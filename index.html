@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="pageTitle">پنل مصرف ترافیک مرزبان</title>
+    <title data-key="pageTitle">پنل جزئیات مصرف شما</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
@@ -64,14 +64,36 @@
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
             padding-bottom: 2.5rem; /* Added bottom padding for footer space */
+            /* Custom scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-card);
         }
+        /* Custom scrollbar for WebKit browsers */
+        ::-webkit-scrollbar {
+            width: 0.5em;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--accent-blue);
+            border-radius: 0.5em;
+        }
+
         .card {
             background-color: var(--bg-card);
             border-radius: 1rem; /* More rounded */
             padding: 1.5rem; /* Adjusted padding */
             box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light); /* Enhanced shadow */
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
             border: 1px solid var(--border-color); /* Subtle border */
+            /* Hover effect */
+            &:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 24px -6px var(--shadow-color-dark), 0 8px 16px -3px var(--shadow-color-light);
+            }
         }
         .chart-container {
             background-color: var(--bg-card);
@@ -91,7 +113,7 @@
             border: 1px solid var(--input-border);
             padding: 0.75rem 1rem; /* Adjusted padding */
             border-radius: 0.5rem; /* Adjusted rounded corners */
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
         input[type="text"]:focus {
             outline: none;
@@ -106,6 +128,32 @@
             font-weight: 600; /* Semi-bold */
             transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); /* Adjusted shadow */
+            /* Loading animation */
+            &.loading {
+                position: relative;
+                padding-right: 3rem; /* Make space for spinner */
+                &:after {
+                    content: '';
+                    position: absolute;
+                    right: 1rem;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 1.2em;
+                    height: 1.2em;
+                    border-radius: 50%;
+                    border: 3px solid transparent;
+                    border-top-color: white;
+                    animation: spin 1s linear infinite;
+                }
+            }
+        }
+        @keyframes spin {
+            0% {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-50%) rotate(360deg);
+            }
         }
         .main-button:hover {
             background-color: var(--accent-blue-hover);
@@ -188,6 +236,15 @@
             background-color: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--error-red);
             font-size: 0.95rem; /* Adjusted font size */
+            /* Validation animation */
+            &.error-shake {
+                animation: shake 0.5s;
+            }
+        }
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            10%, 30%, 50%, 70%, 90% {transform: translateX(-10px);}
+            20%, 40%, 60%, 80% {transform: translateX(10px);}
         }
         /* Chart specific styles */
         .chartjs-render-monitor {
@@ -399,7 +456,7 @@
         <div id="loadingIndicator" class="loading-spinner hidden"></div>
         <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
-        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
+        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden">
             <div class="card">
                 <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
                 <p id="total2" class="text-3xl">...</p>
@@ -421,7 +478,7 @@
             </div>
         </div>
 
-        <div id="chartContainer" class="chart-container hidden mx-auto">
+        <div id="chartContainer" class="chart-container hidden">
             <div class="flex justify-between items-center mb-5 flex-wrap">
                 <div>
                     <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک</h2>
@@ -484,7 +541,7 @@
                 usernameLabel: 'نام کاربری را وارد کنید:',
                 fetchDataButton: 'دریافت اطلاعات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
-                invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.', // Formal and polite error message
+                invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.', 
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی',
                 remainingVolume: 'حجم باقیمانده',
@@ -513,7 +570,7 @@
                 usernameLabel: 'Enter Username:',
                 fetchDataButton: 'Fetch Data',
                 errorMessage: 'Error fetching data. Please try again.',
-                invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.', // Formal and polite error message
+                invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.', 
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
                 totalVolume: 'Total Volume',
                 remainingVolume: 'Remaining Volume',
@@ -645,11 +702,15 @@
                 return;
             }
 
-            // Show loading indicator and hide previous content
+            // Show loading indicator on the button and disable it
+            fetchDataButton.classList.add('loading');
+            fetchDataButton.disabled = true;
+
+            // Hide previous error message, data cards, and chart
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden'); // Hide data cards
-            chartContainer.classList.add('hidden'); // Hide chart
+            dataCards.classList.add('hidden'); 
+            chartContainer.classList.add('hidden'); 
 
             try {
                 // Construct the URL for fetching data from your Cloudflare Worker
@@ -674,6 +735,8 @@
                     // Specific error handling for invalid username
                     if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
                         errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
+                        errorMessage.classList.add('error-shake'); // Add shake animation
+                        errorMessage.addEventListener('animationend', () => errorMessage.classList.remove('error-shake'), { once: true }); // Remove after animation
                     } else {
                         errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
                     }
@@ -702,6 +765,8 @@
             } finally {
                 // Hide loading indicator regardless of success or failure
                 loadingIndicator.classList.add('hidden');
+                fetchDataButton.classList.remove('loading');
+                fetchDataButton.disabled = false;
             }
         });
 

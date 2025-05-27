@@ -31,9 +31,6 @@
             --footer-text-color: #6b7280; /* Gray for footer */
             --modal-overlay-bg: rgba(0, 0, 0, 0.7); /* Dark overlay for modal */
             --modal-bg: #1a222c; /* Modal background */
-            --llm-button-bg: #6366f1; /* Indigo for LLM buttons */
-            --llm-button-hover-bg: #4f46e5; /* Darker indigo for LLM buttons */
-            --llm-response-bg: #2d3748; /* Background for LLM response area */
         }
 
         /* Light theme variables */
@@ -58,9 +55,6 @@
             --footer-text-color: #9ca3af;
             --modal-overlay-bg: rgba(0, 0, 0, 0.5);
             --modal-bg: #ffffff;
-            --llm-button-bg: #818cf8; /* Lighter indigo for LLM buttons */
-            --llm-button-hover-bg: #6366f1; /* Darker indigo for LLM buttons */
-            --llm-response-bg: #f8fafc; /* Light background for LLM response area */
         }
 
         /* Apply CSS variables */
@@ -135,9 +129,8 @@
             transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); /* Adjusted shadow */
             /* Loading animation */
-            position: relative; /* For spinner positioning */
-            overflow: hidden; /* Hide overflow from spinner */
             &.loading {
+                position: relative;
                 padding-right: 3rem; /* Make space for spinner */
                 &:after {
                     content: '';
@@ -360,61 +353,6 @@
             height: 100%;
             border: none;
         }
-        /* LLM Features Section */
-        .llm-features-section {
-            background-color: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
-        .llm-button {
-            background-color: var(--llm-button-bg);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        .llm-button:hover {
-            background-color: var(--llm-button-hover-bg);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-        .llm-button:active {
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-        }
-        .llm-button:disabled {
-            background-color: var(--button-bg-general);
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-        .llm-response-area {
-            background-color: var(--llm-response-bg);
-            color: var(--text-primary);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: right; /* RTL alignment */
-            line-height: 1.6;
-            font-size: 0.95rem;
-            white-space: pre-wrap; /* Preserve whitespace and line breaks */
-            word-wrap: break-word; /* Break long words */
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Inner shadow */
-            border: 1px solid var(--border-color);
-        }
 
 
         /* Responsive adjustments for smaller screens */
@@ -481,14 +419,6 @@
                 height: 2rem;
                 font-size: 1rem;
             }
-            .llm-button {
-                padding: 0.625rem 1.25rem;
-                font-size: 0.9rem;
-            }
-            .llm-response-area {
-                padding: 1rem;
-                font-size: 0.85rem;
-            }
         }
     </style>
 </head>
@@ -498,7 +428,7 @@
             <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
-                </svg>
+                    </svg>
             </button>
 
             <div class="relative">
@@ -526,7 +456,7 @@
         <div id="loadingIndicator" class="loading-spinner hidden"></div>
         <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
-        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
+        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden">
             <div class="card">
                 <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
                 <p id="total2" class="text-3xl">...</p>
@@ -548,7 +478,7 @@
             </div>
         </div>
 
-        <div id="chartContainer" class="chart-container hidden mx-auto">
+        <div id="chartContainer" class="chart-container hidden">
             <div class="flex justify-between items-center mb-5 flex-wrap">
                 <div>
                     <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک</h2>
@@ -564,22 +494,6 @@
             </div>
             <div class="relative h-96">
                 <canvas id="trafficChart"></canvas>
-            </div>
-        </div>
-
-        <div id="llmFeatures" class="llm-features-section hidden mx-auto w-full max-w-xl">
-            <h2 class="text-xl font-semibold mb-4" data-key="aiFeaturesHeader">ویژگی‌های هوش مصنوعی</h2>
-            <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                <button id="summarizeTrafficButton" class="llm-button">
-                    خلاصه مصرف ترافیک ✨
-                </button>
-                <button id="optimizeTipsButton" class="llm-button">
-                    پیشنهادات بهینه‌سازی ✨
-                </button>
-            </div>
-            <div id="llmResponseArea" class="llm-response-area text-gray-200 min-h-[100px] flex items-center justify-center">
-                <p id="llmResponseText" data-key="llmDefaultMessage">برای دریافت اطلاعات بیشتر، یکی از دکمه‌های بالا را کلیک کنید.</p>
-                <div id="llmLoadingSpinner" class="loading-spinner hidden w-8 h-8"></div>
             </div>
         </div>
     </div>
@@ -613,13 +527,6 @@
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
         const chartContainer = document.getElementById('chartContainer');
-        const llmFeatures = document.getElementById('llmFeatures'); // LLM features section
-        const summarizeTrafficButton = document.getElementById('summarizeTrafficButton'); // LLM button
-        const optimizeTipsButton = document.getElementById('optimizeTipsButton'); // LLM button
-        const llmResponseArea = document.getElementById('llmResponseArea'); // LLM response area
-        const llmResponseText = document.getElementById('llmResponseText'); // LLM response text
-        const llmLoadingSpinner = document.getElementById('llmLoadingSpinner'); // LLM loading spinner
-
 
         let trafficChart; // Global Chart.js instance for traffic chart
         let currentTrafficData = {}; // Object to store the fetched traffic data
@@ -655,11 +562,7 @@
                 footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
                 themeToggleTitle: 'تغییر تم',
                 supportButtonTitle: 'پشتیبانی',
-                closeButtonTitle: 'بستن',
-                aiFeaturesHeader: 'ویژگی‌های هوش مصنوعی',
-                summarizeTrafficButton: 'خلاصه مصرف ترافیک ✨',
-                optimizeTipsButton: 'پیشنهادات بهینه‌سازی ✨',
-                llmDefaultMessage: 'برای دریافت اطلاعات بیشتر، یکی از دکمه‌های بالا را کلیک کنید.'
+                closeButtonTitle: 'بستن'
             },
             en: {
                 pageTitle: 'Your Usage Details Panel', 
@@ -688,11 +591,7 @@
                 footerText: 'All rights reserved for Mr. Marzban.', 
                 themeToggleTitle: 'Toggle Theme',
                 supportButtonTitle: 'Support',
-                closeButtonTitle: 'Close',
-                aiFeaturesHeader: 'AI Features',
-                summarizeTrafficButton: 'Summarize Traffic ✨',
-                optimizeTipsButton: 'Optimization Tips ✨',
-                llmDefaultMessage: 'Click one of the buttons above for more information.'
+                closeButtonTitle: 'Close'
             }
         };
 
@@ -718,11 +617,6 @@
             document.querySelector('title').textContent = currentTrans.pageTitle;
             usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim(); // Remove colon for placeholder
             
-            // Update LLM button texts
-            summarizeTrafficButton.textContent = currentTrans.summarizeTrafficButton;
-            optimizeTipsButton.textContent = currentTrans.optimizeTipsButton;
-            llmResponseText.textContent = currentTrans.llmDefaultMessage;
-
             // Update HTML dir attribute
             htmlElement.setAttribute('lang', lang);
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
@@ -817,8 +711,6 @@
             errorMessage.classList.add('hidden');
             dataCards.classList.add('hidden'); 
             chartContainer.classList.add('hidden'); 
-            llmFeatures.classList.add('hidden'); // Hide LLM features section on new fetch
-            llmResponseText.textContent = translations[currentLanguage].llmDefaultMessage; // Reset LLM response text
 
             try {
                 // Construct the URL for fetching data from your Cloudflare Worker
@@ -852,17 +744,15 @@
                     // Ensure data cards and chart remain hidden on error
                     dataCards.classList.add('hidden');
                     chartContainer.classList.add('hidden');
-                    llmFeatures.classList.add('hidden'); // Keep LLM features hidden on error
                     return; // Stop further processing
                 }
 
                 currentTrafficData = data; // Store the fetched data globally
                 updateUI(data); // Update the UI with the received data
                 
-                // Show data cards, chart, and LLM features ONLY if no error
+                // Show data cards and chart ONLY if no error
                 dataCards.classList.remove('hidden');
                 chartContainer.classList.remove('hidden');
-                llmFeatures.classList.remove('hidden'); // Show LLM features section
 
             } catch (error) {
                 // Log and display general error messages
@@ -872,7 +762,6 @@
                 // Ensure data cards and chart remain hidden on error
                 dataCards.classList.add('hidden');
                 chartContainer.classList.add('hidden');
-                llmFeatures.classList.add('hidden'); // Keep LLM features hidden on error
             } finally {
                 // Hide loading indicator regardless of success or failure
                 loadingIndicator.classList.add('hidden');
@@ -1064,79 +953,6 @@
                 }
             });
         }
-
-        // Function to call Gemini API for AI-powered features
-        async function callGeminiAPI(prompt) {
-            llmResponseText.classList.add('hidden');
-            llmLoadingSpinner.classList.remove('hidden');
-            summarizeTrafficButton.disabled = true;
-            optimizeTipsButton.disabled = true;
-
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave as empty string, Canvas will provide it
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    llmResponseText.textContent = text;
-                } else {
-                    llmResponseText.textContent = translations[currentLanguage].llmDefaultMessage; // Fallback to default message
-                }
-            } catch (error) {
-                console.error('Error calling Gemini API:', error);
-                llmResponseText.textContent = `${translations[currentLanguage].errorMessage} (${error.message})`;
-            } finally {
-                llmLoadingSpinner.classList.add('hidden');
-                llmResponseText.classList.remove('hidden');
-                summarizeTrafficButton.disabled = false;
-                optimizeTipsButton.disabled = false;
-            }
-        }
-
-        // Event listener for Summarize Traffic button
-        summarizeTrafficButton.addEventListener('click', () => {
-            if (Object.keys(currentTrafficData).length === 0) {
-                llmResponseText.textContent = translations[currentLanguage].llmDefaultMessage;
-                llmResponseText.classList.remove('hidden');
-                return;
-            }
-            const prompt = `خلاصه‌ای از وضعیت مصرف ترافیک زیر ارائه دهید:
-            حجم کلی: ${currentTrafficData.total2}
-            حجم باقیمانده: ${currentTrafficData.baghi}
-            مصرفی: ${currentTrafficData.usage}
-            تاریخ ساخت: ${currentTrafficData.date3}
-            مدت زمان ساخت: ${currentTrafficData.date2} روز
-            `;
-            callGeminiAPI(prompt);
-        });
-
-        // Event listener for Optimization Tips button
-        optimizeTipsButton.addEventListener('click', () => {
-            if (Object.keys(currentTrafficData).length === 0) {
-                llmResponseText.textContent = translations[currentLanguage].llmDefaultMessage;
-                llmResponseText.classList.remove('hidden');
-                return;
-            }
-            const prompt = `با توجه به اطلاعات مصرف ترافیک زیر، چند پیشنهاد برای بهینه‌سازی مصرف و مدیریت بهتر ترافیک ارائه دهید:
-            حجم باقیمانده: ${currentTrafficData.baghi}
-            مصرفی: ${currentTrafficData.usage}
-            حجم کلی: ${currentTrafficData.total2}
-            `;
-            callGeminiAPI(prompt);
-        });
 
         // Initial setup on page load
         window.onload = function() {

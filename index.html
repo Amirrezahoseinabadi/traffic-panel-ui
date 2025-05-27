@@ -387,7 +387,7 @@
 
         <div class="card mb-10">
             <label for="usernameInput" class="text-lg mb-4" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
-            <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center" value="dehghan_sa">
+            <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
             <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
         </div>
 
@@ -460,7 +460,7 @@
         const goftinoIframe = document.getElementById('goftinoIframe'); // Reference to the iframe
 
         const usernameInput = document.getElementById('usernameInput');
-        const fetchDataButton = document.getElementById('fetchDataButton');
+        const fetchDataButton = document = document.getElementById('fetchDataButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
@@ -878,7 +878,9 @@
         // Initial setup on page load
         window.onload = function() {
             initializePreferences(); // Apply saved theme and language
-            fetchDataButton.click(); // Simulate a click to load data on page load
+            // Do NOT click fetchDataButton on load if username is empty initially
+            // The user explicitly requested the input field to be empty
+            // They will manually enter the username and click "Fetch Data"
         };
     </script>
 </body>

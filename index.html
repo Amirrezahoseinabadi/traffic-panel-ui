@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="pageTitle">پنل مصرف ترافیک مرزبان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            /* Dark theme defaults (Marzban-like) */
+            --bg-primary: #121820; /* Deep dark background */
+            --bg-card: #1a222c; /* Slightly lighter for cards */
+            --text-primary: #e2e8f0; /* Off-white for main text */
+            --text-secondary: #a0aec0; /* Lighter gray for secondary text/labels */
+            --input-bg: #2d3748; /* Input background */
+            --input-border: #4a5568; /* Input border */
+            --button-bg-general: #3b424e; /* Darker grey for general buttons/inputs */
+            --button-hover-bg-general: #5a626e; /* Hover state for general buttons */
+            --accent-blue: #4299e1; /* Primary accent blue for active states/buttons */
+            --accent-blue-hover: #3182ce; /* Darker blue on hover */
+            --accent-green: #4cd137; /* Bright green for positive metrics/bars */
+            --accent-yellow: #f6b93b; /* Amber/orange for remaining/warnings */
+            --error-red: #ef4444; /* Red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+            --shadow-color-light: rgba(0, 0, 0, 0.15); /* Lighter shadow */
+            --border-color: #2d3748; /* Subtle border color */
+            --chart-grid-color: rgba(255, 255, 255, 0.1);
+            --footer-text-color: #6b7280; /* Gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.7); /* Dark overlay for modal */
+            --modal-bg: #1a222c; /* Modal background */
+        }
+
+        /* Light theme variables */
+        body.light-mode {
+            --bg-primary: #f0f2f5; /* Light background */
+            --bg-card: #ffffff; /* White cards */
+            --text-primary: #2d3748; /* Dark text */
+            --text-secondary: #4a5568; /* Medium gray secondary text */
+            --input-bg: #e2e8f0;
+            --input-border: #cbd5e0;
+            --button-bg-general: #e2e8f0; /* Light gray buttons */
+            --button-hover-bg-general: #cbd5e0; /* Slightly darker light gray */
+            --accent-blue: #3b82f6; /* Brighter blue */
+            --accent-blue-hover: #2563eb; /* Darker blue */
+            --accent-green: #22c55e; /* Brighter green */
+            --accent-yellow: #fbbf24; /* Brighter yellow */
+            --error-red: #dc2626; /* Brighter red */
+            --shadow-color-dark: rgba(0, 0, 0, 0.1);
+            --shadow-color-light: rgba(0, 0, 0, 0.05);
+            --border-color: #e2e8f0;
+            --chart-grid-color: rgba(0, 0, 0, 0.1);
+            --footer-text-color: #9ca3af;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+            --modal-bg: #ffffff;
+        }
+
+        /* Apply CSS variables */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 2.5rem; /* Added bottom padding for footer space */
+        }
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 1rem; /* More rounded */
+            padding: 1.5rem; /* Adjusted padding */
+            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light); /* Enhanced shadow */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+        .chart-container {
+            background-color: var(--bg-card);
+            border-radius: 1rem; /* Match card radius */
+            padding: 1.5rem; /* Adjusted padding */
+            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+        .loading-spinner {
+            border-left-color: var(--accent-blue);
+        }
+        /* Input and Button Styling */
+        input[type="text"] {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.75rem 1rem; /* Adjusted padding */
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4); /* Adjusted glow */
+        }
+        .main-button { /* General button style */
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 0.75rem 1.5rem; /* Adjusted padding */
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            font-weight: 600; /* Semi-bold */
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); /* Adjusted shadow */
+        }
+        .main-button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px); /* Adjusted lift effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        .main-button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        .main-button:disabled {
+            background-color: var(--button-bg-general);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        /* Select (Dropdown) Styling */
+        select {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.625rem 1rem; /* Adjusted padding */
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            cursor: pointer;
+            appearance: none; /* Remove default arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E"); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25em 1.25em; /* Adjusted arrow size */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4);
+        }
+        /* Icon Button (Theme Toggle) Styling */
+        .icon-button {
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.25rem; /* Adjusted icon size */
+            width: 2.5rem; /* Adjusted fixed width/height */
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .icon-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+        }
+        /* Metric Card Values */
+        .card p:first-child { /* Label text */
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem; /* Smaller label font size */
+            margin-bottom: 0.5rem; /* Adjusted margin */
+        }
+        .card p:last-child { /* Value text */
+            font-weight: 700;
+            font-size: 2.25rem; /* Adjusted value font size */
+            line-height: 1.2; /* Adjusted line height */
+            margin-top: 0; /* Adjusted margin */
+        }
+        #total2, #usage {
+            color: var(--accent-green);
+        }
+        #baghi {
+            color: var(--accent-yellow);
+        }
+        #errorMessage {
+            color: var(--error-red);
+            font-weight: 600;
+            padding: 0.625rem 1.25rem; /* Adjusted padding */
+            border-radius: 0.5rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error-red);
+            font-size: 0.95rem; /* Adjusted font size */
+        }
+        /* Chart specific styles */
+        .chartjs-render-monitor {
+            background-color: transparent !important;
+        }
+        .chart-title {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.5rem; /* Adjusted chart title size */
+        }
+        .chart-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem; /* Adjusted subtitle size */
+        }
+        .time-range-button {
+            background-color: var(--button-bg-general);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem; /* Adjusted padding */
+            border-radius: 0.375rem; /* Adjusted rounded corners */
+            font-weight: 500;
+            font-size: 0.875rem; /* Adjusted font size */
+        }
+        .time-range-button:hover {
+            background-color: var(--button-hover-bg-general);
+        }
+        .time-range-button.active {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+        .time-range-button.active:hover {
+            background-color: var(--accent-blue-hover);
+        }
+        /* Specific font size for creationDate value */
+        #date3 {
+            font-size: 1.25rem; /* Adjusted font size for date3 to be smaller */
+            line-height: 1.4; /* Adjusted line height for date3 */
+            margin-top: 0.5rem; /* Adjusted margin for date3 */
+        }
+        /* Footer styling */
+        .app-footer {
+            margin-top: 2.5rem; /* Space from content */
+            text-align: center;
+            color: var(--footer-text-color);
+            font-size: 0.875rem; /* Smaller font size for footer */
+            font-weight: 400; /* Normal weight */
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--modal-overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* High z-index to be on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: var(--modal-bg);
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            width: 90%; /* Responsive width */
+            max-width: 600px; /* Max width for desktop */
+            height: 80%; /* Responsive height */
+            max-height: 700px; /* Max height */
+            overflow: hidden; /* Hide iframe scrollbars if content fits */
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem; /* Adjusted position */
+            left: 1rem; /* Adjusted position for RTL */
+            background: var(--button-bg-general);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%; /* Circular button */
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            z-index: 1001; /* Above iframe */
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .modal-close-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+        }
+        .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 640px) { /* Tailwind's 'sm' breakpoint */
+            .card {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+            .chart-container {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+            .card p:last-child {
+                font-size: 1.75rem; /* Adjusted values on mobile */
+            }
+            #date3 {
+                font-size: 1rem; /* Smaller date3 on mobile */
+            }
+            .chart-title {
+                font-size: 1.25rem; /* Smaller chart title on mobile */
+            }
+            .chart-subtitle {
+                font-size: 0.8rem; /* Smaller subtitle on mobile */
+            }
+            .time-range-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .main-button {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.9rem;
+            }
+            input[type="text"] {
+                padding: 0.625rem 1rem;
+                font-size: 0.9rem;
+            }
+            select {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .icon-button {
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 1.1rem;
+            }
+            h1 {
+                font-size: 2.25rem; /* Smaller main header on mobile */
+            }
+            .text-xl { /* usernameLabel */
+                font-size: 1.125rem;
+            }
+            .app-footer {
+                margin-top: 2rem;
+                font-size: 0.75rem;
+            }
+            .modal-content {
+                width: 95%;
+                height: 90%;
+            }
+            .modal-close-button {
+                top: 0.5rem;
+                left: 0.5rem;
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-end items-center gap-4 mb-8">
+            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+                <span id="themeIcon">🌙</span> </button>
+
+            <div class="relative">
+                <select id="languageSelector" class="px-3 py-2 rounded-md">
+                    <option value="fa">فارسی</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <button id="supportButton" class="icon-button" data-key="supportButtonTitle">
+                <span>💬</span>
+            </button>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
+
+        <div class="card mb-10">
+            <label for="usernameInput" class="text-lg mb-4" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
+            <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center" value="dehghan_sa">
+            <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
+        </div>
+
+        <div id="loadingIndicator" class="loading-spinner hidden"></div>
+        <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+
+        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden">
+            <div class="card">
+                <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
+                <p id="total2" class="text-3xl">...</p>
+            </div>
+            <div class="card">
+                <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده</p>
+                <p id="baghi" class="text-3xl">...</p>
+            </div>
+            <div class="card">
+                <p class="text-sm mb-2" data-key="consumed">مصرفی</p>
+                <p id="usage" class="text-3xl">...</p>
+            </div>
+            <div class="card">
+                <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت</p>
+                <p id="date3" class="text-lg">...</p> </div>
+            <div class="card col-span-full lg:col-span-1">
+                <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت</p>
+                <p id="date2" class="text-3xl">...</p>
+            </div>
+        </div>
+
+        <div id="chartContainer" class="chart-container hidden">
+            <div class="flex justify-between items-center mb-5 flex-wrap">
+                <div>
+                    <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک</h2>
+                    <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی شما بر اساس بازه زمانی انتخابی</p>
+                </div>
+                <div class="flex space-x-2 mt-4 sm:mt-0" dir="ltr"> 
+                    <button class="time-range-button active" data-range="24h">24H</button>
+                    <button class="time-range-button" data-range="7d">7D</button>
+                    <button class="time-range-button" data-range="30d">30D</button>
+                    <button class="time-range-button" data-range="6m">6M</button>
+                    <button class="time-range-button" data-range="12m">12M</button>
+                </div>
+            </div>
+            <div class="relative h-96">
+                <canvas id="trafficChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer" data-key="footerText">
+        تمامی حقوق برای آقای مرزبان محفوظ است.
+    </footer>
+
+    <div id="supportModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="closeModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const htmlElement = document.documentElement;
+        const bodyElement = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const languageSelector = document.getElementById('languageSelector');
+        const supportButton = document.getElementById('supportButton'); 
+        const supportModal = document.getElementById('supportModal'); // Reference to the modal overlay
+        const closeModalButton = document.getElementById('closeModalButton'); // Reference to the modal close button
+        const goftinoIframe = document.getElementById('goftinoIframe'); // Reference to the iframe
+
+        const usernameInput = document.getElementById('usernameInput');
+        const fetchDataButton = document.getElementById('fetchDataButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const dataCards = document.getElementById('dataCards');
+        const chartContainer = document.getElementById('chartContainer');
+
+        let trafficChart; // Global Chart.js instance for traffic chart
+        let currentTrafficData = {}; // Object to store the fetched traffic data
+        let currentLanguage = localStorage.getItem('language') || 'fa'; // Default to Persian
+        let currentTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
+
+        // Translations object
+        const translations = {
+            fa: {
+                pageTitle: 'پنل جزئیات مصرف شما', 
+                mainHeader: 'پنل جزئیات مصرف شما', 
+                usernameLabel: 'نام کاربری را وارد کنید:',
+                fetchDataButton: 'دریافت اطلاعات',
+                errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
+                invalidUsernameError: 'نام کاربری وارد شده اشتباه است. لطفا نام کاربری صحیح را وارد کرده و دوباره تلاش کنید.',
+                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
+                totalVolume: 'حجم کلی',
+                remainingVolume: 'حجم باقیمانده',
+                consumed: 'مصرفی',
+                creationDate: 'تاریخ ساخت',
+                daysPassed: 'مدت زمان ساخت',
+                trafficChartHeader: 'نمودار مصرف ترافیک',
+                trafficChartSubtitle: 'ترافیک مصرفی شما بر اساس بازه زمانی انتخابی',
+                notAvailable: 'در دسترس نیست',
+                invalidDateFormat: 'فرمت تاریخ نامعتبر', 
+                daysUnit: 'روز',
+                unknown: 'نامشخص',
+                currentUsage: 'مصرف فعلی',
+                bytes: 'بایت',
+                mb: 'مگابایت',
+                gb: 'گیگابایت',
+                tb: 'ترابایت',
+                footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
+                themeToggleTitle: 'تغییر تم',
+                supportButtonTitle: 'پشتیبانی',
+                closeButtonTitle: 'بستن'
+            },
+            en: {
+                pageTitle: 'Your Usage Details Panel', 
+                mainHeader: 'Your Usage Details Panel', 
+                usernameLabel: 'Enter Username:',
+                fetchDataButton: 'Fetch Data',
+                errorMessage: 'Error fetching data. Please try again.',
+                invalidUsernameError: 'The entered username is incorrect. Please enter the correct username and try again.',
+                fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
+                totalVolume: 'Total Volume',
+                remainingVolume: 'Remaining Volume',
+                consumed: 'Consumed',
+                creationDate: 'Creation Date',
+                daysPassed: 'Days Passed',
+                trafficChartHeader: 'Traffic Consumption Chart',
+                trafficChartSubtitle: 'Your traffic consumption based on the selected time range',
+                notAvailable: 'Not Available',
+                invalidDateFormat: 'Invalid Date Format',
+                daysUnit: 'days',
+                unknown: 'Unknown',
+                currentUsage: 'Current Usage',
+                bytes: 'Bytes',
+                mb: 'MB',
+                gb: 'GB',
+                tb: 'TB',
+                footerText: 'All rights reserved for Mr. Marzban.', 
+                themeToggleTitle: 'Toggle Theme',
+                supportButtonTitle: 'Support',
+                closeButtonTitle: 'Close'
+            }
+        };
+
+        // Function to apply translations
+        function applyTranslations(lang) {
+            const currentTrans = translations[lang];
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (currentTrans[key]) {
+                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
+                        element.title = currentTrans.themeToggleTitle;
+                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
+                        element.title = currentTrans.supportButtonTitle;
+                    } else if (element.tagName === 'BUTTON' && element.id === 'closeModalButton') {
+                        element.title = currentTrans.closeButtonTitle;
+                    }
+                    else {
+                        element.textContent = currentTrans[key];
+                    }
+                }
+            });
+            // Update specific elements not covered by data-key
+            document.querySelector('title').textContent = currentTrans.pageTitle;
+            usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim(); // Remove colon for placeholder
+            
+            // Update HTML dir attribute
+            htmlElement.setAttribute('lang', lang);
+            htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+            bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+
+            // Re-render chart to apply RTL/LTR changes if needed
+            if (trafficChart) {
+                updateUI(currentTrafficData); // Re-call updateUI with current data
+            }
+        }
+
+        // Function to set theme
+        function setTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-mode');
+                themeIcon.textContent = '☀️'; // Sun icon for light mode
+            } else {
+                bodyElement.classList.remove('light-mode');
+                themeIcon.textContent = '🌙'; // Moon icon for dark mode
+            }
+            localStorage.setItem('theme', theme);
+            currentTheme = theme;
+        }
+
+        // Initialize theme and language on page load
+        function initializePreferences() {
+            setTheme(currentTheme);
+            languageSelector.value = currentLanguage;
+            applyTranslations(currentLanguage);
+        }
+
+        // Event listener for theme toggle button
+        themeToggle.addEventListener('click', () => {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        // Event listener for language selector
+        languageSelector.addEventListener('change', (event) => {
+            currentLanguage = event.target.value;
+            localStorage.setItem('language', currentLanguage);
+            applyTranslations(currentLanguage);
+        });
+
+        // Event listener for support button to open modal
+        supportButton.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+            supportModal.classList.add('show');
+            // Ensure iframe loads the content when modal is shown
+            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
+        });
+
+        // Event listener for modal close button
+        closeModalButton.addEventListener('click', () => {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            // Optionally, clear iframe src to stop any ongoing processes/audio
+            goftinoIframe.src = ''; 
+        });
+
+        // Close modal if user clicks outside the content (on the overlay)
+        supportModal.addEventListener('click', (event) => {
+            if (event.target === supportModal) {
+                supportModal.classList.remove('show');
+                supportModal.classList.add('hidden');
+                goftinoIframe.src = ''; 
+            }
+        });
+
+
+        // The URL of your Cloudflare Worker. This Worker acts as an API proxy.
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
+
+        // Event listener for the "دریافت اطلاعات" (Fetch Data) button
+        fetchDataButton.addEventListener('click', async () => {
+            const username = usernameInput.value.trim();
+            // Validate if username is entered
+            if (!username) {
+                errorMessage.textContent = translations[currentLanguage].usernameLabel.replace(':', '').trim(); // Use translated text
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Show loading indicator and hide previous content
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            dataCards.classList.add('hidden');
+            chartContainer.classList.add('hidden');
+
+            try {
+                // Construct the URL for fetching data from your Cloudflare Worker
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`;
+                console.log('Fetching data from:', fetchUrl); // Log the URL for debugging
+
+                // Make the fetch request to your Cloudflare Worker
+                const response = await fetch(fetchUrl);
+
+                // Handle non-OK HTTP responses (e.g., 404, 500)
+                if (!response.ok) {
+                    // Try to read response text for more details on server-side errors
+                    const errorText = await response.text();
+                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
+                }
+
+                // Parse the JSON response from your Cloudflare Worker
+                const data = await response.json();
+
+                // Check for application-level errors returned by your worker
+                if (data.error) {
+                    // Specific error handling for invalid username
+                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
+                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
+                    } else {
+                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
+                    }
+                    errorMessage.classList.remove('hidden');
+                    return; // Stop further processing
+                }
+
+                currentTrafficData = data; // Store the fetched data globally
+                updateUI(data); // Update the UI with the received data
+                
+                // Show data cards and chart
+                dataCards.classList.remove('hidden');
+                chartContainer.classList.remove('hidden');
+
+            } catch (error) {
+                // Log and display general error messages
+                console.error('Error fetching data:', error);
+                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // Hide loading indicator regardless of success or failure
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+
+        // Function to update the UI elements with fetched data, including the chart
+        function updateUI(data) {
+            const currentTrans = translations[currentLanguage];
+
+            // Update individual data cards
+            document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
+            document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
+            document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
+            
+            // Format 'date3' to Persian/English date and time
+            if (data.date3) {
+                let displayDate = data.date3; // Default to raw data if parsing fails
+                try {
+                    // Check for the specific problematic string '✖️' or if it's too short to be a valid date
+                    if (data.date3.includes('✖️') || data.date3.length < 10) { 
+                        displayDate = currentTrans.notAvailable; 
+                    } else {
+                        // Clean the date string by removing any leading non-date characters (like '│ ')
+                        const cleanDateString = data.date3.replace(/^\|\s*/, ''); 
+                        const dateObj = new Date(cleanDateString);
+                        
+                        // Check if the date object is valid after parsing
+                        if (isNaN(dateObj.getTime())) {
+                            throw new Error("Invalid date string after cleaning or unparsable format.");
+                        }
+
+                        const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+                        const persianDateOptions = { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric', 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            second: '2-digit',
+                            hour12: false 
+                        };
+                        displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
+                    }
+                } catch (e) {
+                    console.error("Error parsing date3:", e);
+                    displayDate = currentTrans.notAvailable; // Fallback to "Not Available" for any parsing errors
+                }
+                document.getElementById('date3').textContent = displayDate;
+            } else {
+                document.getElementById('date3').textContent = currentTrans.unknown;
+            }
+
+            document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
+
+            // Extract usage value and unit for the chart
+            const usageValue = parseFloat(data.usage); 
+            let usageUnit = '';
+            if (data.usage && typeof data.usage === 'string') {
+                const unitMatch = data.usage.match(/[A-Z]+/i);
+                if (unitMatch) {
+                    const unit = unitMatch[0].toLowerCase();
+                    if (unit === 'b') usageUnit = currentTrans.bytes;
+                    else if (unit === 'mb') usageUnit = currentTrans.mb;
+                    else if (unit === 'gb') usageUnit = currentTrans.gb;
+                    else if (unit === 'tb') usageUnit = currentTrans.tb;
+                    else usageUnit = unitMatch[0]; // Fallback to original unit if not recognized
+                }
+            } else {
+                usageUnit = currentTrans.mb; // Default unit if not found
+            }
+
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+
+            // Destroy previous chart instance if it exists
+            if (trafficChart) {
+                trafficChart.destroy();
+            }
+
+            // --- Chart Data and Labels (Simulated to match the image) ---
+            // Generate labels for 24 hours
+            const labels = [];
+            for (let i = 12; i <= 23; i++) { // From 12 PM to 11 PM
+                labels.push(`${String(i).padStart(2, '0')}:48`);
+            }
+            for (let i = 0; i <= 11; i++) { // From 12 AM to 11 AM
+                labels.push(`${String(i).padStart(2, '0')}:48`);
+            }
+
+            const chartData = new Array(labels.length).fill(0); // Initialize all data points to 0
+            // Use CSS variable for default bar color
+            const defaultBarColor = getComputedStyle(document.documentElement).getPropertyValue('--button-bg-general').trim();
+            const backgroundColors = new Array(labels.length).fill(defaultBarColor); 
+
+            // Simulate the main green bar at 11:48 with actual usage value
+            const lastHourIndex = labels.indexOf('11:48'); 
+            if (lastHourIndex !== -1) {
+                chartData[lastHourIndex] = usageValue; 
+                backgroundColors[lastHourIndex] = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim(); // Green color
+            }
+
+            // Simulate the "0 byte" grey bar at 14:48 as seen in the image.
+            const fourteenthHourIndex = labels.indexOf('14:48');
+            if (fourteenthHourIndex !== -1) {
+                chartData[fourteenthHourIndex] = 0.01; // Small value to make the bar visible
+                backgroundColors[fourteenthHourIndex] = defaultBarColor; // Grey color
+            }
+            // --- End Chart Data Simulation ---
+
+            // Create or update the Chart.js bar chart
+            trafficChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels, // Use the generated hourly labels
+                    datasets: [{
+                        label: `${currentTrans.consumed} (${usageUnit})`, // Translated label
+                        data: chartData, // Use the simulated data points
+                        backgroundColor: backgroundColors, // Use array for different bar colors
+                        borderColor: backgroundColors, // Border color same as background for solid look
+                        borderWidth: 1,
+                        borderRadius: 5, /* Rounded corners for bars */
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false, // Hide legend
+                        },
+                        tooltip: {
+                            rtl: currentLanguage === 'fa', // Enable RTL for tooltips if Persian
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    let label = '';
+                                    if (context.parsed.y !== null) {
+                                        // Custom tooltip for the 0-byte bar at 14:48
+                                        if (context.parsed.y === 0.01 && labels[context.dataIndex] === '14:48') {
+                                            label = `0 ${currentTrans.bytes}`; 
+                                        } else {
+                                            label = `${context.parsed.y} ${usageUnit}`;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'var(--chart-grid-color)', /* Use CSS variable for grid color */
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: 'var(--text-secondary)', // Use CSS variable for tick color
+                                font: {
+                                    family: 'Vazirmatn', // Ensure Vazirmatn font for chart ticks
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'var(--chart-grid-color)',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: 'var(--text-secondary)', // Use CSS variable for tick color
+                                callback: function(value) {
+                                    return value + ' ' + usageUnit;
+                                },
+                                min: 0,
+                                max: 8,
+                                font: {
+                                    family: 'Vazirmatn', // Ensure Vazirmatn font for chart ticks
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initial setup on page load
+        window.onload = function() {
+            initializePreferences(); // Apply saved theme and language
+            fetchDataButton.click(); // Simulate a click to load data on page load
+        };
+    </script>
+</body>
+</html>

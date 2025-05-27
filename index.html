@@ -369,7 +369,10 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-end items-center gap-4 mb-8">
             <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
-                <span id="themeIcon">🌙</span> </button>
+                <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
+                    </svg>
+            </button>
 
             <div class="relative">
                 <select id="languageSelector" class="px-3 py-2 rounded-md">
@@ -379,14 +382,16 @@
             </div>
 
             <button id="supportButton" class="icon-button" data-key="supportButtonTitle">
-                <span>💬</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                </svg>
             </button>
         </div>
 
         <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
 
-        <div class="card mb-10">
-            <label for="usernameInput" class="text-lg mb-4" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
+        <div class="card mb-10 w-full max-w-md mx-auto">
+            <label for="usernameInput" class="text-lg mb-4 text-center" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
             <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
             <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
         </div>
@@ -394,7 +399,7 @@
         <div id="loadingIndicator" class="loading-spinner hidden"></div>
         <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
-        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden">
+        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
             <div class="card">
                 <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
                 <p id="total2" class="text-3xl">...</p>
@@ -416,7 +421,7 @@
             </div>
         </div>
 
-        <div id="chartContainer" class="chart-container hidden">
+        <div id="chartContainer" class="chart-container hidden mx-auto">
             <div class="flex justify-between items-center mb-5 flex-wrap">
                 <div>
                     <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک</h2>
@@ -460,7 +465,7 @@
         const goftinoIframe = document.getElementById('goftinoIframe'); // Reference to the iframe
 
         const usernameInput = document.getElementById('usernameInput');
-        const fetchDataButton = document = document.getElementById('fetchDataButton');
+        const fetchDataButton = document.getElementById('fetchDataButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
@@ -479,7 +484,7 @@
                 usernameLabel: 'نام کاربری را وارد کنید:',
                 fetchDataButton: 'دریافت اطلاعات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
-                invalidUsernameError: 'نام کاربری وارد شده اشتباه است. لطفا نام کاربری صحیح را وارد کرده و دوباره تلاش کنید.',
+                invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.', // Formal and polite error message
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی',
                 remainingVolume: 'حجم باقیمانده',
@@ -508,7 +513,7 @@
                 usernameLabel: 'Enter Username:',
                 fetchDataButton: 'Fetch Data',
                 errorMessage: 'Error fetching data. Please try again.',
-                invalidUsernameError: 'The entered username is incorrect. Please enter the correct username and try again.',
+                invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.', // Formal and polite error message
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
                 totalVolume: 'Total Volume',
                 remainingVolume: 'Remaining Volume',
@@ -570,10 +575,12 @@
         function setTheme(theme) {
             if (theme === 'light') {
                 bodyElement.classList.add('light-mode');
-                themeIcon.textContent = '☀️'; // Sun icon for light mode
+                // Sun icon SVG for light mode
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
             } else {
                 bodyElement.classList.remove('light-mode');
-                themeIcon.textContent = '🌙'; // Moon icon for dark mode
+                // Moon icon SVG for dark mode
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
             }
             localStorage.setItem('theme', theme);
             currentTheme = theme;
@@ -581,9 +588,9 @@
 
         // Initialize theme and language on page load
         function initializePreferences() {
-            setTheme(currentTheme);
+            setTheme(currentTheme); // Apply saved theme
             languageSelector.value = currentLanguage;
-            applyTranslations(currentLanguage);
+            applyTranslations(currentLanguage); // Apply saved language
         }
 
         // Event listener for theme toggle button
@@ -641,8 +648,8 @@
             // Show loading indicator and hide previous content
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
-            chartContainer.classList.add('hidden');
+            dataCards.classList.add('hidden'); // Hide data cards
+            chartContainer.classList.add('hidden'); // Hide chart
 
             try {
                 // Construct the URL for fetching data from your Cloudflare Worker
@@ -671,13 +678,16 @@
                         errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
                     }
                     errorMessage.classList.remove('hidden');
+                    // Ensure data cards and chart remain hidden on error
+                    dataCards.classList.add('hidden');
+                    chartContainer.classList.add('hidden');
                     return; // Stop further processing
                 }
 
                 currentTrafficData = data; // Store the fetched data globally
                 updateUI(data); // Update the UI with the received data
                 
-                // Show data cards and chart
+                // Show data cards and chart ONLY if no error
                 dataCards.classList.remove('hidden');
                 chartContainer.classList.remove('hidden');
 
@@ -686,6 +696,9 @@
                 console.error('Error fetching data:', error);
                 errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
                 errorMessage.classList.remove('hidden');
+                // Ensure data cards and chart remain hidden on error
+                dataCards.classList.add('hidden');
+                chartContainer.classList.add('hidden');
             } finally {
                 // Hide loading indicator regardless of success or failure
                 loadingIndicator.classList.add('hidden');
@@ -778,20 +791,21 @@
             const chartData = new Array(labels.length).fill(0); // Initialize all data points to 0
             // Use CSS variable for default bar color
             const defaultBarColor = getComputedStyle(document.documentElement).getPropertyValue('--button-bg-general').trim();
+            const accentGreenColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim(); // Get accent green color
             const backgroundColors = new Array(labels.length).fill(defaultBarColor); 
 
             // Simulate the main green bar at 11:48 with actual usage value
             const lastHourIndex = labels.indexOf('11:48'); 
             if (lastHourIndex !== -1) {
                 chartData[lastHourIndex] = usageValue; 
-                backgroundColors[lastHourIndex] = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim(); // Green color
+                backgroundColors[lastHourIndex] = accentGreenColor; // Green color for the main usage bar
             }
 
             // Simulate the "0 byte" grey bar at 14:48 as seen in the image.
             const fourteenthHourIndex = labels.indexOf('14:48');
             if (fourteenthHourIndex !== -1) {
                 chartData[fourteenthHourIndex] = 0.01; // Small value to make the bar visible
-                backgroundColors[fourteenthHourIndex] = defaultBarColor; // Grey color
+                backgroundColors[fourteenthHourIndex] = defaultBarColor; // Grey color for the placeholder bar
             }
             // --- End Chart Data Simulation ---
 
@@ -878,9 +892,7 @@
         // Initial setup on page load
         window.onload = function() {
             initializePreferences(); // Apply saved theme and language
-            // Do NOT click fetchDataButton on load if username is empty initially
-            // The user explicitly requested the input field to be empty
-            // They will manually enter the username and click "Fetch Data"
+            // Removed automatic fetchDataButton.click() on load, as per user request for empty input field
         };
     </script>
 </body>

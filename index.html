@@ -10,47 +10,49 @@
     <style>
         /* CSS Variables for theming */
         :root {
-            --bg-primary: #121820;
-            --bg-card: #1a222c;
-            --text-primary: #e2e8f0;
-            --text-secondary: #a0aec0;
-            --input-bg: #2d3748;
-            --input-border: #4a5568;
-            --button-bg-general: #3b424e;
-            --button-hover-bg-general: #5a626e;
-            --accent-blue: #4299e1;
-            --accent-blue-hover: #3182ce;
-            --accent-green: #4cd137;
-            --accent-yellow: #f6b93b;
-            --error-red: #ef4444;
-            --shadow-color-dark: rgba(0, 0, 0, 0.3);
-            --shadow-color-light: rgba(0, 0, 0, 0.15);
-            --border-color: #2d3748;
+            /* Dark theme defaults (Marzban-like) */
+            --bg-primary: #121820; /* Deep dark background */
+            --bg-card: #1a222c; /* Slightly lighter for cards */
+            --text-primary: #e2e8f0; /* Off-white for main text */
+            --text-secondary: #a0aec0; /* Lighter gray for secondary text/labels */
+            --input-bg: #2d3748; /* Input background */
+            --input-border: #4a5568; /* Input border */
+            --button-bg-general: #3b424e; /* Darker grey for general buttons/inputs */
+            --button-hover-bg-general: #5a626e; /* Hover state for general buttons */
+            --accent-blue: #4299e1; /* Primary accent blue for active states/buttons */
+            --accent-blue-hover: #3182ce; /* Darker blue on hover */
+            --accent-green: #4cd137; /* Bright green for positive metrics/bars */
+            --accent-yellow: #f6b93b; /* Amber/orange for remaining/warnings */
+            --error-red: #ef4444; /* Red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+            --shadow-color-light: rgba(0, 0, 0, 0.15); /* Lighter shadow */
+            --border-color: #2d3748; /* Subtle border color */
             --chart-grid-color: rgba(255, 255, 255, 0.1);
-            --footer-text-color: #6b7280;
-            --modal-overlay-bg: rgba(0, 0, 0, 0.7);
-            --modal-bg: #1a222c;
+            --footer-text-color: #6b7280; /* Gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.7); /* Dark overlay for modal */
+            --modal-bg: #1a222c; /* Modal background */
+            /* Prediction status colors */
             --status-good: #4cd137;
             --status-moderate: #f6b93b;
-            --status-low: #ff7f50;
+            --status-low: #ff7f50; /* Coral */
             --status-critical: #ef4444;
         }
 
         /* Light theme variables */
         body.light-mode {
-            --bg-primary: #f0f2f5;
-            --bg-card: #ffffff;
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
+            --bg-primary: #f0f2f5; /* Light background */
+            --bg-card: #ffffff; /* White cards */
+            --text-primary: #2d3748; /* Dark text */
+            --text-secondary: #4a5568; /* Medium gray secondary text */
             --input-bg: #e2e8f0;
             --input-border: #cbd5e0;
-            --button-bg-general: #e2e8f0;
-            --button-hover-bg-general: #cbd5e0;
-            --accent-blue: #3b82f6;
-            --accent-blue-hover: #2563eb;
-            --accent-green: #22c55e;
-            --accent-yellow: #fbbf24;
-            --error-red: #dc2626;
+            --button-bg-general: #e2e8f0; /* Light gray buttons */
+            --button-hover-bg-general: #cbd5e0; /* Slightly darker light gray */
+            --accent-blue: #3b82f6; /* Brighter blue */
+            --accent-blue-hover: #2563eb; /* Darker blue */
+            --accent-green: #22c55e; /* Brighter green */
+            --accent-yellow: #fbbf24; /* Brighter yellow */
+            --error-red: #dc2626; /* Brighter red */
             --shadow-color-dark: rgba(0, 0, 0, 0.1);
             --shadow-color-light: rgba(0, 0, 0, 0.05);
             --border-color: #e2e8f0;
@@ -58,9 +60,10 @@
             --footer-text-color: #9ca3af;
             --modal-overlay-bg: rgba(0, 0, 0, 0.5);
             --modal-bg: #ffffff;
+            /* Prediction status colors */
             --status-good: #22c55e;
             --status-moderate: #fbbf24;
-            --status-low: #f97316;
+            --status-low: #f97316; /* Orange */
             --status-critical: #dc2626;
         }
 
@@ -96,10 +99,11 @@
             box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light); /* Enhanced shadow */
             transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
             border: 1px solid var(--border-color); /* Subtle border */
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px -6px var(--shadow-color-dark), 0 8px 16px -3px var(--shadow-color-light);
+            /* Hover effect */
+            &:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 24px -6px var(--shadow-color-dark), 0 8px 16px -3px var(--shadow-color-light);
+            }
         }
         .chart-container {
             background-color: var(--bg-card);
@@ -537,6 +541,20 @@
                 height: 2rem;
                 font-size: 1rem;
             }
+            .analysis-value {
+                font-size: 1rem;
+            }
+            .user-list-table th, .user-list-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .top-bottom-users {
+                flex-direction: column;
+                align-items: center;
+            }
+            .top-bottom-user-item {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -921,10 +939,10 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             if (trafficChart) {
-                updateUI(currentTrafficData);
+                updateUI(currentTrafficData); // Re-render chart to apply RTL/LTR changes and translated labels
             }
             if (!allUsersCard.classList.contains('hidden') && window.allMarzbanUsers) {
-                 displayAllUsers(window.allMarzbanUsers);
+                 displayAllUsers(window.allMarzbanUsers); // Re-render user list with updated translations
             }
         }
 
@@ -990,8 +1008,7 @@
 
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev'; 
 
-        adminLoginButton.addEventListener('click', async (event) => {
-            event.preventDefault(); // Prevent default form submission and page refresh
+        adminLoginButton.addEventListener('click', async () => {
             const adminUsername = adminUsernameInput.value.trim();
             const adminPassword = adminPasswordInput.value.trim();
 
@@ -1019,42 +1036,25 @@
                     body: JSON.stringify({ username: adminUsername, password: adminPassword })
                 });
 
-                if (!response.ok) {
-                    let errorDetail = `HTTP Error: ${response.status} ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorDetail = errorData.detail || errorDetail;
-                    } catch (e) {
-                        errorDetail = await response.text(); // Get raw text if not JSON
-                    }
-                    throw new Error(errorDetail);
-                }
-
                 const data = await response.json();
 
-                if (data.error) {
-                    throw new Error(data.error);
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || `Authentication failed with status: ${response.status}`);
                 }
 
                 adminAccessToken = data.access_token;
                 localStorage.setItem('adminAccessToken', adminAccessToken);
-                loggedInAdminUsername = adminUsername;
-                localStorage.setItem('loggedInAdminUsername', loggedInAdminUsername);
+                loggedInAdminUsername = adminUsername; // Store admin's username
+                localStorage.setItem('loggedInAdminUsername', loggedInAdminUsername); // Store admin's username
 
                 adminLoginCard.classList.add('hidden');
                 mainContentArea.classList.remove('hidden');
                 logoutButton.classList.remove('hidden');
-                await fetchAllMarzbanUsers(loggedInAdminUsername);
+                await fetchAllMarzbanUsers(loggedInAdminUsername); // Pass admin username here
 
             } catch (error) {
                 console.error('Admin login error:', error);
-                if (error.message.includes("Authentication failed") || (error.message.includes("detail") && error.message.includes("Not authenticated"))) {
-                    adminLoginErrorMessage.textContent = translations[currentLanguage].adminLoginError;
-                } else if (error.message.includes("Failed to fetch")) {
-                    adminLoginErrorMessage.textContent = `خطا در اتصال به Worker: ${translations[currentContainer].fetchErrorGeneric.replace('{error}', error.message)}`; // Corrected: use currentLanguage
-                } else {
-                    adminLoginErrorMessage.textContent = `${translations[currentLanguage].errorMessage}: ${error.message}`;
-                }
+                adminLoginErrorMessage.textContent = translations[currentLanguage].adminLoginError;
                 adminLoginErrorMessage.classList.remove('hidden');
                 adminLoginErrorMessage.classList.add('error-shake');
                 adminLoginErrorMessage.addEventListener('animationend', () => adminLoginErrorMessage.classList.remove('error-shake'), { once: true });
@@ -1066,7 +1066,7 @@
 
         logoutButton.addEventListener('click', () => {
             localStorage.removeItem('adminAccessToken');
-            localStorage.removeItem('loggedInAdminUsername');
+            localStorage.removeItem('loggedInAdminUsername'); // Clear stored admin username
             adminAccessToken = null;
             loggedInAdminUsername = null;
             adminLoginCard.classList.remove('hidden');
@@ -1177,7 +1177,7 @@
                         if (isNaN(dateObj.getTime())) {
                             throw new Error("Invalid date string after cleaning or unparsable format.");
                         }
-                        const dateLocale = currentTrans === translations.fa ? 'fa-IR' : 'en-US';
+                        const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
                         const persianDateOptions = {
                             year: 'numeric',
                             month: 'long',
@@ -1322,7 +1322,7 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.detail || `Failed to fetch users: ${response.status}`);
+                    throw new Error(errorData.detail || `Failed to fetch users for admin: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -1413,13 +1413,8 @@
             let mostConsumed = { username: currentTrans.unknown, used_traffic: -1 };
             let leastConsumed = { username: currentTrans.unknown, used_traffic: Infinity };
 
-            const usersWithUsage = users.map(user => ({
-                username: user.username,
-                used_traffic: user.used_traffic !== null ? user.used_traffic : 0 // Ensure used_traffic is numeric
-            }));
-
             // Filter out users with 0 used_traffic for "least consumed" unless all are 0
-            const actualConsumers = usersWithUsage.filter(user => user.used_traffic > 0);
+            const actualConsumers = users.filter(user => user.used_traffic > 0);
 
             if (actualConsumers.length > 0) {
                 // Sort by used_traffic for top 5
@@ -1431,7 +1426,7 @@
                 mostConsumedUsage.innerHTML = top5.map(u => formatBytes(u.used_traffic, currentTrans)).join('<br>') || '';
 
                 // Get top 5 least consumed (from actual consumers)
-                const least5 = sortedByUsed.slice(Math.max(sortedByUsed.length - 5, 0)).reverse(); // Take last 5, then reverse to ascending
+                const least5 = sortedByUsed.slice(-5).reverse(); // Sort descending, take last 5, then reverse to ascending
                 leastConsumedUsername.innerHTML = least5.map(u => u.username).join('<br>') || currentTrans.noUsersFound;
                 leastConsumedUsage.innerHTML = least5.map(u => formatBytes(u.used_traffic, currentTrans)).join('<br>') || '';
             } else {

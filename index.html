@@ -7,7 +7,556 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-    <style>:root{--bg-primary:#121820;--bg-card:#1a222c;--text-primary:#e2e8f0;--text-secondary:#a0aec0;--input-bg:#2d3748;--input-border:#4a5568;--button-bg-general:#3b424e;--button-hover-bg-general:#5a626e;--accent-blue:#4299e1;--accent-blue-hover:#3182ce;--accent-green:#4cd137;--accent-yellow:#f6b93b;--error-red:#ef4444;--shadow-color-dark:rgba(0,0,0,.3);--shadow-color-light:rgba(0,0,0,.15);--border-color:#2d3748;--chart-grid-color:rgba(255,255,255,.1);--footer-text-color:#6b7280;--modal-overlay-bg:rgba(0,0,0,.7);--modal-bg:#1a222c}.light-mode{--bg-primary:#f0f2f5;--bg-card:#fff;--text-primary:#2d3748;--text-secondary:#4a5568;--input-bg:#e2e8f0;--input-border:#cbd5e0;--button-bg-general:#e2e8f0;--button-hover-bg-general:#cbd5e0;--accent-blue:#3b82f6;--accent-blue-hover:#2563eb;--accent-green:#22c55e;--accent-yellow:#fbbf24;--error-red:#dc2626;--shadow-color-dark:rgba(0,0,0,.1);--shadow-color-light:rgba(0,0,0,.05);--border-color:#e2e8f0;--chart-grid-color:rgba(0,0,0,.1);--footer-text-color:#9ca3af;--modal-overlay-bg:rgba(0,0,0,.5);--modal-bg:#fff}body{font-family:'Vazirmatn',sans-serif;background-color:var(--bg-primary);color:var(--text-primary);transition:background-color .3s ease,color .3s ease;padding-bottom:2.5rem;scrollbar-width:thin;scrollbar-color:var(--accent-blue) var(--bg-card)}::-webkit-scrollbar{width:.5em}::-webkit-scrollbar-track{background:var(--bg-card)}::-webkit-scrollbar-thumb{background-color:var(--accent-blue);border-radius:.5em}.card{background-color:var(--bg-card);border-radius:1rem;padding:1.5rem;box-shadow:0 8px 16px -6px var(--shadow-color-dark),0 5px 10px -3px var(--shadow-color-light);transition:background-color .3s ease,box-shadow .3s ease,transform .2s ease;border:1px solid var(--border-color)}@media (hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 12px 24px -6px var(--shadow-color-dark),0 8px 16px -3px var(--shadow-color-light)}}.chart-container{background-color:var(--bg-card);border-radius:1rem;padding:1.5rem;box-shadow:0 8px 16px -6px var(--shadow-color-dark),0 5px 10px -3px var(--shadow-color-light);transition:background-color .3s ease,box-shadow .3s ease;border:1px solid var(--border-color)}.loading-spinner{border-left-color:var(--accent-blue)}input[type=text]{background-color:var(--input-bg);color:var(--text-primary);border:1px solid var(--input-border);padding:.75rem 1rem;border-radius:.5rem;transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease}input[type=text]:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 2px rgba(66,153,225,.4)}.main-button{background-color:var(--accent-blue);color:#fff;padding:.75rem 1.5rem;border-radius:.5rem;font-weight:600;transition:background-color .2s ease,transform .1s ease,box-shadow .2s ease;box-shadow:0 2px 4px rgba(0,0,0,.25);position:relative;overflow:hidden}.main-button.loading{padding-right:3rem}.main-button.loading:after{content:'';position:absolute;right:1rem;top:50%;transform:translateY(-50%);width:1.2em;height:1.2em;border-radius:50%;border:3px solid transparent;border-top-color:#fff;animation:spin 1s linear infinite}@keyframes spin{0%{transform:translateY(-50%) rotate(0deg)}100%{transform:translateY(-50%) rotate(360deg)}}.main-button:hover{background-color:var(--accent-blue-hover);transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,.4)}.main-button:active{transform:translateY(0);box-shadow:0 1px 2px rgba(0,0,0,.15)}.main-button:disabled{background-color:var(--button-bg-general);cursor:not-allowed;box-shadow:none;transform:none}select{background-color:var(--input-bg);color:var(--text-primary);border:1px solid var(--input-border);padding:.625rem 1rem;border-radius:.5rem;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;background-size:1.25em 1.25em;transition:background-color .3s ease,border-color .3s ease}select:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 2px rgba(66,153,225,.4)}.icon-button{background:var(--button-bg-general);border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;font-size:1.25rem;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:.5rem;transition:background-color .2s ease,color .2s ease,border-color .2s ease}.icon-button:hover{background-color:var(--button-hover-bg-general);color:var(--accent-blue)}.card p:first-child{color:var(--text-secondary);font-weight:500;font-size:.875rem;margin-bottom:.5rem}.card p:last-child{font-weight:700;font-size:2.25rem;line-height:1.2;margin-top:0}#total2,#usage{color:var(--accent-green)}#baghi{color:var(--accent-yellow)}#errorMessage{color:var(--error-red);font-weight:600;padding:.625rem 1.25rem;border-radius:.5rem;background-color:rgba(239,68,68,.1);border:1px solid var(--error-red);font-size:.95rem}.error-shake{animation:shake .5s}@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-10px)}20%,40%,60%,80%{transform:translateX(10px)}}.chartjs-render-monitor{background-color:transparent!important}.chart-title{color:var(--text-primary);font-weight:600;font-size:1.5rem}.chart-subtitle{color:var(--text-secondary);font-size:.9rem}.time-range-button{background-color:var(--button-bg-general);color:var(--text-primary);padding:.5rem 1rem;border-radius:.375rem;font-weight:500;font-size:.875rem}.time-range-button:hover{background-color:var(--button-hover-bg-general)}.time-range-button.active{background-color:var(--accent-blue);color:#fff}.time-range-button.active:hover{background-color:var(--accent-blue-hover)}#date3{font-size:1.25rem;line-height:1.4;margin-top:.5rem}.app-footer{margin-top:2.5rem;text-align:center;color:var(--footer-text-color);font-size:.875rem;font-weight:400}.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background-color:var(--modal-overlay-bg);display:flex;justify-content:center;align-items:center;z-index:1000;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}.modal-overlay.show{opacity:1;visibility:visible}.modal-content{background-color:var(--modal-bg);border-radius:1rem;box-shadow:0 10px 20px rgba(0,0,0,.4);position:relative;width:90%;max-width:600px;height:80%;max-height:700px;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--border-color)}.modal-close-button{position:absolute;top:1rem;left:1rem;background:var(--button-bg-general);color:var(--text-primary);border:1px solid var(--border-color);border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;font-size:1.25rem;cursor:pointer;z-index:1001;transition:background-color .2s ease,color .2s ease}.modal-close-button:hover{background-color:var(--button-hover-bg-general);color:var(--accent-blue)}.modal-iframe{width:100%;height:100%;border:none}}</style>
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            /* Dark theme defaults (Marzban-like) */
+            --bg-primary: #121820; /* Deep dark background */
+            --bg-card: #1a222c; /* Slightly lighter for cards */
+            --text-primary: #e2e8f0; /* Off-white for main text */
+            --text-secondary: #a0aec0; /* Lighter gray for secondary text/labels */
+            --input-bg: #2d3748; /* Input background */
+            --input-border: #4a5568; /* Input border */
+            --button-bg-general: #3b424e; /* Darker grey for general buttons/inputs */
+            --button-hover-bg-general: #5a626e; /* Hover state for general buttons */
+            --accent-blue: #4299e1; /* Primary accent blue for active states/buttons */
+            --accent-blue-hover: #3182ce; /* Darker blue on hover */
+            --accent-green: #4cd137; /* Bright green for positive metrics/bars */
+            --accent-yellow: #f6b93b; /* Amber/orange for remaining/warnings */
+            --error-red: #ef4444; /* Red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+            --shadow-color-light: rgba(0, 0, 0, 0.15); /* Lighter shadow */
+            --border-color: #2d3748; /* Subtle border color */
+            --chart-grid-color: rgba(255, 255, 255, 0.1);
+            --footer-text-color: #6b7280; /* Gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.7); /* Dark overlay for modal */
+            --modal-bg: #1a222c; /* Modal background */
+            /* Prediction status colors */
+            --status-good: #4cd137;
+            --status-moderate: #f6b93b;
+            --status-low: #ff7f50; /* Coral */
+            --status-critical: #ef4444;
+        }
+
+        /* Light theme variables */
+        body.light-mode {
+            --bg-primary: #f0f2f5; /* Light background */
+            --bg-card: #ffffff; /* White cards */
+            --text-primary: #2d3748; /* Dark text */
+            --text-secondary: #4a5568; /* Medium gray secondary text */
+            --input-bg: #e2e8f0;
+            --input-border: #cbd5e0;
+            --button-bg-general: #e2e8f0; /* Light gray buttons */
+            --button-hover-bg-general: #cbd5e0; /* Slightly darker light gray */
+            --accent-blue: #3b82f6; /* Brighter blue */
+            --accent-blue-hover: #2563eb; /* Darker blue */
+            --accent-green: #22c55e; /* Brighter green */
+            --accent-yellow: #fbbf24; /* Brighter yellow */
+            --error-red: #dc2626; /* Brighter red */
+            --shadow-color-dark: rgba(0, 0, 0, 0.1);
+            --shadow-color-light: rgba(0, 0, 0, 0.05);
+            --border-color: #e2e8f0;
+            --chart-grid-color: rgba(0, 0, 0, 0.1);
+            --footer-text-color: #9ca3af;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+            --modal-bg: #ffffff;
+            /* Prediction status colors */
+            --status-good: #22c55e;
+            --status-moderate: #fbbf24;
+            --status-low: #f97316; /* Orange */
+            --status-critical: #dc2626;
+        }
+
+        /* Apply CSS variables */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 2.5rem; /* Added bottom padding for footer space */
+            /* Custom scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-card);
+        }
+        /* Custom scrollbar for WebKit browsers */
+        ::-webkit-scrollbar {
+            width: 0.5em;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--accent-blue);
+            border-radius: 0.5em;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 1rem; /* More rounded */
+            padding: 1.5rem; /* Adjusted padding */
+            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light); /* Enhanced shadow */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            border: 1px solid var(--border-color); /* Subtle border */
+            /* Hover effect */
+            &:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 24px -6px var(--shadow-color-dark), 0 8px 16px -3px var(--shadow-color-light);
+            }
+        }
+        .chart-container {
+            background-color: var(--bg-card);
+            border-radius: 1rem; /* Match card radius */
+            padding: 1.5rem; /* Adjusted padding */
+            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+        .loading-spinner {
+            border-left-color: var(--accent-blue);
+        }
+        /* Input and Button Styling */
+        input[type="text"], input[type="password"] {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.75rem 1rem; /* Adjusted padding */
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4); /* Adjusted glow */
+        }
+        .main-button { /* General button style */
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 0.75rem 1.5rem; /* Adjusted padding */
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            font-weight: 600; /* Semi-bold */
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); /* Adjusted shadow */
+            position: relative; /* For spinner positioning */
+            overflow: hidden; /* Hide overflow from spinner */
+        }
+        .main-button.loading {
+            padding-right: 3rem; /* Make space for spinner */
+        }
+        .main-button.loading:after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.2em;
+            height: 1.2em;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+        .main-button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px); /* Adjusted lift effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        .main-button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        .main-button:disabled {
+            background-color: var(--button-bg-general);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        /* Select (Dropdown) Styling */
+        select {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.625rem 1rem; /* Adjusted padding */
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            cursor: pointer;
+            appearance: none; /* Remove default arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E"); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25em 1.25em; /* Adjusted arrow size */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4);
+        }
+        /* Icon Button (Theme Toggle) Styling */
+        .icon-button {
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.25rem; /* Adjusted icon size */
+            width: 2.5rem; /* Adjusted fixed width/height */
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem; /* Adjusted rounded corners */
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .icon-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+        }
+        /* Metric Card Values */
+        .card p:first-child { /* Label text */
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem; /* Smaller label font size */
+            margin-bottom: 0.5rem; /* Adjusted margin */
+        }
+        .card p:last-child { /* Value text */
+            font-weight: 700;
+            font-size: 2.25rem; /* Adjusted value font size */
+            line-height: 1.2; /* Adjusted line height */
+            margin-top: 0; /* Adjusted margin */
+        }
+        #total2, #usage {
+            color: var(--accent-green);
+        }
+        #baghi {
+            color: var(--accent-yellow);
+        }
+        #errorMessage {
+            color: var(--error-red);
+            font-weight: 600;
+            padding: 0.625rem 1.25rem; /* Adjusted padding */
+            border-radius: 0.5rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error-red);
+            font-size: 0.95rem; /* Adjusted font size */
+        }
+        /* Chart specific styles */
+        .chartjs-render-monitor {
+            background-color: transparent !important;
+        }
+        .chart-title {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.5rem; /* Adjusted chart title size */
+        }
+        .chart-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem; /* Adjusted subtitle size */
+        }
+        .time-range-button {
+            background-color: var(--button-bg-general);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem; /* Adjusted padding */
+            border-radius: 0.375rem; /* Adjusted rounded corners */
+            font-weight: 500;
+            font-size: 0.875rem; /* Adjusted font size */
+        }
+        .time-range-button:hover {
+            background-color: var(--button-hover-bg-general);
+        }
+        .time-range-button.active {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+        .time-range-button.active:hover {
+            background-color: var(--accent-blue-hover);
+        }
+        /* Specific font size for creationDate value */
+        #date3 {
+            font-size: 1.25rem; /* Adjusted font size for date3 to be smaller */
+            line-height: 1.4; /* Adjusted line height for date3 */
+            margin-top: 0.5rem; /* Adjusted margin for date3 */
+        }
+        /* Footer styling */
+        .app-footer {
+            margin-top: 2.5rem; /* Space from content */
+            text-align: center;
+            color: var(--footer-text-color);
+            font-size: 0.875rem; /* Smaller font size for footer */
+            font-weight: 400; /* Normal weight */
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--modal-overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* High z-index to be on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: var(--modal-bg);
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            width: 90%; /* Responsive width */
+            max-width: 600px; /* Max width for desktop */
+            height: 80%; /* Responsive height */
+            max-height: 700px; /* Max height */
+            overflow: hidden; /* Hide iframe scrollbars if content fits */
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem; /* Adjusted position */
+            left: 1rem; /* Adjusted position for RTL */
+            background: var(--button-bg-general);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%; /* Circular button */
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            z-index: 1001; /* Above iframe */
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .modal-close-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+        }
+        .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* Prediction Analysis Card */
+        .analysis-card {
+            background-color: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            border: 1px solid var(--border-color);
+        }
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+        .analysis-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .analysis-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        .status-good { color: var(--status-good); }
+        .status-moderate { color: var(--status-moderate); }
+        .status-low { color: var(--status-low); }
+        .status-critical { color: var(--status-critical); }
+        /* User List Card */
+        .user-list-card {
+            background-color: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
+        }
+        .user-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .user-list-table th, .user-list-table td {
+            padding: 0.75rem;
+            text-align: right; /* RTL align */
+            border-bottom: 1px solid var(--border-color);
+        }
+        .user-list-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-card);
+            z-index: 10;
+        }
+        .user-list-table tbody tr:hover {
+            background-color: var(--button-bg-general);
+            cursor: pointer;
+        }
+        .user-list-table tbody tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.05); /* Subtle stripe for readability */
+        }
+        body.light-mode .user-list-table tbody tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02);
+        }
+        .user-status-dot {
+            display: inline-block;
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            margin-left: 0.5rem; /* Space before text */
+        }
+        .status-active { background-color: var(--accent-green); }
+        .status-disabled { background-color: var(--text-secondary); }
+        .status-expired { background-color: var(--error-red); }
+        .status-limited { background-color: var(--accent-yellow); }
+        .status-on_hold { background-color: var(--accent-blue); } /* Using blue for on_hold */
+
+        .top-bottom-users {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+        .top-bottom-user-item {
+            background-color: var(--input-bg);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            flex: 1 1 45%; /* Allow wrapping and growth */
+            min-width: 250px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .top-bottom-user-item.most-consumed {
+            border: 1px solid var(--error-red);
+        }
+        .top-bottom-user-item.least-consumed {
+            border: 1px solid var(--accent-green);
+        }
+        .top-bottom-user-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .top-bottom-username {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        .top-bottom-usage {
+            font-size: 1rem;
+            color: var(--accent-blue);
+            margin-top: 0.25rem;
+        }
+
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 640px) { /* Tailwind's 'sm' breakpoint */
+            .card {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+            .chart-container {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+            .card p:last-child {
+                font-size: 1.75rem; /* Adjusted values on mobile */
+            }
+            #date3 {
+                font-size: 1rem; /* Smaller date3 on mobile */
+            }
+            .chart-title {
+                font-size: 1.25rem; /* Smaller chart title on mobile */
+            }
+            .chart-subtitle {
+                font-size: 0.8rem; /* Smaller subtitle on mobile */
+            }
+            .time-range-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .main-button {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.9rem;
+            }
+            input[type="text"] {
+                padding: 0.625rem 1rem;
+                font-size: 0.9rem;
+            }
+            select {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .icon-button {
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 1.1rem;
+            }
+            h1 {
+                font-size: 2.25rem; /* Smaller main header on mobile */
+            }
+            .text-xl { /* usernameLabel */
+                font-size: 1.125rem;
+            }
+            .app-footer {
+                margin-top: 2rem;
+                font-size: 0.75rem;
+            }
+            .modal-content {
+                width: 95%;
+                height: 90%;
+            }
+            .modal-close-button {
+                top: 0.5rem;
+                left: 0.5rem;
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
+            .analysis-value {
+                font-size: 1rem;
+            }
+            .user-list-table th, .user-list-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .top-bottom-users {
+                flex-direction: column;
+                align-items: center;
+            }
+            .top-bottom-user-item {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
@@ -17,12 +566,14 @@
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
                 </svg>
             </button>
+
             <div class="relative">
                 <select id="languageSelector" class="px-3 py-2 rounded-md">
                     <option value="fa">فارسی</option>
                     <option value="en">English</option>
                 </select>
             </div>
+
             <button id="supportButton" class="icon-button" data-key="supportButtonTitle">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
@@ -32,56 +583,122 @@
 
         <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
 
-        <div class="card mb-10 w-full max-w-md mx-auto">
-            <label for="usernameInput" class="text-lg mb-4 text-center" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
-            <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
-            <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
+        <div id="adminLoginCard" class="card mb-10 w-full max-w-md mx-auto">
+            <h2 class="text-xl font-bold text-center mb-6" data-key="adminLoginHeader">ورود ادمین</h2>
+            <p id="adminLoginErrorMessage" class="text-red-500 text-center mt-2 mb-4 hidden" data-key="adminLoginError">خطا در ورود. لطفاً نام کاربری و رمز عبور را بررسی کنید.</p>
+            <label for="adminUsernameInput" class="text-lg mb-2 text-center w-full" data-key="adminUsernameLabel">نام کاربری ادمین:</label>
+            <input type="text" id="adminUsernameInput" placeholder="نام کاربری ادمین" class="w-full mb-4 text-center">
+            <label for="adminPasswordInput" class="text-lg mb-2 text-center w-full" data-key="adminPasswordLabel">رمز عبور ادمین:</label>
+            <input type="password" id="adminPasswordInput" placeholder="رمز عبور ادمین" class="w-full mb-6 text-center">
+            <button id="adminLoginButton" class="main-button w-full" data-key="adminLoginButton">ورود به پنل</button>
+            <button id="logoutButton" class="main-button w-full mt-4 bg-gray-500 hidden" data-key="logoutButton">خروج از پنل</button>
         </div>
 
-        <div id="loadingIndicator" class="loading-spinner hidden"></div>
-        <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+        <div id="mainContentArea" class="hidden">
+            <div class="card mb-10 w-full max-w-md mx-auto">
+                <label for="usernameInput" class="text-lg mb-4 text-center" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
+                <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
+                <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
+            </div>
 
-        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
-            <div class="card">
-                <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
-                <p id="total2" class="text-3xl">...</p>
-            </div>
-            <div class="card">
-                <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده</p>
-                <p id="baghi" class="text-3xl">...</p>
-            </div>
-            <div class="card">
-                <p class="text-sm mb-2" data-key="consumed">مصرفی</p>
-                <p id="usage" class="text-3xl">...</p>
-            </div>
-            <div class="card">
-                <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت</p>
-                <p id="date3" class="text-lg">...</p> </div>
-            <div class="card col-span-full lg:col-span-1">
-                <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت</p>
-                <p id="date2" class="text-3xl">...</p>
-            </div>
-        </div>
+            <div id="loadingIndicator" class="loading-spinner hidden"></div>
+            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
-        <div id="chartContainer" class="chart-container hidden mx-auto">
-            <div class="flex justify-between items-center mb-5 flex-wrap">
-                <div>
-                    <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک <span class="text-sm text-gray-400 font-normal" data-key="chartStatus">(بزودی - درحال تکمیل)</span></h2>
-                    <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی شما بر اساس بازه زمانی انتخابی</p>
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
+                    <p id="total2" class="text-3xl">...</p>
                 </div>
-                <div class="flex space-x-2 mt-4 sm:mt-0" dir="ltr"> 
-                    <button class="time-range-button active" data-range="24h">24H</button>
-                    <button class="time-range-button" data-range="7d">7D</button>
-                    <button class="time-range-button" data-range="30d">30D</button>
-                    <button class="time-range-button" data-range="6m">6M</button>
-                    <button class="time-range-button" data-range="12m">12M</button>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده</p>
+                    <p id="baghi" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumed">مصرفی</p>
+                    <p id="usage" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت</p>
+                    <p id="date3" class="text-lg">...</p> </div>
+                <div class="card col-span-full lg:col-span-1">
+                    <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت</p>
+                    <p id="date2" class="text-3xl">...</p>
                 </div>
             </div>
-            <div class="relative h-96">
-                <canvas id="trafficChart"></canvas>
+
+            <div id="chartContainer" class="chart-container hidden mx-auto">
+                <div class="flex justify-between items-center mb-5 flex-wrap">
+                    <div>
+                        <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک <span class="text-sm text-gray-400 font-normal" data-key="chartStatus">(بزودی - درحال تکمیل)</span></h2>
+                        <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی شما بر اساس بازه زمانی انتخابی</p>
+                    </div>
+                    <div class="flex space-x-2 mt-4 sm:mt-0" dir="ltr"> 
+                        <button class="time-range-button active" data-range="24h">24H</button>
+                        <button class="time-range-button" data-range="7d">7D</button>
+                        <button class="time-range-button" data-range="30d">30D</button>
+                        <button class="time-range-button" data-range="6m">6M</button>
+                        <button class="time-range-button" data-range="12m">12M</button>
+                    </div>
+                </div>
+                <div class="relative h-96">
+                    <canvas id="trafficChart"></canvas>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <div id="trafficAnalysisCard" class="analysis-card mb-10 w-full max-w-lg mx-auto hidden">
+                <h2 class="chart-title mb-4 text-center" data-key="trafficAnalysisHeader">تحلیل و پیش‌بینی مصرف ترافیک</h2>
+                <div class="analysis-item">
+                    <span class="analysis-label" data-key="dailyAverageUsage">میانگین مصرف روزانه:</span>
+                    <span id="dailyAverageValue" class="analysis-value">...</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label" data-key="estimatedRemainingDays">روزهای باقیمانده تخمینی:</span>
+                    <span id="remainingDaysValue" class="analysis-value">...</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label" data-key="status">وضعیت:</span>
+                    <span id="trafficStatusMessage" class="analysis-value">...</span>
+                </div>
+            </div>
+
+            <div id="allUsersCard" class="user-list-card mb-10 w-full mx-auto hidden">
+                <h2 class="chart-title mb-4 text-center" data-key="allUsersHeader">لیست کاربران و تحلیل مصرف</h2>
+                
+                <div class="top-bottom-users">
+                    <div class="top-bottom-user-item most-consumed">
+                        <p class="top-bottom-user-label" data-key="mostConsumedUser">پرمصرف‌ترین کاربر:</p>
+                        <p id="mostConsumedUsername" class="top-bottom-username">...</p>
+                        <p id="mostConsumedUsage" class="top-bottom-usage">...</p>
+                    </div>
+                    <div class="top-bottom-user-item least-consumed">
+                        <p class="top-bottom-user-label" data-key="leastConsumedUser">کم‌مصرف‌ترین کاربر:</p>
+                        <p id="leastConsumedUsername" class="top-bottom-username">...</p>
+                        <p id="leastConsumedUsage" class="top-bottom-usage">...</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="user-list-table">
+                        <thead>
+                            <tr>
+                                <th data-key="tableUsername">نام کاربری</th>
+                                <th data-key="tableStatus">وضعیت</th>
+                                <th data-key="tableUsedTraffic">مصرفی</th>
+                                <th data-key="tableDataLimit">محدودیت</th>
+                                <th data-key="tableRemaining">باقیمانده</th>
+                                <th data-key="tableCreatedAt">ساخت</th>
+                                <th data-key="tableExpires">انقضا</th>
+                                <th data-key="tableActions">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            </tbody>
+                    </table>
+                </div>
+                <button id="loadMoreUsersButton" class="main-button mt-4 mx-auto block" data-key="loadMoreUsers">بارگذاری کاربران بیشتر</button>
+            </div>
+
+        </div> </div>
 
     <footer class="app-footer" data-key="footerText">
         تمامی حقوق برای آقای مرزبان محفوظ است.
@@ -105,17 +722,41 @@
         const closeModalButton = document.getElementById('closeModalButton');
         const goftinoIframe = document.getElementById('goftinoIframe');
 
+        const adminLoginCard = document.getElementById('adminLoginCard');
+        const adminLoginErrorMessage = document.getElementById('adminLoginErrorMessage');
+        const adminUsernameInput = document.getElementById('adminUsernameInput');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const adminLoginButton = document.getElementById('adminLoginButton');
+        const logoutButton = document.getElementById('logoutButton');
+
+        const mainContentArea = document.getElementById('mainContentArea');
+
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
         const chartContainer = document.getElementById('chartContainer');
+        const trafficAnalysisCard = document.getElementById('trafficAnalysisCard');
+        const dailyAverageValue = document.getElementById('dailyAverageValue');
+        const remainingDaysValue = document.getElementById('remainingDaysValue');
+        const trafficStatusMessage = document.getElementById('trafficStatusMessage');
+
+        const allUsersCard = document.getElementById('allUsersCard');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const mostConsumedUsername = document.getElementById('mostConsumedUsername');
+        const mostConsumedUsage = document.getElementById('mostConsumedUsage');
+        const leastConsumedUsername = document.getElementById('leastConsumedUsername');
+        const leastConsumedUsage = document.getElementById('leastConsumedUsage');
+        const loadMoreUsersButton = document.getElementById('loadMoreUsersButton');
+
 
         let trafficChart;
         let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
+        let adminAccessToken = localStorage.getItem('adminAccessToken') || null;
+        let marzbanBaseUrl = 'https://a-l.fl-sub.site:2096';
 
         const translations = {
             fa: {
@@ -145,7 +786,37 @@
                 footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.',
                 themeToggleTitle: 'تغییر تم',
                 supportButtonTitle: 'پشتیبانی',
-                closeButtonTitle: 'بستن'
+                closeButtonTitle: 'بستن',
+                trafficAnalysisHeader: 'تحلیل و پیش‌بینی مصرف ترافیک',
+                dailyAverageUsage: 'میانگین مصرف روزانه:',
+                estimatedRemainingDays: 'روزهای باقیمانده تخمینی:',
+                status: 'وضعیت:',
+                statusGood: 'عالی (مصرف بهینه)',
+                statusModerate: 'متوسط (نیاز به مدیریت)',
+                statusLow: 'کم (نزدیک به اتمام)',
+                statusCritical: 'خیلی کم (فوری)',
+                unlimitedRemaining: 'نامحدود (مصرف صفر)',
+                noConsumptionData: 'اطلاعات مصرف در دسترس نیست',
+                adminLoginHeader: 'ورود ادمین',
+                adminUsernameLabel: 'نام کاربری ادمین:',
+                adminPasswordLabel: 'رمز عبور ادمین:',
+                adminLoginButton: 'ورود به پنل',
+                adminLoginError: 'ورود ناموفق. نام کاربری یا رمز عبور ادمین اشتباه است.',
+                logoutButton: 'خروج از پنل',
+                allUsersHeader: 'لیست کاربران و تحلیل مصرف',
+                mostConsumedUser: 'پرمصرف‌ترین کاربر:',
+                leastConsumedUser: 'کم‌مصرف‌ترین کاربر:',
+                tableUsername: 'نام کاربری',
+                tableStatus: 'وضعیت',
+                tableUsedTraffic: 'مصرفی',
+                tableDataLimit: 'محدودیت',
+                tableRemaining: 'باقیمانده',
+                tableCreatedAt: 'ساخت',
+                tableExpires: 'انقضا',
+                tableActions: 'عملیات',
+                loadMoreUsers: 'بارگذاری کاربران بیشتر',
+                fetchingUsers: 'در حال دریافت لیست کاربران...',
+                noUsersFound: 'کاربری یافت نشد.'
             },
             en: {
                 pageTitle: 'Your Usage Details Panel',
@@ -174,9 +845,90 @@
                 footerText: 'All rights reserved for Mr. Marzban.',
                 themeToggleTitle: 'Toggle Theme',
                 supportButtonTitle: 'Support',
-                closeButtonTitle: 'Close'
+                closeButtonTitle: 'Close',
+                trafficAnalysisHeader: 'Traffic Consumption Analysis & Prediction',
+                dailyAverageUsage: 'Daily Average Usage:',
+                estimatedRemainingDays: 'Estimated Remaining Days:',
+                status: 'Status:',
+                statusGood: 'Excellent (Optimized Usage)',
+                statusModerate: 'Moderate (Needs Management)',
+                statusLow: 'Low (Nearing Depletion)',
+                statusCritical: 'Critical (Urgent)',
+                unlimitedRemaining: 'Unlimited (Zero Consumption)',
+                noConsumptionData: 'Consumption data not available',
+                adminLoginHeader: 'Admin Login',
+                adminUsernameLabel: 'Admin Username:',
+                adminPasswordLabel: 'Admin Password:',
+                adminLoginButton: 'Login to Panel',
+                logoutButton: 'Logout from Panel',
+                allUsersHeader: 'User List & Consumption Analysis',
+                mostConsumedUser: 'Most Consumed User:',
+                leastConsumedUser: 'Least Consumed User:',
+                tableUsername: 'Username',
+                tableStatus: 'Status',
+                tableUsedTraffic: 'Used',
+                tableDataLimit: 'Limit',
+                tableRemaining: 'Remaining',
+                tableCreatedAt: 'Created',
+                tableExpires: 'Expires',
+                tableActions: 'Actions',
+                loadMoreUsers: 'Load More Users',
+                fetchingUsers: 'Fetching user list...',
+                noUsersFound: 'No users found.'
             }
         };
+
+        // Helper to convert traffic string (e.g., "340 GB") to MB for calculations
+        function convertTrafficToMB(trafficString) {
+            if (!trafficString || typeof trafficString !== 'string') return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
+
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            if (isNaN(value)) return 0;
+
+            switch (unit) {
+                case 'b': return value / (1024 * 1024);
+                case 'kb': return value / 1024;
+                case 'mb': return value;
+                case 'gb': return value * 1024;
+                case 'tb': return value * 1024 * 1024;
+                default: return 0;
+            }
+        }
+        
+        // Helper to format bytes to human-readable string (e.g., 1073741824 to 1 GB)
+        function formatBytes(bytes, currentTrans) {
+            if (bytes === 0) return `0 ${currentTrans.bytes}`;
+            if (bytes === null) return currentTrans.unknown;
+            const k = 1024;
+            const sizes = [currentTrans.bytes, currentTrans.kb, currentTrans.mb, currentTrans.gb, currentTrans.tb];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Helper to format Unix timestamp (seconds) to Persian/English date
+        function formatUnixTimestamp(timestamp, currentTrans) {
+            if (timestamp === 0) return currentTrans.unlimited; // Unlimited
+            if (!timestamp) return currentTrans.unknown;
+
+            const dateObj = new Date(timestamp * 1000); // Convert seconds to milliseconds
+            if (isNaN(dateObj.getTime())) return currentTrans.notAvailable;
+
+            const dateLocale = currentTrans === translations.fa ? 'fa-IR' : 'en-US';
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            return new Intl.DateTimeFormat(dateLocale, options).format(dateObj);
+        }
 
         function applyTranslations(lang) {
             const currentTrans = translations[lang];
@@ -189,18 +941,25 @@
                         element.title = currentTrans.supportButtonTitle;
                     } else if (element.tagName === 'BUTTON' && element.id === 'closeModalButton') {
                         element.title = currentTrans.closeButtonTitle;
-                    } else {
+                    }
+                    else {
                         element.textContent = currentTrans[key];
                     }
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
             usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            adminUsernameInput.placeholder = currentTrans.adminUsernameLabel.replace(':', '').trim();
+            adminPasswordInput.placeholder = currentTrans.adminPasswordLabel.replace(':', '').trim();
+
             htmlElement.setAttribute('lang', lang);
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             if (trafficChart) {
-                updateUI(currentTrafficData);
+                updateUI(currentTrafficData); // Re-render chart to apply RTL/LTR changes and translated labels
+            }
+            if (!allUsersCard.classList.contains('hidden') && window.allMarzbanUsers) {
+                 displayAllUsers(window.allMarzbanUsers);
             }
         }
 
@@ -220,6 +979,17 @@
             setTheme(currentTheme);
             languageSelector.value = currentLanguage;
             applyTranslations(currentLanguage);
+            
+            if (adminAccessToken) {
+                adminLoginCard.classList.add('hidden');
+                mainContentArea.classList.remove('hidden');
+                logoutButton.classList.remove('hidden');
+                fetchAllMarzbanUsers();
+            } else {
+                adminLoginCard.classList.remove('hidden');
+                mainContentArea.classList.add('hidden');
+                logoutButton.classList.add('hidden');
+            }
         }
 
         themeToggle.addEventListener('click', () => {
@@ -253,7 +1023,80 @@
             }
         });
 
-        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev';
+
+        adminLoginButton.addEventListener('click', async () => {
+            const adminUsername = adminUsernameInput.value.trim();
+            const adminPassword = adminPasswordInput.value.trim();
+
+            if (!adminUsername || !adminPassword) {
+                adminLoginErrorMessage.textContent = translations[currentLanguage].adminLoginError;
+                adminLoginErrorMessage.classList.remove('hidden');
+                adminLoginErrorMessage.classList.add('error-shake');
+                adminLoginErrorMessage.addEventListener('animationend', () => adminLoginErrorMessage.classList.remove('error-shake'), { once: true });
+                return;
+            }
+
+            adminLoginButton.classList.add('loading');
+            adminLoginButton.disabled = true;
+            adminLoginErrorMessage.classList.add('hidden');
+
+            try {
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}/api/admin-login`;
+                console.log('Attempting admin login to:', fetchUrl);
+
+                const response = await fetch(fetchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: adminUsername, password: adminPassword })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || `Authentication failed with status: ${response.status}`);
+                }
+
+                adminAccessToken = data.access_token;
+                localStorage.setItem('adminAccessToken', adminAccessToken);
+
+                adminLoginCard.classList.add('hidden');
+                mainContentArea.classList.remove('hidden');
+                logoutButton.classList.remove('hidden');
+                fetchAllMarzbanUsers();
+
+            } catch (error) {
+                console.error('Admin login error:', error);
+                adminLoginErrorMessage.textContent = translations[currentLanguage].adminLoginError;
+                adminLoginErrorMessage.classList.remove('hidden');
+                adminLoginErrorMessage.classList.add('error-shake');
+                adminLoginErrorMessage.addEventListener('animationend', () => adminLoginErrorMessage.classList.remove('error-shake'), { once: true });
+            } finally {
+                adminLoginButton.classList.remove('loading');
+                adminLoginButton.disabled = false;
+            }
+        });
+
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('adminAccessToken');
+            adminAccessToken = null;
+            adminLoginCard.classList.remove('hidden');
+            mainContentArea.classList.add('hidden');
+            logoutButton.classList.add('hidden');
+            usersTableBody.innerHTML = '';
+            document.getElementById('mostConsumedUsername').textContent = '...';
+            document.getElementById('leastConsumedUsername').textContent = '...';
+            document.getElementById('total2').textContent = '...';
+            document.getElementById('baghi').textContent = '...';
+            document.getElementById('usage').textContent = '...';
+            document.getElementById('date3').textContent = '...';
+            document.getElementById('date2').textContent = '...';
+            dataCards.classList.add('hidden');
+            chartContainer.classList.add('hidden');
+            trafficAnalysisCard.classList.add('hidden');
+        });
 
         fetchDataButton.addEventListener('click', async () => {
             const username = usernameInput.value.trim();
@@ -270,22 +1113,31 @@
             errorMessage.classList.add('hidden');
             dataCards.classList.add('hidden');
             chartContainer.classList.add('hidden');
+            trafficAnalysisCard.classList.add('hidden');
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`;
-                console.log('Fetching data from:', fetchUrl);
+                if (!adminAccessToken) {
+                    throw new Error("Admin not logged in. Please log in first.");
+                }
 
-                const response = await fetch(fetchUrl);
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}/api/user-details?username=${username}`;
+                console.log('Fetching single user data from:', fetchUrl);
+
+                const response = await fetch(fetchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${adminAccessToken}`
+                    }
+                });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `(${response.status}): ${response.statusText}. Server response: ${JSON.stringify(errorData)}`);
                 }
 
                 const data = await response.json();
 
                 if (data.error) {
-                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
+                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username") || data.error.includes("Not found")) {
                         errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
                         errorMessage.classList.add('error-shake');
                         errorMessage.addEventListener('animationend', () => errorMessage.classList.remove('error-shake'), { once: true });
@@ -295,6 +1147,7 @@
                     errorMessage.classList.remove('hidden');
                     dataCards.classList.add('hidden');
                     chartContainer.classList.add('hidden');
+                    trafficAnalysisCard.classList.add('hidden');
                     return;
                 }
 
@@ -303,13 +1156,15 @@
 
                 dataCards.classList.remove('hidden');
                 chartContainer.classList.remove('hidden');
+                trafficAnalysisCard.classList.remove('hidden');
 
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching single user data:', error);
                 errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
                 errorMessage.classList.remove('hidden');
                 dataCards.classList.add('hidden');
                 chartContainer.classList.add('hidden');
+                trafficAnalysisCard.classList.add('hidden');
             } finally {
                 loadingIndicator.classList.add('hidden');
                 fetchDataButton.classList.remove('loading');
@@ -456,8 +1311,73 @@
             });
         }
 
+        // --- Traffic Analysis & Prediction Logic ---
+        function updateTrafficAnalysis(data) {
+            const currentTrans = translations[currentLanguage];
+            const usageMB = convertTrafficToMB(data.usage);
+            const totalMB = convertTrafficToMB(data.total2);
+            const baghiMB = convertTrafficToMB(data.baghi);
+            const daysPassed = parseFloat(data.date2);
+
+            let dailyAvg = 0;
+            if (daysPassed > 0) {
+                dailyAvg = usageMB / daysPassed;
+            }
+
+            dailyAverageValue.textContent = `${dailyAvg.toFixed(2)} ${currentTrans.mb}/${currentTrans.daysUnit}`;
+
+            let remainingDays = 0;
+            let statusMessage = currentTrans.unknown;
+            let statusColorClass = '';
+
+            if (dailyAvg > 0) {
+                remainingDays = baghiMB / dailyAvg;
+                remainingDaysValue.textContent = `${remainingDays.toFixed(1)} ${currentTrans.daysUnit}`;
+                
+                const remainingPercentage = (baghiMB / totalMB) * 100;
+
+                if (remainingDays >= 7 && remainingPercentage > 20) {
+                    statusMessage = currentTrans.statusGood;
+                    statusColorClass = 'status-good';
+                } else if (remainingDays >= 3 || remainingPercentage > 10) {
+                    statusMessage = currentTrans.statusModerate;
+                    statusColorClass = 'status-moderate';
+                } else if (remainingDays > 0) {
+                    statusMessage = currentTrans.statusLow;
+                    statusColorClass = 'status-low';
+                } else { // remainingDays <= 0
+                    statusMessage = currentTrans.statusCritical;
+                    statusColorClass = 'status-critical';
+                }
+
+            } else if (baghiMB > 0) {
+                remainingDaysValue.textContent = currentTrans.unlimitedRemaining;
+                statusMessage = currentTrans.statusGood;
+                statusColorClass = 'status-good';
+            } else {
+                remainingDaysValue.textContent = currentTrans.unknown;
+                statusMessage = currentTrans.noConsumptionData;
+                statusColorClass = ''; // No specific color
+            }
+
+            trafficStatusMessage.textContent = statusMessage;
+            trafficStatusMessage.className = 'analysis-value ' + statusColorClass; // Apply class for color
+            
+            trafficAnalysisCard.classList.remove('hidden'); // Ensure the analysis card is shown
+        }
+
+        // Override original updateUI to also call new feature updates
+        const originalUpdateUI = updateUI;
+        updateUI = function(data) {
+            originalUpdateUI(data); // Call the original updateUI for cards and chart
+            updateTrafficAnalysis(data); // Call the analysis update
+        };
+
+
+        // Initial setup on page load
         window.onload = function() {
-            initializePreferences();
+            initializePreferences(); // Apply saved theme and language
+            // Do NOT click fetchDataButton on load by default, user must log in
         };
     </script>
 </body>

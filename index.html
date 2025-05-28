@@ -712,6 +712,42 @@
     </div>
 
     <script>
+        // Helper functions
+        function convertTrafficToMB(trafficString) {
+            if (!trafficString || typeof trafficString !== 'string') return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+            if (isNaN(value)) return 0;
+            switch (unit) {
+                case 'b': return value / (1024 * 1024);
+                case 'kb': return value / 1024;
+                case 'mb': return value;
+                case 'gb': return value * 1024;
+                case 'tb': return value * 1024 * 1024;
+                default: return 0;
+            }
+        }
+        function formatBytes(bytes, currentTrans) {
+            if (bytes === 0) return `0 ${currentTrans.bytes}`;
+            if (bytes === null) return currentTrans.unknown;
+            const k = 1024;
+            const sizes = [currentTrans.bytes, currentTrans.kb, currentTrans.mb, currentTrans.gb, currentTrans.tb];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        function formatUnixTimestamp(timestamp, currentTrans) {
+            if (timestamp === 0) return currentTrans.unlimited;
+            if (!timestamp) return currentTrans.unknown;
+            const dateObj = new Date(timestamp * 1000);
+            if (isNaN(dateObj.getTime())) return currentTrans.notAvailable;
+            const dateLocale = currentTrans === translations.fa ? 'fa-IR' : 'en-US';
+            const options = {year: 'numeric',month: 'long',day: 'numeric',hour: '2-digit',minute: '2-digit',second: '2-digit',hour12: false};
+            return new Intl.DateTimeFormat(dateLocale, options).format(dateObj);
+        }
+
+        // DOM Elements
         const htmlElement = document.documentElement;
         const bodyElement = document.body;
         const themeToggle = document.getElementById('themeToggle');
@@ -730,7 +766,6 @@
         const logoutButton = document.getElementById('logoutButton');
 
         const mainContentArea = document.getElementById('mainContentArea');
-
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
@@ -750,13 +785,15 @@
         const leastConsumedUsage = document.getElementById('leastConsumedUsage');
         const loadMoreUsersButton = document.getElementById('loadMoreUsersButton');
 
-
         let trafficChart;
         let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let adminAccessToken = localStorage.getItem('adminAccessToken') || null;
-        let marzbanBaseUrl = 'https://a-l.fl-sub.site:2096';
+        let loggedInAdminUsername = localStorage.getItem('loggedInAdminUsername') || null; // New: Store logged in admin's username
+
+        // This URL should point to YOUR Cloudflare Worker
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev'; 
 
         const translations = {
             fa: {
@@ -878,58 +915,6 @@
             }
         };
 
-        // Helper to convert traffic string (e.g., "340 GB") to MB for calculations
-        function convertTrafficToMB(trafficString) {
-            if (!trafficString || typeof trafficString !== 'string') return 0;
-            const parts = trafficString.trim().split(' ');
-            if (parts.length !== 2) return 0;
-
-            const value = parseFloat(parts[0]);
-            const unit = parts[1].toLowerCase();
-
-            if (isNaN(value)) return 0;
-
-            switch (unit) {
-                case 'b': return value / (1024 * 1024);
-                case 'kb': return value / 1024;
-                case 'mb': return value;
-                case 'gb': return value * 1024;
-                case 'tb': return value * 1024 * 1024;
-                default: return 0;
-            }
-        }
-        
-        // Helper to format bytes to human-readable string (e.g., 1073741824 to 1 GB)
-        function formatBytes(bytes, currentTrans) {
-            if (bytes === 0) return `0 ${currentTrans.bytes}`;
-            if (bytes === null) return currentTrans.unknown;
-            const k = 1024;
-            const sizes = [currentTrans.bytes, currentTrans.kb, currentTrans.mb, currentTrans.gb, currentTrans.tb];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        // Helper to format Unix timestamp (seconds) to Persian/English date
-        function formatUnixTimestamp(timestamp, currentTrans) {
-            if (timestamp === 0) return currentTrans.unlimited; // Unlimited
-            if (!timestamp) return currentTrans.unknown;
-
-            const dateObj = new Date(timestamp * 1000); // Convert seconds to milliseconds
-            if (isNaN(dateObj.getTime())) return currentTrans.notAvailable;
-
-            const dateLocale = currentTrans === translations.fa ? 'fa-IR' : 'en-US';
-            const options = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            };
-            return new Intl.DateTimeFormat(dateLocale, options).format(dateObj);
-        }
-
         function applyTranslations(lang) {
             const currentTrans = translations[lang];
             document.querySelectorAll('[data-key]').forEach(element => {
@@ -959,7 +944,7 @@
                 updateUI(currentTrafficData); // Re-render chart to apply RTL/LTR changes and translated labels
             }
             if (!allUsersCard.classList.contains('hidden') && window.allMarzbanUsers) {
-                 displayAllUsers(window.allMarzbanUsers);
+                 displayAllUsers(window.allMarzbanUsers); // Re-render user list with updated translations
             }
         }
 
@@ -980,11 +965,11 @@
             languageSelector.value = currentLanguage;
             applyTranslations(currentLanguage);
             
-            if (adminAccessToken) {
+            if (adminAccessToken && loggedInAdminUsername) { // Check for loggedInAdminUsername too
                 adminLoginCard.classList.add('hidden');
                 mainContentArea.classList.remove('hidden');
                 logoutButton.classList.remove('hidden');
-                fetchAllMarzbanUsers();
+                fetchAllMarzbanUsers(loggedInAdminUsername); // Pass admin username
             } else {
                 adminLoginCard.classList.remove('hidden');
                 mainContentArea.classList.add('hidden');
@@ -1061,11 +1046,13 @@
 
                 adminAccessToken = data.access_token;
                 localStorage.setItem('adminAccessToken', adminAccessToken);
+                loggedInAdminUsername = adminUsername; // Store admin's username
+                localStorage.setItem('loggedInAdminUsername', loggedInAdminUsername); // Store admin's username
 
                 adminLoginCard.classList.add('hidden');
                 mainContentArea.classList.remove('hidden');
                 logoutButton.classList.remove('hidden');
-                fetchAllMarzbanUsers();
+                await fetchAllMarzbanUsers(loggedInAdminUsername); // Pass admin username here
 
             } catch (error) {
                 console.error('Admin login error:', error);
@@ -1081,7 +1068,9 @@
 
         logoutButton.addEventListener('click', () => {
             localStorage.removeItem('adminAccessToken');
+            localStorage.removeItem('loggedInAdminUsername'); // Clear stored admin username
             adminAccessToken = null;
+            loggedInAdminUsername = null;
             adminLoginCard.classList.remove('hidden');
             mainContentArea.classList.add('hidden');
             logoutButton.classList.add('hidden');
@@ -1311,60 +1300,146 @@
             });
         }
 
-        // --- Traffic Analysis & Prediction Logic ---
-        function updateTrafficAnalysis(data) {
-            const currentTrans = translations[currentLanguage];
-            const usageMB = convertTrafficToMB(data.usage);
-            const totalMB = convertTrafficToMB(data.total2);
-            const baghiMB = convertTrafficToMB(data.baghi);
-            const daysPassed = parseFloat(data.date2);
+        // --- All Users List & Analysis Logic ---
+        window.allMarzbanUsers = []; // Store all fetched users globally
 
-            let dailyAvg = 0;
-            if (daysPassed > 0) {
-                dailyAvg = usageMB / daysPassed;
+        async function fetchAllMarzbanUsers(adminUsername) { // Now accepts adminUsername
+            if (!adminAccessToken || !adminUsername) {
+                console.error("Admin token or username not available. Cannot fetch all users.");
+                allUsersCard.classList.add('hidden'); // Hide user list if no token
+                return;
             }
 
-            dailyAverageValue.textContent = `${dailyAvg.toFixed(2)} ${currentTrans.mb}/${currentTrans.daysUnit}`;
+            usersTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-secondary">${translations[currentLanguage].fetchingUsers}</td></tr>`;
+            allUsersCard.classList.remove('hidden'); // Show user list container
+            loadMoreUsersButton.classList.add('hidden'); // Hide load more during initial fetch
 
-            let remainingDays = 0;
-            let statusMessage = currentTrans.unknown;
-            let statusColorClass = '';
+            try {
+                // Fetch users created by the logged-in admin
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}/api/marzban-admin-users?adminUsername=${adminUsername}`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminAccessToken}`
+                    }
+                });
 
-            if (dailyAvg > 0) {
-                remainingDays = baghiMB / dailyAvg;
-                remainingDaysValue.textContent = `${remainingDays.toFixed(1)} ${currentTrans.daysUnit}`;
-                
-                const remainingPercentage = (baghiMB / totalMB) * 100;
-
-                if (remainingDays >= 7 && remainingPercentage > 20) {
-                    statusMessage = currentTrans.statusGood;
-                    statusColorClass = 'status-good';
-                } else if (remainingDays >= 3 || remainingPercentage > 10) {
-                    statusMessage = currentTrans.statusModerate;
-                    statusColorClass = 'status-moderate';
-                } else if (remainingDays > 0) {
-                    statusMessage = currentTrans.statusLow;
-                    statusColorClass = 'status-low';
-                } else { // remainingDays <= 0
-                    statusMessage = currentTrans.statusCritical;
-                    statusColorClass = 'status-critical';
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Failed to fetch users for admin: ${response.status}`);
                 }
 
-            } else if (baghiMB > 0) {
-                remainingDaysValue.textContent = currentTrans.unlimitedRemaining;
-                statusMessage = currentTrans.statusGood;
-                statusColorClass = 'status-good';
-            } else {
-                remainingDaysValue.textContent = currentTrans.unknown;
-                statusMessage = currentTrans.noConsumptionData;
-                statusColorClass = ''; // No specific color
+                const data = await response.json();
+                window.allMarzbanUsers = data.users; // Store all users
+
+                displayAllUsers(window.allMarzbanUsers);
+                analyzeUserConsumption(window.allMarzbanUsers);
+
+            } catch (error) {
+                console.error('Error fetching all Marzban users:', error);
+                usersTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-red-500">${translations[currentLanguage].errorMessage}: ${error.message}</td></tr>`;
+                // Optionally hide allUsersCard if fetching completely failed
+            }
+        }
+
+        function displayAllUsers(users) {
+            const currentTrans = translations[currentLanguage];
+            usersTableBody.innerHTML = ''; // Clear existing rows
+
+            if (!users || users.length === 0) {
+                usersTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-secondary">${currentTrans.noUsersFound}</td></tr>`;
+                return;
             }
 
-            trafficStatusMessage.textContent = statusMessage;
-            trafficStatusMessage.className = 'analysis-value ' + statusColorClass; // Apply class for color
-            
-            trafficAnalysisCard.classList.remove('hidden'); // Ensure the analysis card is shown
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.classList.add('transition-colors', 'duration-150');
+                row.addEventListener('click', () => {
+                    usernameInput.value = user.username; // Set username in single-user lookup
+                    fetchDataButton.click(); // Trigger single-user lookup
+                });
+
+                // API returns used_traffic and data_limit in Bytes
+                const usedTrafficFormatted = formatBytes(user.used_traffic, currentTrans);
+                const dataLimitFormatted = user.data_limit === 0 ? currentTrans.unlimited : formatBytes(user.data_limit, currentTrans);
+                
+                let remainingTrafficBytes = user.data_limit - user.used_traffic;
+                let remainingTrafficFormatted = currentTrans.unknown;
+                if (user.data_limit === 0) { // Unlimited plan
+                    remainingTrafficFormatted = currentTrans.unlimited;
+                } else if (remainingTrafficBytes <= 0) { // Exceeded limit
+                    remainingTrafficFormatted = `0 ${currentTrans.bytes}`;
+                } else {
+                    remainingTrafficFormatted = formatBytes(remainingTrafficBytes, currentTrans);
+                }
+
+
+                let statusColorClass = '';
+                switch(user.status) {
+                    case 'active': statusColorClass = 'status-active'; break;
+                    case 'disabled': statusColorClass = 'status-disabled'; break;
+                    case 'expired': statusColorClass = 'status-critical'; break;
+                    case 'limited': statusColorClass = 'status-moderate'; break;
+                    case 'on_hold': statusColorClass = 'status-on_hold'; break;
+                    default: statusColorClass = '';
+                }
+
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>
+                        <span class="user-status-dot ${statusColorClass}"></span>
+                        ${currentTrans[user.status] || user.status}
+                    </td>
+                    <td>${usedTrafficFormatted}</td>
+                    <td>${dataLimitFormatted}</td>
+                    <td>${remainingTrafficFormatted}</td>
+                    <td>${formatUnixTimestamp(new Date(user.created_at).getTime() / 1000, currentTrans)}</td>
+                    <td>${user.expire === 0 ? currentTrans.unlimited : formatUnixTimestamp(user.expire, currentTrans)}</td>
+                    <td>
+                        <button class="text-blue-400 hover:text-blue-600 transition-colors duration-150" title="${currentTrans.fetchDataButton}">${currentTrans.fetchDataButton}</button>
+                    </td>
+                `;
+                usersTableBody.appendChild(row);
+            });
+            loadMoreUsersButton.classList.add('hidden'); // No pagination implemented yet for simplicity
         }
+
+        function analyzeUserConsumption(users) {
+            const currentTrans = translations[currentLanguage];
+            if (!users || users.length === 0) {
+                mostConsumedUsername.textContent = currentTrans.noUsersFound;
+                mostConsumedUsage.textContent = '';
+                leastConsumedUsername.textContent = currentTrans.noUsersFound;
+                leastConsumedUsage.textContent = '';
+                return;
+            }
+
+            let mostConsumed = { username: currentTrans.unknown, used_traffic: -1 };
+            let leastConsumed = { username: currentTrans.unknown, used_traffic: Infinity };
+
+            // Filter out users with 0 used_traffic for "least consumed" unless all are 0
+            const actualConsumers = users.filter(user => user.used_traffic > 0);
+
+            if (actualConsumers.length > 0) {
+                // Sort by used_traffic for top 5
+                const sortedByUsed = [...actualConsumers].sort((a, b) => b.used_traffic - a.used_traffic);
+                
+                // Get top 5 most consumed
+                const top5 = sortedByUsed.slice(0, 5);
+                mostConsumedUsername.innerHTML = top5.map(u => u.username).join('<br>') || currentTrans.noUsersFound;
+                mostConsumedUsage.innerHTML = top5.map(u => formatBytes(u.used_traffic, currentTrans)).join('<br>') || '';
+
+                // Get top 5 least consumed (from actual consumers)
+                const least5 = sortedByUsed.slice(-5).reverse(); // Sort descending, take last 5, then reverse to ascending
+                leastConsumedUsername.innerHTML = least5.map(u => u.username).join('<br>') || currentTrans.noUsersFound;
+                leastConsumedUsage.innerHTML = least5.map(u => formatBytes(u.used_traffic, currentTrans)).join('<br>') || '';
+            } else {
+                // If all users have 0 consumption
+                mostConsumedUsername.textContent = currentTrans.noUsersFound;
+                mostConsumedUsage.textContent = '';
+                leastConsumedUsername.textContent = currentTrans.noUsersFound;
+                leastConsumedUsage.textContent = '';
+            }
+        }
+
 
         // Override original updateUI to also call new feature updates
         const originalUpdateUI = updateUI;
@@ -1377,7 +1452,6 @@
         // Initial setup on page load
         window.onload = function() {
             initializePreferences(); // Apply saved theme and language
-            // Do NOT click fetchDataButton on load by default, user must log in
         };
     </script>
 </body>

@@ -790,9 +790,8 @@
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let adminAccessToken = localStorage.getItem('adminAccessToken') || null;
-        let loggedInAdminUsername = localStorage.getItem('loggedInAdminUsername') || null; // New: Store logged in admin's username
+        let loggedInAdminUsername = localStorage.getItem('loggedInAdminUsername') || null;
 
-        // This URL should point to YOUR Cloudflare Worker
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev'; 
 
         const translations = {
@@ -926,8 +925,7 @@
                         element.title = currentTrans.supportButtonTitle;
                     } else if (element.tagName === 'BUTTON' && element.id === 'closeModalButton') {
                         element.title = currentTrans.closeButtonTitle;
-                    }
-                    else {
+                    } else {
                         element.textContent = currentTrans[key];
                     }
                 }
@@ -1008,7 +1006,7 @@
             }
         });
 
-        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev';
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev'; 
 
         adminLoginButton.addEventListener('click', async () => {
             const adminUsername = adminUsernameInput.value.trim();

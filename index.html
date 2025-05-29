@@ -284,14 +284,40 @@
 
         /* Modals */
         .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background-color: var(--modal-overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
         }
         .modal-content, .small-modal-content {
             background-color: var(--modal-bg);
             border-radius: 1.5rem; /* More rounded modals */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
             border: 1px solid var(--border-color);
+            position: relative; /* Ensure position for absolute close button */
+            transform: scale(0.9); /* Initial smaller scale for animation */
+            opacity: 0; /* Initial hidden state for animation */
+            transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
         }
+        .modal-overlay.show .modal-content,
+        .modal-overlay.show .small-modal-content {
+            transform: scale(1); /* Scale up on show */
+            opacity: 1; /* Fade in on show */
+        }
+
         .modal-close-button {
             position: absolute; /* Keep absolute for positioning */
             top: 1rem;
@@ -307,7 +333,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 1001; /* Ensure button is above modal content */
             transition: all 0.2s ease; /* Smooth transition */
         }
         .modal-close-button:hover {
@@ -316,7 +342,12 @@
         }
         .small-modal-content {
             padding: 2rem; /* More padding */
+            width: 90%; /* Responsive width */
             max-width: 400px; /* Adjusted max width */
+            display: flex; /* Ensure flex for internal content centering */
+            flex-direction: column;
+            align-items: center; /* Center internal content horizontally */
+            text-align: center; /* Center text within content */
         }
         .small-modal-content h3 {
             font-size: 1.5rem; /* Larger modal title */
@@ -444,7 +475,7 @@
             </button>
         </div>
 
-        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل اختصاصی جزئیات مصرف شما</h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
 
         <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
             <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
@@ -590,12 +621,12 @@
         const translations = {
             fa: {
                 pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
-                mainHeader: 'پنل اختصاصی جزئیات مصرف شما', 
-                usernameLabel: 'مثال: rezazin',
+                mainHeader: 'پنل جزئیات مصرف شما', 
+                usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
                 fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
-                fetchErrorGeneric: 'خطا در دریافت اطلاعات: لطفا نام کاربری ورود به پنل مرزبان خود را وارد کنید.',
+                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی کاربر',
                 remainingVolume: 'حجم باقیمانده کاربر',
                 consumed: 'حجم مصرفی کاربر',
@@ -839,6 +870,7 @@
 
         closeUserActionModalButton.addEventListener('click', hideUserActionModal);
         userActionModal.addEventListener('click', (event) => {
+            // Only close if the click target is the overlay itself, not the modal content
             if (event.target === userActionModal) {
                 hideUserActionModal();
             }

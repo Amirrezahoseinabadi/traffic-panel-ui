@@ -59,8 +59,8 @@
             --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: #ef4444;
-            --deactivate-button-hover-bg: #b91c1c;
+            --deactivate-button-bg: var(--error-red);
+            --deactivate-button-hover-bg: #B91C1C;
             --prediction-color: #7C3AED; 
         }
 
@@ -303,7 +303,7 @@
             visibility: visible;
         }
         /* Adjusted modal content (for support modal) */
-        .modal-content { /* Used to be .support-modal-content in previous turn, now back to .modal-content */
+        .modal-content { /* Used for support modal */
             background-color: var(--modal-bg);
             border-radius: 1.5rem; /* More rounded modals */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
@@ -313,13 +313,14 @@
             opacity: 0; /* Initial hidden state for animation */
             transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
             
-            width: 90%; /* Max width for responsiveness */
-            max-width: 600px; /* Larger max-width (original large size) */
-            height: auto; /* Let content determine height, better for iframe */
-            max-height: 90vh; /* Max height to fit viewport */
-            overflow-y: auto; /* Allow scrolling if content overflows max-height */
+            width: 95vw; /* Almost full viewport width */
+            max-width: 1200px; /* An even larger max-width for very wide screens */
+            height: 95vh; /* Almost full viewport height */
+            max-height: 95vh; /* Ensure it doesn't exceed viewport */
+            overflow-y: auto; /* Allow scrolling if content truly overflows */
             display: flex;
             flex-direction: column; /* Stack content */
+            padding: 0; /* Remove padding if iframe is to fill entirely */
         }
         .modal-overlay.show .modal-content {
             transform: scale(1); /* Scale up on show */
@@ -328,8 +329,8 @@
 
         .modal-close-button {
             position: absolute;
-            top: 1rem;
-            left: 1rem; /* Adjusted for RTL to be top-left */
+            top: 1.5rem; /* Slightly further from corner */
+            left: 1.5rem; /* Slightly further from corner for RTL top-left */
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -341,7 +342,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1001; /* Ensure button is above modal content */
+            z-index: 1001; /* Ensure button is above iframe */
             transition: all 0.2s ease;
         }
         .modal-close-button:hover {
@@ -349,7 +350,13 @@
             color: var(--accent-blue);
         }
 
-        /* Removed .small-modal-content and .deactivate-button styles as they are no longer used */
+        /* Ensure iframe fills the modal content */
+        .modal-iframe {
+            width: 100%;
+            height: 100%; /* Iframe should fill the modal content */
+            border: none;
+            display: block; /* Ensures it takes up full space */
+        }
 
 
         /* Responsive Adjustments */
@@ -394,9 +401,9 @@
             }
             /* Support modal content on small screens */
             .modal-content { /* Applies to support modal now */
-                padding: 1.5rem;
-                max-width: 95%; /* Adjust max-width for small screens */
-                height: 90%; /* Adjust height for small screens */
+                padding: 0; /* No padding on mobile for full iframe space */
+                max-width: 98vw; /* Wider on very small screens */
+                height: 98vh; /* Taller on very small screens */
                 border-radius: 1rem;
             }
             .modal-close-button {
@@ -559,12 +566,6 @@
         const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
-        // Removed references to user action modal elements:
-        // const userActionModal = document.getElementById('userActionModal');
-        // const closeUserActionModalButton = document.getElementById('closeUserActionModalButton');
-        // const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
-        // const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
-
         // Prediction elements
         const predictionMessage = document.getElementById('predictionMessage'); 
 
@@ -572,7 +573,7 @@
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        // Removed currentSelectedUser = null; 
+        
 
         // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
@@ -610,10 +611,6 @@
                 topUsersHeader: 'کاربران پرمصرف', 
                 leastUsersHeader: 'کاربران کم‌مصرف', 
                 noUsersFound: 'کاربری یافت نشد.',
-                // Removed user action modal translations:
-                // userActionModalTitle: 'عملیات کاربر',
-                // userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
-                // deactivateButton: 'خاموش کردن اشتراک',
                 predictionHeader: 'پیش‌بینی اتمام حجم', 
                 predictionMessageNoData: 'اطلاعات کافی نیست.', 
                 predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
@@ -651,10 +648,6 @@
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
                 noUsersFound: 'No users found.',
-                // Removed user action modal translations:
-                // userActionModalTitle: 'User Action',
-                // userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
-                // deactivateButton: 'Deactivate Subscription',
                 predictionHeader: 'Data Depletion Prediction', 
                 predictionMessageNoData: 'Insufficient data.', 
                 predictionMessageNoConsumption: 'No consumption recorded.', 
@@ -804,17 +797,6 @@
         }
 
         // Removed all User Action Modal Logic
-        // This includes:
-        // - const userActionModal = document.getElementById('userActionModal');
-        // - const closeUserActionModalButton = document.getElementById('closeUserActionModalButton');
-        // - const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
-        // - const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
-        // - let currentSelectedUser = null;
-        // - showUserActionModal(username) function
-        // - hideUserActionModal() function
-        // - Event listeners on topUsersList/leastUsersList items for showUserActionModal
-        // - Event listeners on closeUserActionModalButton and userActionModal for hideUserActionModal
-        // - deactivateSubscriptionButton.addEventListener
 
 
         // --- Login Logic ---
@@ -908,8 +890,6 @@
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
                         div.setAttribute('data-username', user.username); 
-                        // Removed event listener for showUserActionModal
-                        // div.addEventListener('click', () => showUserActionModal(user.username)); // Removed this
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
@@ -926,8 +906,6 @@
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 
                         div.setAttribute('data-username', user.username); 
-                        // Removed event listener for showUserActionModal
-                        // div.addEventListener('click', () => showUserActionModal(user.username)); // Removed this
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>

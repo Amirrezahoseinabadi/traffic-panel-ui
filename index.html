@@ -437,6 +437,13 @@
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
+            <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
+                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">نام کاربری کاربر را وارد کنید:</label>
+                <input type="text" id="usernameInput" placeholder="نام کاربری" class="w-full max-w-md mb-6 text-center">
+                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت اطلاعات</button>
+            </div>
+
+
             <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 hidden mx-auto">
                 <div class="card">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
@@ -509,10 +516,11 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
-        // Removed usernameInput and fetchDataButton as they are for individual user lookup,
-        // which was not the primary focus of "all information for panel" after login.
-        // If individual user lookup is still desired, these would need to be re-added
-        // along with an input field for the username and a button to trigger the lookup.
+        // Re-added elements for individual user lookup
+        const usernameInput = document.getElementById('usernameInput');
+        const fetchDataButton = document.getElementById('fetchDataButton');
+        const individualUserLookup = document.getElementById('individualUserLookup'); // New reference
+
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
@@ -522,7 +530,7 @@
         const leastUsersList = document.getElementById('leastUsersList'); 
 
         let trafficChart;
-        let currentTrafficData = {};
+        let currentTrafficData = {}; // Stores data for the individual user chart
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
@@ -533,18 +541,18 @@
             fa: {
                 pageTitle: 'پنل مصرف ترافیک مرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'نام کاربری کاربر را وارد کنید:', // Still needed if individual user lookup is re-added
-                fetchDataButton: 'دریافت اطلاعات', // Still needed if individual user lookup is re-added
+                usernameLabel: 'نام کاربری کاربر را وارد کنید:',
+                fetchDataButton: 'دریافت اطلاعات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
-                totalVolume: 'حجم کلی کاربر', // Changed from 'حجم کلی' to clarify it's for individual user
-                remainingVolume: 'حجم باقیمانده کاربر', // Changed from 'حجم باقیمانده' to clarify it's for individual user
-                consumed: 'مصرفی کاربر', // Changed from 'مصرفی' to clarify it's for individual user
-                creationDate: 'تاریخ ساخت کاربر', // Changed from 'تاریخ ساخت' to clarify it's for individual user
-                daysPassed: 'مدت زمان ساخت کاربر', // Changed from 'مدت زمان ساخت' to clarify it's for individual user
-                trafficChartHeader: 'نمودار مصرف ترافیک کاربر', // Changed from 'نمودار مصرف ترافیک' to clarify it's for individual user
-                trafficChartSubtitle: 'ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی', // Changed to reflect individual user
+                totalVolume: 'حجم کلی کاربر',
+                remainingVolume: 'حجم باقیمانده کاربر',
+                consumed: 'مصرفی کاربر',
+                creationDate: 'تاریخ ساخت کاربر',
+                daysPassed: 'مدت زمان ساخت کاربر',
+                trafficChartHeader: 'نمودار مصرف ترافیک کاربر',
+                trafficChartSubtitle: 'ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی',
                 notAvailable: 'در دسترس نیست',
                 invalidDateFormat: 'فرمت تاریخ نامعتبر', 
                 daysUnit: 'روز',
@@ -579,13 +587,13 @@
                 errorMessage: 'Error fetching data. Please try again.',
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
-                totalVolume: 'Total User Volume', // Changed to clarify it's for individual user
-                remainingVolume: 'Remaining User Volume', // Changed to clarify it's for individual user
-                consumed: 'Consumed User Traffic', // Changed to clarify it's for individual user
-                creationDate: 'User Creation Date', // Changed to clarify it's for individual user
-                daysPassed: 'User Days Passed', // Changed to clarify it's for individual user
-                trafficChartHeader: 'User Traffic Consumption Chart', // Changed to clarify it's for individual user
-                trafficChartSubtitle: 'Your traffic consumption based on the selected time range', // Changed to reflect individual user
+                totalVolume: 'Total User Volume',
+                remainingVolume: 'Remaining User Volume',
+                consumed: 'Consumed User Traffic',
+                creationDate: 'User Creation Date',
+                daysPassed: 'User Days Passed',
+                trafficChartHeader: 'User Traffic Consumption Chart',
+                trafficChartSubtitle: 'Your traffic consumption based on the selected time range',
                 notAvailable: 'Not Available',
                 invalidDateFormat: 'Invalid Date Format',
                 daysUnit: 'days',
@@ -632,7 +640,7 @@
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
-            // Removed placeholder setting for usernameInput as it's commented out in HTML
+            usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
             loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
             loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
             
@@ -640,13 +648,8 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            if (trafficChart) {
-                // To re-render chart with new labels/tooltips if applicable
-                // A full re-render of chart might be needed if axis labels or tooltips change significantly with language
-                // For this example, I'll call updateUI with currentTrafficData to re-draw it.
-                if (Object.keys(currentTrafficData).length > 0) {
-                    updateUI(currentTrafficData); 
-                }
+            if (trafficChart && Object.keys(currentTrafficData).length > 0) { // Only update UI if there's chart data
+                updateUI(currentTrafficData);
             }
         }
 
@@ -667,13 +670,11 @@
             languageSelector.value = currentLanguage;
             applyTranslations(currentLanguage);
 
-            // Check for existing token on load
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                // Fetch admin stats and user lists on dashboard load
-                fetchAdminStats();
-                fetchUserLists();
+                fetchAdminStats(); // Fetch admin stats on dashboard load
+                fetchUserLists(); // Fetch top/least users on dashboard load
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -724,7 +725,7 @@
 
             loginButton.disabled = true;
             loginErrorMessage.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden'); // Show general loading for login
+            loadingIndicator.classList.remove('hidden'); 
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
@@ -747,7 +748,6 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                // Fetch admin stats and user lists immediately after successful login
                 await fetchAdminStats();
                 await fetchUserLists();
 
@@ -757,11 +757,11 @@
                 loginErrorMessage.classList.remove('hidden');
             } finally {
                 loginButton.disabled = false;
-                loadingIndicator.classList.add('hidden'); // Hide loading after login attempt
+                loadingIndicator.classList.add('hidden'); 
             }
         });
 
-        // --- New: Fetch Admin Stats ---
+        // --- Fetch Admin Stats ---
         async function fetchAdminStats() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch admin stats.");
@@ -774,7 +774,6 @@
             }
 
             try {
-                // Assuming there's a worker endpoint for admin stats, e.g., /admin-stats
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}admin-stats`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -798,44 +797,16 @@
                 const data = await response.json();
                 console.log("Admin Stats data:", data);
 
-                document.getElementById('adminTotalVolume').textContent = data.total_volume_formatted || translations[currentLanguage].unknown;
-                document.getElementById('adminConsumed').textContent = data.consumed_volume_formatted || translations[currentLanguage].unknown;
-                document.getElementById('adminRemaining').textContent = data.remaining_volume_formatted || translations[currentLanguage].unknown;
-                
-                if (data.admin_creation_date) {
-                    let displayDate = data.admin_creation_date;
-                    try {
-                        const dateObj = new Date(data.admin_creation_date);
-                        if (isNaN(dateObj.getTime())) {
-                            throw new Error("Invalid date string for admin creation date.");
-                        }
-                        const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-                        const persianDateOptions = { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric', 
-                            hour: '2-digit', 
-                            minute: '2-digit', 
-                            second: '2-digit',
-                            hour12: false 
-                        };
-                        displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
-                    } catch (e) {
-                        console.error("Error parsing admin creation date:", e);
-                        displayDate = translations[currentLanguage].notAvailable;
-                    }
-                    document.getElementById('adminCreationDateValue').textContent = displayDate;
-                } else {
-                    document.getElementById('adminCreationDateValue').textContent = translations[currentLanguage].unknown;
-                }
-
-                document.getElementById('adminDaysPassedValue').textContent = data.days_passed_formatted ? `${data.days_passed_formatted} ${translations[currentLanguage].daysUnit}` : translations[currentLanguage].unknown;
+                document.getElementById('adminTotalVolume').textContent = data.adminTotalVolume || translations[currentLanguage].unknown;
+                document.getElementById('adminConsumed').textContent = data.adminConsumed || translations[currentLanguage].unknown;
+                document.getElementById('adminRemaining').textContent = data.adminRemaining || translations[currentLanguage].unknown;
+                document.getElementById('adminCreationDateValue').textContent = data.adminCreationDateValue || translations[currentLanguage].unknown;
+                document.getElementById('adminDaysPassedValue').textContent = data.adminDaysPassedValue || translations[currentLanguage].unknown;
 
             } catch (error) {
                 console.error('Error fetching admin stats:', error);
                 errorMessage.textContent = `Error fetching admin stats: ${error.message}`;
                 errorMessage.classList.remove('hidden');
-                // Set placeholders if error
                 document.getElementById('adminTotalVolume').textContent = translations[currentLanguage].unknown;
                 document.getElementById('adminConsumed').textContent = translations[currentLanguage].unknown;
                 document.getElementById('adminRemaining').textContent = translations[currentLanguage].unknown;
@@ -844,20 +815,19 @@
             }
         }
 
-
-        // --- New: Fetch Top/Least Consuming Users ---
+        // --- Fetch Top/Least Consuming Users ---
         async function fetchUserLists() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch user lists.");
                 topUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
                 leastUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
-                userUsageLists.classList.remove('hidden'); // Show container even with default message
+                userUsageLists.classList.remove('hidden'); 
                 return;
             }
 
-            topUsersList.innerHTML = ''; // Clear previous lists
+            topUsersList.innerHTML = ''; 
             leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden'); // Hide until loaded
+            userUsageLists.classList.add('hidden'); 
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
@@ -873,7 +843,7 @@
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; // Or a specific "Session expired" message
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
                         loginErrorMessage.classList.remove('hidden');
                     }
                     const errorData = await response.json();
@@ -907,19 +877,13 @@
 
             } catch (error) {
                 console.error('Error fetching user lists:', error);
-                // Display error in the user list section or general error message
                 topUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
                 leastUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
-                userUsageLists.classList.remove('hidden'); // Show container even with error
+                userUsageLists.classList.remove('hidden'); 
             }
         }
 
-
-        // --- Individual User Data Lookup and Chart (Kept for completeness, but not primary on login) ---
-        // You would need to uncomment and re-add the username input field and fetch button in the HTML
-        // if you still want to allow lookup of individual users after the initial admin login.
-        // For the current request (see all panel information after login), the focus is on admin stats and user lists.
-        /*
+        // --- Individual User Data Lookup and Chart ---
         fetchDataButton.addEventListener('click', async () => {
             const username = usernameInput.value.trim();
             if (!username) {
@@ -934,8 +898,9 @@
             chartContainer.classList.add('hidden');
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; // Still uses main worker route for individual user data
-                console.log('Fetching data from:', fetchUrl);
+                // The worker route for individual user data
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
+                console.log('Fetching data for individual user from:', fetchUrl);
 
                 const response = await fetch(fetchUrl);
 
@@ -958,14 +923,14 @@
                     return;
                 }
 
-                currentTrafficData = data;
-                updateUI(data);
+                currentTrafficData = data; // Store this data for potential chart re-render on language change
+                updateUI(data); // Populate individual user data cards and chart
                 
                 dataCards.classList.remove('hidden');
                 chartContainer.classList.remove('hidden');
 
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching individual user data:', error);
                 errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
                 errorMessage.classList.remove('hidden');
                 dataCards.classList.add('hidden');
@@ -974,13 +939,11 @@
                 loadingIndicator.classList.add('hidden');
             }
         });
-        */
 
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
-            // These are for individual user data, so they will only be populated if you re-implement
-            // the individual user lookup functionality and call updateUI with that data.
+            // These are for individual user data
             document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
             document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
             document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
@@ -991,6 +954,8 @@
                     if (data.date3.includes('✖️') || data.date3.length < 10) { 
                         displayDate = currentTrans.notAvailable; 
                     } else {
+                        // Assuming date3 comes formatted from the worker, no further parsing needed here.
+                        // If it's still raw '│ 21 May 2025, 23:51:39', need to clean it before new Date()
                         const cleanDateString = data.date3.replace(/^\|\s*/, ''); 
                         const dateObj = new Date(cleanDateString);
                         
@@ -1021,8 +986,10 @@
 
             document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
 
+            // Chart data preparation
             const usageValue = parseFloat(data.usage); 
             let usageUnit = '';
+            // Extract unit from data.usage string, e.g., "464.74 GB"
             if (data.usage && typeof data.usage === 'string') {
                 const unitMatch = data.usage.match(/[A-Z]+/i);
                 if (unitMatch) {
@@ -1031,10 +998,10 @@
                     else if (unit === 'mb') usageUnit = currentTrans.mb;
                     else if (unit === 'gb') usageUnit = currentTrans.gb;
                     else if (unit === 'tb') usageUnit = currentTrans.tb;
-                    else usageUnit = unitMatch[0];
+                    else usageUnit = unitMatch[0]; // Fallback to raw unit
                 }
             } else {
-                usageUnit = currentTrans.mb; // Default to MB if unit is not parsed
+                usageUnit = currentTrans.gb; // Default to GB if no unit is parsed
             }
 
             const ctx = document.getElementById('trafficChart').getContext('2d');
@@ -1043,31 +1010,32 @@
                 trafficChart.destroy();
             }
 
-            // Chart data generation (currently hardcoded for a specific display)
+            // Create chart labels (e.g., "00:48", "01:48", ...)
             const labels = [];
-            for (let i = 12; i <= 23; i++) {
-                labels.push(`${String(i).padStart(2, '0')}:48`);
-            }
-            for (let i = 0; i <= 11; i++) {
+            for (let i = 0; i < 24; i++) { // Generate labels for 24 hours
                 labels.push(`${String(i).padStart(2, '0')}:48`);
             }
 
+            // Prepare chart data based on the usageValue
             const chartData = new Array(labels.length).fill(0);
             const defaultBarColor = getComputedStyle(document.documentElement).getPropertyValue('--button-bg-general').trim();
             const accentGreenColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim();
             const backgroundColors = new Array(labels.length).fill(defaultBarColor); 
 
-            // Logic for highlighting specific bars, as seen in original code
-            const lastHourIndex = labels.indexOf('11:48'); 
-            if (lastHourIndex !== -1) {
-                chartData[lastHourIndex] = usageValue; 
-                backgroundColors[lastHourIndex] = accentGreenColor;
+            // Place the usageValue at a specific point (e.g., 11:48) for illustration
+            // The worker current sends `chart_data` but this front-end code ignores it and redraws based on `usage`
+            // If the worker sends historical data, this part needs to be revised to use `data.chart_data`
+            const targetHourIndex = labels.indexOf('11:48'); 
+            if (targetHourIndex !== -1) {
+                chartData[targetHourIndex] = usageValue; 
+                backgroundColors[targetHourIndex] = accentGreenColor;
             }
 
-            const fourteenthHourIndex = labels.indexOf('14:48');
-            if (fourteenthHourIndex !== -1) {
-                chartData[fourteenthHourIndex] = 0.01; // Representing 0 for visual distinction
-                backgroundColors[fourteenthHourIndex] = defaultBarColor;
+            // Placeholder for 0 usage at 14:48 if desired
+            const zeroByteHourIndex = labels.indexOf('14:48');
+            if (zeroByteHourIndex !== -1) {
+                chartData[zeroByteHourIndex] = 0.01; // Small value to show a bar for zero
+                backgroundColors[zeroByteHourIndex] = defaultBarColor;
             }
 
             trafficChart = new Chart(ctx, {
@@ -1133,11 +1101,11 @@
                             ticks: {
                                 color: 'var(--text-secondary)',
                                 callback: function(value) {
-                                    if (value === 0.01) return '0 ' + currentTrans.bytes; // Display 0 for placeholder
+                                    if (value === 0.01) return '0 ' + currentTrans.bytes; 
                                     return value + ' ' + usageUnit;
                                 },
                                 min: 0,
-                                max: usageValue > 0 ? usageValue * 1.2 : 8, // Adjust max based on actual usageValue
+                                max: usageValue > 0 ? usageValue * 1.2 : 8, // Dynamically adjust max based on usageValue
                                 font: {
                                     family: 'Vazirmatn',
                                     size: 12

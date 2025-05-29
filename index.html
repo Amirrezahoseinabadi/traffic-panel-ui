@@ -176,12 +176,15 @@
             line-height: 1.2;
             margin-top: 0;
         }
-        #total2, #usage, #adminTotalVolume, #adminConsumed {
+        /* Adjusted colors for user-specific data */
+        #total2, #usage { /* Assuming these are for individual user's total and consumed */
             color: var(--accent-green);
         }
-        #baghi, #adminRemaining {
+        #baghi { /* Assuming this is for individual user's remaining */
             color: var(--accent-yellow);
         }
+        /* Admin specific colors removed as these elements are hidden */
+
         #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
@@ -221,7 +224,7 @@
         .time-range-button.active:hover {
             background-color: var(--accent-blue-hover);
         }
-        #date3, #adminCreationDateValue {
+        #date3, #adminCreationDateValue { /* adminCreationDateValue is now unused */
             font-size: 1.25rem;
             line-height: 1.4;
             margin-top: 0.5rem;
@@ -398,42 +401,6 @@
         </div>
 
         <div id="dashboardContent" class="hidden">
-            <div id="adminStats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 mx-auto">
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="adminTotalVolume">حجم کلی پنل</p>
-                    <p id="adminTotalVolume" class="text-3xl">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="adminConsumed">مصرفی پنل</p>
-                    <p id="adminConsumed" class="text-3xl">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="adminRemaining">باقیمانده پنل</p>
-                    <p id="adminRemaining" class="text-3xl">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="adminCreationDate">تاریخ ساخت ادمین</p>
-                    <p id="adminCreationDateValue" class="text-lg">...</p>
-                </div>
-                <div class="card col-span-full lg:col-span-1">
-                    <p class="text-sm mb-2" data-key="adminDaysPassed">مدت زمان ساخت ادمین</p>
-                    <p id="adminDaysPassedValue" class="text-3xl">...</p>
-                </div>
-            </div>
-
-            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
-                <div class="card">
-                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="topUsersHeader">۵ کاربر پرمصرف</h2>
-                    <ul id="topUsersList" class="list-disc pr-5 text-gray-300">
-                        </ul>
-                </div>
-                <div class="card">
-                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="leastUsersHeader">۵ کاربر کم‌مصرف</h2>
-                    <ul id="leastUsersList" class="list-disc pr-5 text-gray-300">
-                        </ul>
-                </div>
-            </div>
-
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
@@ -442,7 +409,6 @@
                 <input type="text" id="usernameInput" placeholder="نام کاربری" class="w-full max-w-md mb-6 text-center">
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت اطلاعات</button>
             </div>
-
 
             <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 hidden mx-auto">
                 <div class="card">
@@ -466,8 +432,7 @@
                 </div>
             </div>
 
-            <div id="chartContainer" class="chart-container hidden mx-auto">
-                <div class="flex justify-between items-center mb-5 flex-wrap">
+            <div id="chartContainer" class="chart-container hidden mx-auto mb-10"> <div class="flex justify-between items-center mb-5 flex-wrap">
                     <div>
                         <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک کاربر</h2>
                         <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی</p>
@@ -484,6 +449,20 @@
                     <canvas id="trafficChart"></canvas>
                 </div>
             </div>
+
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="topUsersHeader">۵ کاربر پرمصرف</h2>
+                    <ul id="topUsersList" class="list-disc pr-5 text-gray-300">
+                        </ul>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="leastUsersHeader">۵ کاربر کم‌مصرف</h2>
+                    <ul id="leastUsersList" class="list-disc pr-5 text-gray-300">
+                        </ul>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -516,10 +495,10 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
-        // Re-added elements for individual user lookup
+        // Elements for individual user lookup
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
-        const individualUserLookup = document.getElementById('individualUserLookup'); // New reference
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
@@ -570,6 +549,7 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
+                // Admin stats translations are now unused but kept for completeness in translations object
                 adminTotalVolume: 'حجم کلی پنل',
                 adminConsumed: 'مصرفی پنل',
                 adminRemaining: 'باقیمانده پنل',
@@ -640,7 +620,10 @@
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
-            usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            // Ensure usernameInput.placeholder is updated
+            if (usernameInput) { // Check if element exists (as it's in dashboardContent)
+                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            }
             loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
             loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
             
@@ -648,7 +631,7 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            if (trafficChart && Object.keys(currentTrafficData).length > 0) { // Only update UI if there's chart data
+            if (trafficChart && Object.keys(currentTrafficData).length > 0) {
                 updateUI(currentTrafficData);
             }
         }
@@ -673,8 +656,8 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                fetchAdminStats(); // Fetch admin stats on dashboard load
-                fetchUserLists(); // Fetch top/least users on dashboard load
+                // Removed fetchAdminStats() call as admin stats cards are removed
+                fetchUserLists(); // Still fetch top/least users
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -748,8 +731,8 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                await fetchAdminStats();
-                await fetchUserLists();
+                // Removed fetchAdminStats() as admin stats cards are removed
+                await fetchUserLists(); // Still fetch top/least users
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -761,58 +744,15 @@
             }
         });
 
-        // --- Fetch Admin Stats ---
+        // --- fetchAdminStats() is now unused as admin stats cards are removed ---
+        // You can remove this function entirely if you are sure you no longer need admin panel stats.
+        // If you might re-add them later, keep it but it won't be called from initializePreferences or loginButton.
         async function fetchAdminStats() {
-            if (!accessToken) {
-                console.warn("No access token available. Cannot fetch admin stats.");
-                document.getElementById('adminTotalVolume').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminConsumed').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminRemaining').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminCreationDateValue').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminDaysPassedValue').textContent = translations[currentLanguage].unknown;
-                return;
-            }
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}admin-stats`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
-                        loginErrorMessage.classList.remove('hidden');
-                    }
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch admin stats: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log("Admin Stats data:", data);
-
-                document.getElementById('adminTotalVolume').textContent = data.adminTotalVolume || translations[currentLanguage].unknown;
-                document.getElementById('adminConsumed').textContent = data.adminConsumed || translations[currentLanguage].unknown;
-                document.getElementById('adminRemaining').textContent = data.adminRemaining || translations[currentLanguage].unknown;
-                document.getElementById('adminCreationDateValue').textContent = data.adminCreationDateValue || translations[currentLanguage].unknown;
-                document.getElementById('adminDaysPassedValue').textContent = data.adminDaysPassedValue || translations[currentLanguage].unknown;
-
-            } catch (error) {
-                console.error('Error fetching admin stats:', error);
-                errorMessage.textContent = `Error fetching admin stats: ${error.message}`;
-                errorMessage.classList.remove('hidden');
-                document.getElementById('adminTotalVolume').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminConsumed').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminRemaining').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminCreationDateValue').textContent = translations[currentLanguage].unknown;
-                document.getElementById('adminDaysPassedValue').textContent = translations[currentLanguage].unknown;
-            }
+            // This function is no longer called in the current layout per user's request.
+            // Its previous purpose was to populate the admin specific cards, which are now removed from HTML.
+            console.log("fetchAdminStats() would have been called, but admin stats elements are removed.");
+            // If you still need this data for other purposes (e.g., internal logic), keep the function.
+            // But the UI will no longer display it.
         }
 
         // --- Fetch Top/Least Consuming Users ---
@@ -923,8 +863,8 @@
                     return;
                 }
 
-                currentTrafficData = data; // Store this data for potential chart re-render on language change
-                updateUI(data); // Populate individual user data cards and chart
+                currentTrafficData = data; 
+                updateUI(data); 
                 
                 dataCards.classList.remove('hidden');
                 chartContainer.classList.remove('hidden');
@@ -954,8 +894,6 @@
                     if (data.date3.includes('✖️') || data.date3.length < 10) { 
                         displayDate = currentTrans.notAvailable; 
                     } else {
-                        // Assuming date3 comes formatted from the worker, no further parsing needed here.
-                        // If it's still raw '│ 21 May 2025, 23:51:39', need to clean it before new Date()
                         const cleanDateString = data.date3.replace(/^\|\s*/, ''); 
                         const dateObj = new Date(cleanDateString);
                         
@@ -989,7 +927,6 @@
             // Chart data preparation
             const usageValue = parseFloat(data.usage); 
             let usageUnit = '';
-            // Extract unit from data.usage string, e.g., "464.74 GB"
             if (data.usage && typeof data.usage === 'string') {
                 const unitMatch = data.usage.match(/[A-Z]+/i);
                 if (unitMatch) {
@@ -998,10 +935,10 @@
                     else if (unit === 'mb') usageUnit = currentTrans.mb;
                     else if (unit === 'gb') usageUnit = currentTrans.gb;
                     else if (unit === 'tb') usageUnit = currentTrans.tb;
-                    else usageUnit = unitMatch[0]; // Fallback to raw unit
+                    else usageUnit = unitMatch[0]; 
                 }
             } else {
-                usageUnit = currentTrans.gb; // Default to GB if no unit is parsed
+                usageUnit = currentTrans.gb; 
             }
 
             const ctx = document.getElementById('trafficChart').getContext('2d');
@@ -1010,31 +947,25 @@
                 trafficChart.destroy();
             }
 
-            // Create chart labels (e.g., "00:48", "01:48", ...)
             const labels = [];
-            for (let i = 0; i < 24; i++) { // Generate labels for 24 hours
+            for (let i = 0; i < 24; i++) { 
                 labels.push(`${String(i).padStart(2, '0')}:48`);
             }
 
-            // Prepare chart data based on the usageValue
             const chartData = new Array(labels.length).fill(0);
             const defaultBarColor = getComputedStyle(document.documentElement).getPropertyValue('--button-bg-general').trim();
             const accentGreenColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim();
             const backgroundColors = new Array(labels.length).fill(defaultBarColor); 
 
-            // Place the usageValue at a specific point (e.g., 11:48) for illustration
-            // The worker current sends `chart_data` but this front-end code ignores it and redraws based on `usage`
-            // If the worker sends historical data, this part needs to be revised to use `data.chart_data`
             const targetHourIndex = labels.indexOf('11:48'); 
             if (targetHourIndex !== -1) {
                 chartData[targetHourIndex] = usageValue; 
                 backgroundColors[targetHourIndex] = accentGreenColor;
             }
 
-            // Placeholder for 0 usage at 14:48 if desired
             const zeroByteHourIndex = labels.indexOf('14:48');
             if (zeroByteHourIndex !== -1) {
-                chartData[zeroByteHourIndex] = 0.01; // Small value to show a bar for zero
+                chartData[zeroByteHourIndex] = 0.01; 
                 backgroundColors[zeroByteHourIndex] = defaultBarColor;
             }
 
@@ -1105,7 +1036,7 @@
                                     return value + ' ' + usageUnit;
                                 },
                                 min: 0,
-                                max: usageValue > 0 ? usageValue * 1.2 : 8, // Dynamically adjust max based on usageValue
+                                max: usageValue > 0 ? usageValue * 1.2 : 8,
                                 font: {
                                     family: 'Vazirmatn',
                                     size: 12

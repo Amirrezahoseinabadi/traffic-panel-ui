@@ -573,7 +573,7 @@
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const individualUserLookup = document.getElementById('individualUserLookup'); 
-        const timeRangeButtons = document.querySelectorAll('.time-range-button'); // انتخاب دکمه‌های بازه زمانی
+        const timeRangeButtons = document.querySelectorAll('.time-range-button'); 
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
@@ -588,23 +588,22 @@
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        let currentSelectedTimeRange = '24h'; // بازه زمانی پیش‌فرض برای نمودار
+        let currentSelectedTimeRange = '24h'; 
 
-        // !!! مهم: این URL را با آدرس Worker خود جایگزین کنید.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
         const translations = {
             fa: {
-                pageTitle: 'پنل مصرف ترافیک مرزبان', 
+                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'نام کاربری کاربر را وارد کنید:',
-                fetchDataButton: 'دریافت اطلاعات',
+                usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
+                fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی کاربر',
                 remainingVolume: 'حجم باقیمانده کاربر',
-                consumed: 'مصرفی کاربر',
+                consumed: 'حجم مصرفی کاربر',
                 creationDate: 'تاریخ ساخت کاربر',
                 daysPassed: 'مدت زمان ساخت کاربر',
                 trafficChartHeader: 'نمودار مصرف ترافیک کاربر',
@@ -626,15 +625,15 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                topUsersHeader: '۵ کاربر پرمصرف',
-                leastUsersHeader: '۵ کاربر کم‌مصرف', 
+                topUsersHeader: 'کاربران پرمصرف', // Shortened from '۵ کاربر پرمصرف'
+                leastUsersHeader: 'کاربران کم‌مصرف', // Shortened from '۵ کاربر کم‌مصرف'
                 noUsersFound: 'کاربری یافت نشد.'
             },
             en: {
-                pageTitle: 'Your Usage Details Panel', 
+                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
                 mainHeader: 'Your Usage Details Panel', 
-                usernameLabel: 'Enter User Username:',
-                fetchDataButton: 'Fetch Data',
+                usernameLabel: 'Enter your username to view usage details:',
+                fetchDataButton: 'Get Details',
                 errorMessage: 'Error fetching data. Please try again.',
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
@@ -662,8 +661,8 @@
                 loginPasswordLabel: 'Admin Password:',
                 loginButton: 'Login',
                 loginErrorMessage: 'Incorrect username or password.',
-                topUsersHeader: 'Top 5 Consuming Users',
-                leastUsersHeader: 'Least 5 Consuming Users',
+                topUsersHeader: 'Top Consuming Users',
+                leastUsersHeader: 'Least Consuming Users',
                 noUsersFound: 'No users found.'
             }
         };
@@ -698,7 +697,6 @@
 
             // Trigger re-fetch for chart and user lists if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                // Re-fetch only if a username is already entered, otherwise, chart will be hidden
                 if (usernameInput && usernameInput.value.trim() !== '') {
                     fetchUserData(usernameInput.value.trim(), currentSelectedTimeRange);
                 }
@@ -900,7 +898,6 @@
             chartContainer.classList.add('hidden');
 
             try {
-                // Pass timeRange to the worker
                 const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}&range=${timeRange}`; 
                 console.log(`Fetching data for individual user ${username} in range ${timeRange} from: ${fetchUrl}`);
 
@@ -916,7 +913,7 @@
                 if (data.error) {
                     if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
                         errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
-                    } else if (data.auth_error) { // Handle auth error specifically from Worker
+                    } else if (data.auth_error) { 
                         errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
@@ -963,7 +960,7 @@
                 currentSelectedTimeRange = button.dataset.range;
 
                 const username = usernameInput.value.trim();
-                if (username) { // Only re-fetch if a username is already entered
+                if (username) { 
                     fetchUserData(username, currentSelectedTimeRange);
                 }
             });
@@ -981,7 +978,7 @@
             if (data.date3) {
                 let displayDate = data.date3;
                 try {
-                    const dateObj = new Date(displayDate); // Assuming date3 from worker is already formatted or parsable
+                    const dateObj = new Date(displayDate); 
                     if (isNaN(dateObj.getTime())) {
                         throw new Error("Invalid date string after cleaning or unparsable format.");
                     }
@@ -1019,20 +1016,20 @@
             const chartValuesBytes = data.chart_data ? data.chart_data.map(item => item.usage_bytes) : [];
             
             // Determine the best unit for the Y-axis based on max value
-            const maxUsageBytes = Math.max(...chartValuesBytes, 0); // Ensure at least 0
-            let displayUnit = translations[currentLanguage].gb; // Default to GB
+            const maxUsageBytes = Math.max(...chartValuesBytes, 0); 
+            let displayUnit = translations[currentLanguage].gb; 
             let scaleFactor = 1;
 
-            if (maxUsageBytes < 1024) { // Less than 1 KB
+            if (maxUsageBytes < 1024) { 
                 displayUnit = translations[currentLanguage].bytes;
                 scaleFactor = 1;
-            } else if (maxUsageBytes < 1024 * 1024) { // Less than 1 MB
-                displayUnit = translations[currentLanguage].bytes; // or KB, depends on desired granularity
-                scaleFactor = 1; // display as bytes
-            } else if (maxUsageBytes < 1024 * 1024 * 1024) { // Less than 1 GB
+            } else if (maxUsageBytes < 1024 * 1024) { 
+                displayUnit = translations[currentLanguage].bytes; 
+                scaleFactor = 1; 
+            } else if (maxUsageBytes < 1024 * 1024 * 1024) { 
                 displayUnit = translations[currentLanguage].mb;
                 scaleFactor = 1024 * 1024;
-            } else if (maxUsageBytes < 1024 * 1024 * 1024 * 1024) { // Less than 1 TB
+            } else if (maxUsageBytes < 1024 * 1024 * 1024 * 1024) { 
                 displayUnit = translations[currentLanguage].gb;
                 scaleFactor = 1024 * 1024 * 1024;
             } else {
@@ -1051,10 +1048,10 @@
             trafficChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: chartLabels, // Use dynamic labels from Worker
+                    labels: chartLabels, 
                     datasets: [{
                         label: `${currentTrans.consumed} (${displayUnit})`,
-                        data: chartValuesDisplay, // Use dynamic values from Worker
+                        data: chartValuesDisplay, 
                         backgroundColor: backgroundColors,
                         borderColor: backgroundColors,
                         borderWidth: 1,
@@ -1076,10 +1073,9 @@
                                 },
                                 label: function(context) {
                                     let value = context.parsed.y;
-                                    // Handle the 0.01 placeholder value for display as 0
-                                    if (value * scaleFactor < 1 && value !== 0 && maxUsageBytes > 0) { // If original bytes were very small but non-zero, show as bytes
+                                    if (value * scaleFactor < 1 && value !== 0 && maxUsageBytes > 0) { 
                                         return `${(value * scaleFactor).toFixed(0)} ${translations[currentLanguage].bytes}`;
-                                    } else if (value === 0 && context.raw !== 0) { // If raw was 0.01 but should be 0
+                                    } else if (value === 0 && context.raw !== 0) { 
                                         return `0 ${displayUnit}`;
                                     }
                                     return `${value.toFixed(2)} ${displayUnit}`;
@@ -1110,12 +1106,11 @@
                             ticks: {
                                 color: 'var(--text-secondary)',
                                 callback: function(value) {
-                                    if (value === 0.01) return '0 ' + displayUnit; // Handle placeholder
+                                    if (value === 0.01) return '0 ' + displayUnit; 
                                     return value + ' ' + displayUnit;
                                 },
                                 min: 0,
-                                // Adjust max Y-axis for better visual representation
-                                max: maxUsageBytes > 0 ? (maxUsageBytes / scaleFactor) * 1.2 : 8, // 20% padding
+                                max: maxUsageBytes > 0 ? (maxUsageBytes / scaleFactor) * 1.2 : 8, 
                                 font: {
                                     family: 'Vazirmatn',
                                     size: 12

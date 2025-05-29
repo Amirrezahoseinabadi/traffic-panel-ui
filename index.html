@@ -289,8 +289,8 @@
             bottom: 0;
             background-color: var(--modal-overlay-bg);
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; /* Centers horizontally */
+            align-items: center; /* Centers vertically */
             z-index: 1000; /* Ensure it's on top */
             opacity: 0;
             visibility: hidden;
@@ -300,8 +300,8 @@
             opacity: 1;
             visibility: visible;
         }
-        /* Adjusted modal content for support modal */
-        .support-modal-content { /* Renamed from .modal-content to be specific */
+        /* Refined modal content styling (now applies to support modal) */
+        .modal-content {
             background-color: var(--modal-bg);
             border-radius: 1.5rem; /* More rounded modals */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
@@ -311,43 +311,58 @@
             opacity: 0; /* Initial hidden state for animation */
             transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
             
-            width: 90%;
-            max-width: 450px; /* Smaller max-width for support modal */
-            height: auto; /* Height adapts to content */
-            max-height: 90vh; /* Max height to fit viewport */
+            width: 90%; /* Max width for responsiveness */
+            max-width: 600px; /* Larger max-width */
+            height: 80%; /* Larger height */
+            max-height: 700px; /* Larger max-height */
             overflow: hidden; /* Hide overflow */
             display: flex;
             flex-direction: column; /* Stack content */
-            align-items: center; /* Center content horizontally */
-            text-align: center; /* Center text */
-            padding: 2rem; /* Generous padding */
         }
-        .modal-overlay.show .support-modal-content {
+        .modal-overlay.show .modal-content {
             transform: scale(1); /* Scale up on show */
             opacity: 1; /* Fade in on show */
         }
 
         .modal-close-button {
-            position: absolute; /* Keep absolute for positioning */
+            position: absolute;
             top: 1rem;
             left: 1rem; /* Adjusted for RTL to be top-left */
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            width: 2.8rem; /* Larger close button */
+            width: 2.8rem;
             height: 2.8rem;
-            font-size: 1.35rem; /* Larger X icon */
-            border-radius: 50%; /* Perfect circle */
-            display: flex; /* Ensure flex for centering X */
+            font-size: 1.35rem;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1001; /* Ensure button is above modal content */
-            transition: all 0.2s ease; /* Smooth transition */
+            z-index: 1001;
+            transition: all 0.2s ease;
         }
         .modal-close-button:hover {
             background-color: var(--button-hover-bg-general);
             color: var(--accent-blue);
+        }
+
+        /* Responsive Adjustments for Modals */
+        @media (max-width: 640px) {
+            /* ... (سایر استایل‌های ریسپانسیو) ... */
+            .modal-content {
+                padding: 1.5rem; /* Adjusted padding for smaller screens */
+                max-width: 95%; /* Make it wider on very small screens */
+                height: 90%; /* Adjust height for small screens */
+                border-radius: 1rem;
+            }
+            .modal-close-button {
+                top: 0.75rem;
+                left: 0.75rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 1.1rem;
+            }
         }
         /* Removed .small-modal-content and .deactivate-button styles as they are no longer used */
 
@@ -524,7 +539,7 @@
     </footer>
 
     <div id="supportModal" class="modal-overlay hidden">
-        <div class="support-modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
         </div>
     </div>

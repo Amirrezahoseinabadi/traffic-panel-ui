@@ -171,11 +171,16 @@
             font-size: 1rem;
             cursor: pointer;
             appearance: none;
+            /* Moved background-image to the left for better visual balance in RTL */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 1rem center; /* Adjusted arrow position */
+            background-position: left 1rem center; /* Moved arrow to left */
             background-size: 1.1em 1.1em; /* Smaller arrow */
             transition: all 0.3s ease;
+            text-align: center; /* Attempt to center text */
+            text-align-last: center; /* Attempt to center selected option text in some browsers */
+            padding-right: 1.2rem; /* Ensure enough space for text */
+            padding-left: 2.25em; /* Make space for the arrow on the left */
         }
         select:focus {
             outline: none;
@@ -193,6 +198,9 @@
             width: 3rem; /* Larger button size */
             height: 3rem;
             border-radius: 0.75rem; /* More rounded */
+            display: flex; /* Ensure flex for centering icon */
+            align-items: center; /* Center icon vertically */
+            justify-content: center; /* Center icon horizontally */
             transition: all 0.2s ease;
         }
         .icon-button:hover {
@@ -402,21 +410,17 @@
                 padding: 0.8rem 1.5rem;
                 font-size: 1rem;
             }
-            /* Adjust icon alignment on small screens */
-            .flex.justify-end.items-center.gap-4.mb-8 {
-                justify-content: space-around; /* Distribute items more evenly */
-                gap: 0.5rem; /* Reduce gap */
-            }
-            .flex.justify-end.items-center.gap-4.mb-8 .relative {
-                order: -1; /* Move language selector to the beginning visually */
+            /* Adjust icon alignment on small screens: center them */
+            .top-bar-icons { /* Added new class for clarity */
+                justify-content: center; /* Center items on small screens */
+                gap: 0.75rem; /* Slightly larger gap */
             }
         }
     </style>
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8">
-            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
                     </svg>

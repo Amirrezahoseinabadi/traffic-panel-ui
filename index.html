@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
+    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان - پیشنمایش مانیتورینگ سرور</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -34,6 +34,11 @@
             --least-user-color: #FFC107; 
             --deactivate-button-bg: #dc2626; /* Red for deactivation */
             --deactivate-button-hover-bg: #b91c1c;
+
+            /* Node Status Colors */
+            --node-status-online: #4cd137; /* Green */
+            --node-status-offline: #ef4444; /* Red */
+            --node-status-warning: #f6b93b; /* Yellow */
         }
 
         /* Light mode theme variables */
@@ -63,6 +68,11 @@
             --least-user-color: #ffc107;
             --deactivate-button-bg: #ef4444;
             --deactivate-button-hover-bg: #dc2626;
+
+            /* Node Status Colors */
+            --node-status-online: #22c55e;
+            --node-status-offline: #dc2626;
+            --node-status-warning: #fbbf24;
         }
 
         /* Base body styles */
@@ -196,7 +206,7 @@
         }
         
         /* Error message styling */
-        #errorMessage, #loginErrorMessage {
+        #errorMessage, #loginErrorMessage, #nodeErrorMessage {
             color: var(--error-red);
             font-weight: 600;
             padding: 0.625rem 1.25rem;
@@ -329,15 +339,16 @@
         .least-user-item .user-list-icon {
             color: var(--least-user-color); 
         }
-        #userUsageLists h2 {
+        #userUsageLists h2, #nodeMonitoringSection h2 {
             display: flex;
             align-items: center;
             justify-content: flex-end; 
             margin-bottom: 1rem; 
         }
-        #userUsageLists h2 span {
+        #userUsageLists h2 span, #nodeMonitoringSection h2 span {
             margin-right: 0.5rem; 
         }
+
 
         /* Small modal for user actions */
         .small-modal-content {
@@ -388,6 +399,51 @@
         .deactivate-button:active {
             transform: translateY(0);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Node card styling */
+        .node-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .node-card .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .node-card .node-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        .node-card .node-status {
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .node-status.online {
+            background-color: rgba(76, 209, 55, 0.2);
+            color: var(--node-status-online);
+        }
+        .node-status.offline {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--node-status-offline);
+        }
+        .node-status.warning {
+            background-color: rgba(246, 185, 59, 0.2);
+            color: var(--node-status-warning);
+        }
+        .node-stats p {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+        .node-stats p strong {
+            color: var(--text-primary);
         }
 
 
@@ -459,6 +515,12 @@
                 padding: 0.625rem 1.25rem;
                 font-size: 0.9rem;
              }
+             .node-card .node-name {
+                font-size: 1.1rem;
+             }
+             .node-stats p {
+                font-size: 0.85rem;
+             }
         }
     </style>
 </head>
@@ -502,6 +564,21 @@
             
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+            <p id="nodeErrorMessage" class="text-red-500 text-center mt-6 hidden" data-key="nodeErrorMessage">خطا در دریافت وضعیت سرورها. لطفا دوباره تلاش کنید.</p>
+
+            <div id="nodeMonitoringSection" class="mb-10 mx-auto">
+                <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                    <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9l-7-7zM6 20V4h6v5h5v11H6z"/>
+                    </svg>
+                    <span data-key="nodeMonitoringHeader">مانیتورینگ سرورها</span>
+                </h2>
+                <div id="nodesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="card flex items-center justify-center p-8" data-key="loadingNodes">
+                        <p class="text-secondary">در حال بارگذاری وضعیت سرورها...</p>
+                    </div>
+                </div>
+            </div>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
@@ -585,7 +662,7 @@
         const languageSelector = document.getElementById('languageSelector');
         const supportButton = document.getElementById('supportButton'); 
         const supportModal = document.getElementById('supportModal');
-        const closeSupportModalButton = document.getElementById('closeSupportModalButton'); // Renamed for clarity
+        const closeSupportModalButton = document.getElementById('closeSupportModalButton');
         const goftinoIframe = document.getElementById('goftinoIframe');
 
         const loginForm = document.getElementById('loginForm');
@@ -601,6 +678,7 @@
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
+        const nodeErrorMessage = document.getElementById('nodeErrorMessage'); // New
         const dataCards = document.getElementById('dataCards');
         const userUsageLists = document.getElementById('userUsageLists'); 
         const topUsersList = document.getElementById('topUsersList');     
@@ -612,21 +690,25 @@
         const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
         const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
 
+        // Node monitoring elements
+        const nodesContainer = document.getElementById('nodesContainer'); // New
+
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        let currentSelectedUser = null; // To store the username of the clicked user for action
+        let currentSelectedUser = null; 
 
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
         const translations = {
             fa: {
-                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
+                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان - پیشنمایش مانیتورینگ سرور', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
                 usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
                 fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
+                nodeErrorMessage: 'خطا در دریافت وضعیت سرورها. لطفا دوباره تلاش کنید.', // New
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی کاربر',
@@ -655,14 +737,26 @@
                 noUsersFound: 'کاربری یافت نشد.',
                 userActionModalTitle: 'عملیات کاربر',
                 userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
-                deactivateButton: 'خاموش کردن اشتراک'
+                deactivateButton: 'خاموش کردن اشتراک',
+                nodeMonitoringHeader: 'مانیتورینگ سرورها', // New
+                loadingNodes: 'در حال بارگذاری وضعیت سرورها...', // New
+                nodeName: 'نام سرور:', // New
+                nodeStatus: 'وضعیت:', // New
+                nodeCPU: 'CPU:', // New
+                nodeRAM: 'RAM:', // New
+                nodeTrafficIn: 'ترافیک ورودی:', // New
+                nodeTrafficOut: 'ترافیک خروجی:', // New
+                statusOnline: 'آنلاین', // New
+                statusOffline: 'آفلاین', // New
+                statusWarning: 'هشدار', // New
             },
             en: {
-                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
+                pageTitle: 'Mr. Marzban Traffic Usage Panel - Server Monitoring Preview', 
                 mainHeader: 'Your Usage Details Panel', 
                 usernameLabel: 'Enter your username to view usage details:',
                 fetchDataButton: 'Get Details',
                 errorMessage: 'Error fetching data. Please try again.',
+                nodeErrorMessage: 'Error fetching node status. Please try again.', // New
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
                 totalVolume: 'Total User Volume',
@@ -691,7 +785,18 @@
                 noUsersFound: 'No users found.',
                 userActionModalTitle: 'User Action',
                 userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
-                deactivateButton: 'Deactivate Subscription'
+                deactivateButton: 'Deactivate Subscription',
+                nodeMonitoringHeader: 'Server Monitoring', // New
+                loadingNodes: 'Loading server status...', // New
+                nodeName: 'Server Name:', // New
+                nodeStatus: 'Status:', // New
+                nodeCPU: 'CPU:', // New
+                nodeRAM: 'RAM:', // New
+                nodeTrafficIn: 'Traffic In:', // New
+                nodeTrafficOut: 'Traffic Out:', // New
+                statusOnline: 'Online', // New
+                statusOffline: 'Offline', // New
+                statusWarning: 'Warning', // New
             }
         };
 
@@ -730,6 +835,7 @@
             // Trigger re-fetch for user lists if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 fetchUserLists(); 
+                fetchNodeStats(); // Re-fetch node stats on language change
             }
             // Update the user action modal message if it's visible and a user is selected
             if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
@@ -760,6 +866,7 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 fetchUserLists(); 
+                fetchNodeStats(); // Fetch node stats on dashboard load
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -820,15 +927,34 @@
             }
         });
 
-        deactivateSubscriptionButton.addEventListener('click', () => {
+        deactivateSubscriptionButton.addEventListener('click', async () => {
             if (currentSelectedUser) {
                 console.log(`Deactivating subscription for user: ${currentSelectedUser}`);
-                // TODO: Implement actual API call to deactivate subscription here
-                // Example: fetch(`${CLOUDFLARE_WORKER_URL}deactivate-user`, { method: 'POST', body: JSON.stringify({ username: currentSelectedUser, accessToken: accessToken }) })
-                // After successful deactivation, you might want to refresh the user lists.
-                alert(`اشتراک کاربر ${currentSelectedUser} غیرفعال شد. (این یک پیام آزمایشی است)`); // Temporary alert
-                hideUserActionModal();
-                fetchUserLists(); // Refresh lists after action
+                deactivateSubscriptionButton.disabled = true; // Disable button during API call
+                try {
+                    const response = await fetch(`${CLOUDFLARE_WORKER_URL}deactivate-user`, { // This endpoint needs to be added to Worker.js
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({ username: currentSelectedUser })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `Failed to deactivate user: ${response.statusText}`);
+                    }
+
+                    alert(`اشتراک کاربر ${currentSelectedUser} با موفقیت غیرفعال شد.`); 
+                    hideUserActionModal();
+                    fetchUserLists(); // Refresh lists after action
+                } catch (error) {
+                    console.error('Error deactivating user:', error);
+                    alert(`خطا در غیرفعال کردن اشتراک ${currentSelectedUser}: ${error.message}`);
+                } finally {
+                    deactivateSubscriptionButton.disabled = false; // Re-enable button
+                }
             }
         });
 
@@ -870,6 +996,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
+                fetchNodeStats(); // Fetch node stats after successful login
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -923,7 +1050,7 @@
                     data.top_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
-                        div.setAttribute('data-username', user.username); // Store username for click handler
+                        div.setAttribute('data-username', user.username); 
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
@@ -940,7 +1067,7 @@
                     data.least_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 
-                        div.setAttribute('data-username', user.username); // Store username for click handler
+                        div.setAttribute('data-username', user.username); 
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>
@@ -962,6 +1089,77 @@
                 userUsageLists.classList.remove('hidden'); 
             }
         }
+
+        // --- Fetch Node Stats ---
+        async function fetchNodeStats() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch node stats.");
+                nodesContainer.innerHTML = `<div class="card flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage}</p></div>`;
+                nodeErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            nodesContainer.innerHTML = `<div class="card flex items-center justify-center p-8"><p class="text-secondary" data-key="loadingNodes">${translations[currentLanguage].loadingNodes}</p></div>`;
+            nodeErrorMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}node-stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.error("Unauthorized: Access token might be expired or invalid for node stats. Please log in again.");
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
+                        loginErrorMessage.classList.remove('hidden');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch node stats: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("Node stats data:", data);
+
+                nodesContainer.innerHTML = ''; // Clear loading message
+
+                if (data.nodes && data.nodes.length > 0) {
+                    data.nodes.forEach(node => {
+                        const statusClass = node.status === 'online' ? 'online' : (node.status === 'offline' ? 'offline' : 'warning');
+                        const statusTextKey = `status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`;
+                        
+                        const nodeCard = document.createElement('div');
+                        nodeCard.className = 'card node-card';
+                        nodeCard.innerHTML = `
+                            <div class="node-header">
+                                <span class="node-name">${node.name}</span>
+                                <span class="node-status ${statusClass}" data-key="${statusTextKey}">${translations[currentLanguage][statusTextKey]}</span>
+                            </div>
+                            <div class="node-stats">
+                                <p><span data-key="nodeCPU">${translations[currentLanguage].nodeCPU}</span> <strong>${node.cpu_usage}%</strong></p>
+                                <p><span data-key="nodeRAM">${translations[currentLanguage].nodeRAM}</span> <strong>${node.ram_usage_percent}%</strong></p>
+                                <p><span data-key="nodeTrafficIn">${translations[currentLanguage].nodeTrafficIn}</span> <strong>${node.traffic_in_formatted}</strong></p>
+                                <p><span data-key="nodeTrafficOut">${translations[currentLanguage].nodeTrafficOut}</span> <strong>${node.traffic_out_formatted}</strong></p>
+                            </div>
+                        `;
+                        nodesContainer.appendChild(nodeCard);
+                    });
+                } else {
+                    nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="noNodesFound">${translations[currentLanguage].noNodesFound || 'هیچ سروری یافت نشد.'}</p></div>`;
+                }
+
+            } catch (error) {
+                console.error('Error fetching node stats:', error);
+                nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage.replace('{error}', error.message)}</p></div>`;
+                nodeErrorMessage.classList.remove('hidden');
+            }
+        }
+
 
         // Function to fetch and display user data
         async function fetchUserData(username) {

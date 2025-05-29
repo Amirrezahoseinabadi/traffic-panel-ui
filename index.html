@@ -32,6 +32,8 @@
             --user-list-item-hover-bg: rgba(255, 255, 255, 0.05); 
             --top-user-color: #4CAF50; 
             --least-user-color: #FFC107; 
+            --deactivate-button-bg: #dc2626; /* Red for deactivation */
+            --deactivate-button-hover-bg: #b91c1c;
         }
 
         /* Light mode theme variables */
@@ -59,6 +61,8 @@
             --user-list-item-hover-bg: rgba(0, 0, 0, 0.03);
             --top-user-color: #28a745; 
             --least-user-color: #ffc107;
+            --deactivate-button-bg: #ef4444;
+            --deactivate-button-hover-bg: #dc2626;
         }
 
         /* Base body styles */
@@ -290,6 +294,7 @@
             margin-bottom: 0; 
             font-size: 0.95rem;
             transition: background-color 0.2s ease;
+            cursor: pointer; /* Indicate clickable */
         }
         .user-list-item:last-child {
             border-bottom: none; 
@@ -332,6 +337,57 @@
         }
         #userUsageLists h2 span {
             margin-right: 0.5rem; 
+        }
+
+        /* Small modal for user actions */
+        .small-modal-content {
+            background-color: var(--modal-bg);
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 350px; /* Smaller max-width */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal-overlay.show .small-modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .small-modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        .small-modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        .deactivate-button {
+            background-color: var(--deactivate-button-bg);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            width: 100%;
+        }
+        .deactivate-button:hover {
+            background-color: var(--deactivate-button-hover-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        .deactivate-button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
         }
 
 
@@ -388,6 +444,20 @@
              .user-list-item {
                 padding: 0.6rem 0.8rem;
                 font-size: 0.85rem;
+             }
+             .small-modal-content {
+                padding: 1rem;
+                max-width: 95%;
+             }
+             .small-modal-content h3 {
+                font-size: 1.1rem;
+             }
+             .small-modal-content p {
+                font-size: 0.9rem;
+             }
+             .deactivate-button {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.9rem;
              }
         }
     </style>
@@ -493,8 +563,17 @@
 
     <div id="supportModal" class="modal-overlay hidden">
         <div class="modal-content">
-            <button id="closeModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
+        </div>
+    </div>
+
+    <div id="userActionModal" class="modal-overlay hidden">
+        <div class="small-modal-content">
+            <button id="closeUserActionModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <h3 data-key="userActionModalTitle">عملیات کاربر</h3>
+            <p data-key="userActionModalMessage">آیا از غیرفعال کردن اشتراک <span id="selectedUsernameForAction" class="font-bold text-accent-blue"></span> مطمئن هستید؟</p>
+            <button id="deactivateSubscriptionButton" class="deactivate-button" data-key="deactivateButton">خاموش کردن اشتراک</button>
         </div>
     </div>
 
@@ -506,7 +585,7 @@
         const languageSelector = document.getElementById('languageSelector');
         const supportButton = document.getElementById('supportButton'); 
         const supportModal = document.getElementById('supportModal');
-        const closeModalButton = document.getElementById('closeModalButton');
+        const closeSupportModalButton = document.getElementById('closeSupportModalButton'); // Renamed for clarity
         const goftinoIframe = document.getElementById('goftinoIframe');
 
         const loginForm = document.getElementById('loginForm');
@@ -527,10 +606,17 @@
         const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
+        // New modal elements
+        const userActionModal = document.getElementById('userActionModal');
+        const closeUserActionModalButton = document.getElementById('closeUserActionModalButton');
+        const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
+        const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
+
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
+        let currentSelectedUser = null; // To store the username of the clicked user for action
 
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
@@ -566,7 +652,10 @@
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
                 topUsersHeader: 'کاربران پرمصرف', 
                 leastUsersHeader: 'کاربران کم‌مصرف', 
-                noUsersFound: 'کاربری یافت نشد.'
+                noUsersFound: 'کاربری یافت نشد.',
+                userActionModalTitle: 'عملیات کاربر',
+                userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
+                deactivateButton: 'خاموش کردن اشتراک'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -599,7 +688,10 @@
                 loginErrorMessage: 'Incorrect username or password.',
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
-                noUsersFound: 'No users found.'
+                noUsersFound: 'No users found.',
+                userActionModalTitle: 'User Action',
+                userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
+                deactivateButton: 'Deactivate Subscription'
             }
         };
 
@@ -612,8 +704,12 @@
                         element.title = currentTrans.themeToggleTitle;
                     } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
                         element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'closeModalButton') {
+                    } else if (element.tagName === 'BUTTON' && (element.id === 'closeSupportModalButton' || element.id === 'closeUserActionModalButton')) {
                         element.title = currentTrans.closeButtonTitle;
+                    }
+                    else if (element.id === 'selectedUsernameForAction') {
+                        // This span's content is set dynamically, so we don't change its textContent here.
+                        // Its parent <p> will handle the message.
                     }
                     else {
                         element.textContent = currentTrans[key];
@@ -634,6 +730,12 @@
             // Trigger re-fetch for user lists if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 fetchUserLists(); 
+            }
+            // Update the user action modal message if it's visible and a user is selected
+            if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
+                selectedUsernameForAction.textContent = currentSelectedUser;
+                userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
+                    currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
             }
         }
 
@@ -681,7 +783,7 @@
             goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
         });
 
-        closeModalButton.addEventListener('click', () => {
+        closeSupportModalButton.addEventListener('click', () => {
             supportModal.classList.remove('show');
             supportModal.classList.add('hidden');
             goftinoIframe.src = ''; 
@@ -694,6 +796,42 @@
                 goftinoIframe.src = ''; 
             }
         });
+
+        // --- New User Action Modal Logic ---
+        function showUserActionModal(username) {
+            currentSelectedUser = username;
+            selectedUsernameForAction.textContent = username;
+            userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
+                translations[currentLanguage].userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${username}</span>`);
+            userActionModal.classList.remove('hidden');
+            userActionModal.classList.add('show');
+        }
+
+        function hideUserActionModal() {
+            userActionModal.classList.remove('show');
+            userActionModal.classList.add('hidden');
+            currentSelectedUser = null;
+        }
+
+        closeUserActionModalButton.addEventListener('click', hideUserActionModal);
+        userActionModal.addEventListener('click', (event) => {
+            if (event.target === userActionModal) {
+                hideUserActionModal();
+            }
+        });
+
+        deactivateSubscriptionButton.addEventListener('click', () => {
+            if (currentSelectedUser) {
+                console.log(`Deactivating subscription for user: ${currentSelectedUser}`);
+                // TODO: Implement actual API call to deactivate subscription here
+                // Example: fetch(`${CLOUDFLARE_WORKER_URL}deactivate-user`, { method: 'POST', body: JSON.stringify({ username: currentSelectedUser, accessToken: accessToken }) })
+                // After successful deactivation, you might want to refresh the user lists.
+                alert(`اشتراک کاربر ${currentSelectedUser} غیرفعال شد. (این یک پیام آزمایشی است)`); // Temporary alert
+                hideUserActionModal();
+                fetchUserLists(); // Refresh lists after action
+            }
+        });
+
 
         // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
@@ -747,8 +885,8 @@
         async function fetchUserLists() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch user lists.");
-                topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
+                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 userUsageLists.classList.remove('hidden'); 
                 return;
             }
@@ -785,30 +923,34 @@
                     data.top_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
+                        div.setAttribute('data-username', user.username); // Store username for click handler
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
                             <span>${user.used_traffic_formatted}</span>
                         `;
+                        div.addEventListener('click', () => showUserActionModal(user.username));
                         topUsersList.appendChild(div);
                     });
                 } else {
-                    topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
+                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 }
 
                 if (data.least_users && data.least_users.length > 0) {
                     data.least_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 
+                        div.setAttribute('data-username', user.username); // Store username for click handler
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>
                             <span>${user.used_traffic_formatted}</span>
                         `;
+                        div.addEventListener('click', () => showUserActionModal(user.username));
                         leastUsersList.appendChild(div);
                     });
                 } else {
-                    leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
+                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 }
 
                 userUsageLists.classList.remove('hidden');

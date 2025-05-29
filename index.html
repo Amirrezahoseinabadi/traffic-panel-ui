@@ -29,6 +29,11 @@
             --footer-text-color: #6b7280;
             --modal-overlay-bg: rgba(0, 0, 0, 0.7);
             --modal-bg: #1a222c;
+            /* New colors for user list items */
+            --user-list-item-bg: #222b36; /* Darker than card, lighter than primary */
+            --user-list-item-hover-bg: #2b3543;
+            --top-user-color: #66bb6a; /* Greenish */
+            --least-user-color: #fdd835; /* Yellowish */
         }
 
         body.light-mode {
@@ -52,6 +57,11 @@
             --footer-text-color: #9ca3af;
             --modal-overlay-bg: rgba(0, 0, 0, 0.5);
             --modal-bg: #ffffff;
+            /* New colors for user list items - Light mode */
+            --user-list-item-bg: #f9fafb; 
+            --user-list-item-hover-bg: #f1f3f6;
+            --top-user-color: #28a745; /* Darker green */
+            --least-user-color: #ffc107; /* Darker yellow */
         }
 
         body {
@@ -176,14 +186,19 @@
             line-height: 1.2;
             margin-top: 0;
         }
-        /* Adjusted colors for user-specific data */
-        #total2, #usage { /* Assuming these are for individual user's total and consumed */
+        #total2, #usage { 
             color: var(--accent-green);
         }
-        #baghi { /* Assuming this is for individual user's remaining */
+        #baghi { 
             color: var(--accent-yellow);
         }
-        /* Admin specific colors removed as these elements are hidden */
+        /* Admin specific colors (related to removed elements) */
+        #adminTotalVolume, #adminConsumed {
+            color: var(--accent-green);
+        }
+        #adminRemaining {
+            color: var(--accent-yellow);
+        }
 
         #errorMessage, #loginErrorMessage {
             color: var(--error-red);
@@ -224,7 +239,7 @@
         .time-range-button.active:hover {
             background-color: var(--accent-blue-hover);
         }
-        #date3, #adminCreationDateValue { /* adminCreationDateValue is now unused */
+        #date3, #adminCreationDateValue { 
             font-size: 1.25rem;
             line-height: 1.4;
             margin-top: 0.5rem;
@@ -297,6 +312,49 @@
             border: none;
         }
 
+        /* NEW STYLES FOR USER LISTS */
+        .user-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--user-list-item-bg);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+        .user-list-item:last-child {
+            margin-bottom: 0;
+        }
+        .user-list-item:hover {
+            background-color: var(--user-list-item-hover-bg);
+        }
+        .user-list-item span:first-child { /* Username */
+            font-weight: 500;
+            color: var(--text-primary);
+            flex-grow: 1; /* Allows username to take available space */
+        }
+        .user-list-item span:last-child { /* Traffic */
+            font-weight: 600;
+            color: var(--text-primary); /* Default for traffic amount */
+            margin-left: 1rem; /* Space between username and traffic */
+            text-align: left; /* Align numbers */
+            min-width: 90px; /* Ensure space for traffic value */
+        }
+        .user-list-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem; /* Space between icon and username */
+        }
+        /* Specific colors for top/least user items */
+        .top-user-item .user-list-icon {
+            color: var(--top-user-color);
+        }
+        .least-user-item .user-list-icon {
+            color: var(--least-user-color);
+        }
+
 
         @media (max-width: 640px) {
             .card {
@@ -361,6 +419,10 @@
                 height: 2rem;
                 font-size: 1rem;
             }
+             .user-list-item {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+             }
         }
     </style>
 </head>
@@ -432,7 +494,8 @@
                 </div>
             </div>
 
-            <div id="chartContainer" class="chart-container hidden mx-auto mb-10"> <div class="flex justify-between items-center mb-5 flex-wrap">
+            <div id="chartContainer" class="chart-container hidden mx-auto mb-10">
+                <div class="flex justify-between items-center mb-5 flex-wrap">
                     <div>
                         <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک کاربر</h2>
                         <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی</p>
@@ -452,14 +515,24 @@
 
             <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
                 <div class="card">
-                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="topUsersHeader">۵ کاربر پرمصرف</h2>
-                    <ul id="topUsersList" class="list-disc pr-5 text-gray-300">
-                        </ul>
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/>
+                        </svg>
+                        <span data-key="topUsersHeader">۵ کاربر پرمصرف</span>
+                    </h2>
+                    <div id="topUsersList" class="space-y-2">
+                        </div>
                 </div>
                 <div class="card">
-                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="leastUsersHeader">۵ کاربر کم‌مصرف</h2>
-                    <ul id="leastUsersList" class="list-disc pr-5 text-gray-300">
-                        </ul>
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
+                        </svg>
+                        <span data-key="leastUsersHeader">۵ کاربر کم‌مصرف</span>
+                    </h2>
+                    <div id="leastUsersList" class="space-y-2">
+                        </div>
                 </div>
             </div>
 
@@ -495,7 +568,6 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
-        // Elements for individual user lookup
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const individualUserLookup = document.getElementById('individualUserLookup'); 
@@ -509,7 +581,7 @@
         const leastUsersList = document.getElementById('leastUsersList'); 
 
         let trafficChart;
-        let currentTrafficData = {}; // Stores data for the individual user chart
+        let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
@@ -549,12 +621,6 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                // Admin stats translations are now unused but kept for completeness in translations object
-                adminTotalVolume: 'حجم کلی پنل',
-                adminConsumed: 'مصرفی پنل',
-                adminRemaining: 'باقیمانده پنل',
-                adminCreationDate: 'تاریخ ساخت ادمین',
-                adminDaysPassed: 'مدت زمان ساخت ادمین',
                 topUsersHeader: '۵ کاربر پرمصرف',
                 leastUsersHeader: '۵ کاربر کم‌مصرف',
                 noUsersFound: 'کاربری یافت نشد.'
@@ -591,11 +657,6 @@
                 loginPasswordLabel: 'Admin Password:',
                 loginButton: 'Login',
                 loginErrorMessage: 'Incorrect username or password.',
-                adminTotalVolume: 'Panel Total Volume',
-                adminConsumed: 'Panel Consumed',
-                adminRemaining: 'Panel Remaining',
-                adminCreationDate: 'Admin Creation Date',
-                adminDaysPassed: 'Admin Days Passed',
                 topUsersHeader: 'Top 5 Consuming Users',
                 leastUsersHeader: 'Least 5 Consuming Users',
                 noUsersFound: 'No users found.'
@@ -620,8 +681,7 @@
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
-            // Ensure usernameInput.placeholder is updated
-            if (usernameInput) { // Check if element exists (as it's in dashboardContent)
+            if (usernameInput) { 
                 usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
             }
             loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
@@ -633,6 +693,10 @@
 
             if (trafficChart && Object.keys(currentTrafficData).length > 0) {
                 updateUI(currentTrafficData);
+            }
+            // Re-render user lists with new translation for headers
+            if (accessToken) { // Only if logged in
+                fetchUserLists();
             }
         }
 
@@ -656,8 +720,8 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                // Removed fetchAdminStats() call as admin stats cards are removed
-                fetchUserLists(); // Still fetch top/least users
+                // fetchAdminStats() call removed as admin stats cards are removed
+                fetchUserLists(); 
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -731,8 +795,8 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                // Removed fetchAdminStats() as admin stats cards are removed
-                await fetchUserLists(); // Still fetch top/least users
+                // fetchAdminStats() call removed
+                await fetchUserLists(); 
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -744,23 +808,22 @@
             }
         });
 
-        // --- fetchAdminStats() is now unused as admin stats cards are removed ---
-        // You can remove this function entirely if you are sure you no longer need admin panel stats.
-        // If you might re-add them later, keep it but it won't be called from initializePreferences or loginButton.
+        // fetchAdminStats() is now commented out or can be removed as its associated elements are removed.
+        // If you were relying on it for other hidden logic, keep the function definition, but it won't be called on UI load.
+        // This function would be responsible for fetching data for `adminTotalVolume`, etc.
+        // As per the request, those elements are removed, so this function is not directly needed for UI population anymore.
+        /*
         async function fetchAdminStats() {
-            // This function is no longer called in the current layout per user's request.
-            // Its previous purpose was to populate the admin specific cards, which are now removed from HTML.
-            console.log("fetchAdminStats() would have been called, but admin stats elements are removed.");
-            // If you still need this data for other purposes (e.g., internal logic), keep the function.
-            // But the UI will no longer display it.
+            // ... (Your previous fetchAdminStats implementation) ...
         }
+        */
 
         // --- Fetch Top/Least Consuming Users ---
         async function fetchUserLists() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch user lists.");
-                topUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
-                leastUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
                 userUsageLists.classList.remove('hidden'); 
                 return;
             }
@@ -795,30 +858,40 @@
 
                 if (data.top_users && data.top_users.length > 0) {
                     data.top_users.forEach(user => {
-                        const li = document.createElement('li');
-                        li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
-                        topUsersList.appendChild(li);
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item top-user-item'; // Added class for specific styling
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${user.used_traffic_formatted}</span>
+                        `;
+                        topUsersList.appendChild(div);
                     });
                 } else {
-                    topUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                    topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
                 }
 
                 if (data.least_users && data.least_users.length > 0) {
                     data.least_users.forEach(user => {
-                        const li = document.createElement('li');
-                        li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
-                        leastUsersList.appendChild(li);
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item least-user-item'; // Added class for specific styling
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${user.used_traffic_formatted}</span>
+                        `;
+                        leastUsersList.appendChild(div);
                     });
                 } else {
-                    leastUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                    leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
                 }
 
                 userUsageLists.classList.remove('hidden');
 
             } catch (error) {
                 console.error('Error fetching user lists:', error);
-                topUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
-                leastUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
+                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
                 userUsageLists.classList.remove('hidden'); 
             }
         }
@@ -838,7 +911,6 @@
             chartContainer.classList.add('hidden');
 
             try {
-                // The worker route for individual user data
                 const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
                 console.log('Fetching data for individual user from:', fetchUrl);
 
@@ -883,7 +955,6 @@
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
-            // These are for individual user data
             document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
             document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
             document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
@@ -924,7 +995,6 @@
 
             document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
 
-            // Chart data preparation
             const usageValue = parseFloat(data.usage); 
             let usageUnit = '';
             if (data.usage && typeof data.usage === 'string') {

@@ -285,6 +285,9 @@
             border: 1px solid var(--border-color);
         }
         .modal-close-button {
+            position: absolute; /* Keep absolute for positioning */
+            top: 1rem;
+            left: 1rem; /* Adjusted for RTL to be top-left */
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -292,6 +295,12 @@
             height: 2.8rem;
             font-size: 1.35rem; /* Larger X icon */
             border-radius: 50%; /* Perfect circle */
+            display: flex; /* Ensure flex for centering X */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.2s ease; /* Smooth transition */
         }
         .modal-close-button:hover {
             background-color: var(--button-hover-bg-general);
@@ -392,6 +401,14 @@
             .deactivate-button {
                 padding: 0.8rem 1.5rem;
                 font-size: 1rem;
+            }
+            /* Adjust icon alignment on small screens */
+            .flex.justify-end.items-center.gap-4.mb-8 {
+                justify-content: space-around; /* Distribute items more evenly */
+                gap: 0.5rem; /* Reduce gap */
+            }
+            .flex.justify-end.items-center.gap-4.mb-8 .relative {
+                order: -1; /* Move language selector to the beginning visually */
             }
         }
     </style>
@@ -644,6 +661,402 @@
                 predictionMessageDepleted: 'Data depleted.' 
             }
         };
+
+        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
+        function convertTrafficToMB(trafficString) {
+            const currentTrans = translations[currentLanguage]; // Get current translations
+            if (!trafficString || trafficString === currentTrans.unknown) return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
+
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            const KB_TO_MB = 1 / 1024;
+            const GB_TO_MB = 1024;
+            const TB_TO_MB = 1024 * 1024;
+
+            // Map Persian units to English for internal consistency in switch
+            const persianUnitMap = {
+                'بایت': 'bytes',
+                'کیلوبایت': 'kb',
+                'مگابایت': 'mb',
+                'گیگابایت': 'gb',
+                'ترابایت': 'tb'
+            };
+            const normalizedUnit = persianUnitMap[unit] || unit;
+
+            switch (normalizedUnit) {
+                case 'bytes':
+                    return value / (1024 * 1024);
+                case 'kb':
+                    return value * KB_TO_MB;
+                case 'mb':
+                    return value;
+                case 'gb':
+                    return value * GB_TO_MB;
+                case 'tb':
+                    return value * TB_TO_MB;
+                default:
+                    return 0;
+            }
+        }
+
+        function applyTranslations(lang) {
+            const currentTrans = translations[lang];
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (currentTrans[key]) {
+                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
+                        element.title = currentTrans.themeToggleTitle;
+                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
+                        element.title = currentTrans.supportButtonTitle;
+                    } else if (element.tagName === 'BUTTON' && (element.id === 'closeSupportModalButton' || element.id === 'closeUserActionModalButton')) {
+                        element.title = currentTrans.closeButtonTitle;
+                    }
+                    else if (element.id === 'selectedUsernameForAction') {
+                        // This span's content is set dynamically, so we don't change its textContent here.
+                        // Its parent <p> will handle the message.
+                    }
+                    else {
+                        element.textContent = currentTrans[key];
+                    }
+                }
+            });
+            document.querySelector('title').textContent = currentTrans.pageTitle;
+            if (usernameInput) { 
+                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            }
+            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
+            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
+            
+            htmlElement.setAttribute('lang', lang);
+            htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+            bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+
+            // Trigger re-fetch for user lists if language changes while dashboard is visible
+            if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
+                fetchUserLists(); 
+            }
+            // Update the user action modal message if it's visible and a user is selected
+            if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
+                selectedUsernameForAction.textContent = currentSelectedUser;
+                userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
+                    currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
+            }
+            // Re-update prediction if data is loaded
+            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
+                updateUI(currentTrafficData);
+            }
+        }
+
+        function setTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-mode');
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
+            } else {
+                bodyElement.classList.remove('light-mode');
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
+            }
+            localStorage.setItem('theme', theme);
+            currentTheme = theme;
+        }
+
+        function initializePreferences() {
+            setTheme(currentTheme);
+            languageSelector.value = currentLanguage;
+            applyTranslations(currentLanguage);
+
+            if (accessToken) {
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                fetchUserLists(); 
+            } else {
+                loginForm.classList.remove('hidden');
+                dashboardContent.classList.add('hidden');
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        languageSelector.addEventListener('change', (event) => {
+            currentLanguage = event.target.value;
+            localStorage.setItem('language', currentLanguage);
+            applyTranslations(currentLanguage);
+        });
+
+        supportButton.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+            supportModal.classList.add('show');
+            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
+        });
+
+        closeSupportModalButton.addEventListener('click', () => {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            goftinoIframe.src = ''; 
+        });
+
+        supportModal.addEventListener('click', (event) => {
+            if (event.target === supportModal) {
+                hideSupportModal(); // Call a dedicated function for consistency
+            }
+        });
+
+        // Helper to hide support modal
+        function hideSupportModal() {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            goftinoIframe.src = '';
+        }
+
+        // --- New User Action Modal Logic ---
+        function showUserActionModal(username) {
+            currentSelectedUser = username;
+            selectedUsernameForAction.textContent = username;
+            userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
+                translations[currentLanguage].userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${username}</span>`);
+            userActionModal.classList.remove('hidden');
+            userActionModal.classList.add('show');
+        }
+
+        function hideUserActionModal() {
+            userActionModal.classList.remove('show');
+            userActionModal.classList.add('hidden');
+            currentSelectedUser = null;
+        }
+
+        closeUserActionModalButton.addEventListener('click', hideUserActionModal);
+        userActionModal.addEventListener('click', (event) => {
+            if (event.target === userActionModal) {
+                hideUserActionModal();
+            }
+        });
+
+        deactivateSubscriptionButton.addEventListener('click', async () => {
+            if (currentSelectedUser) {
+                console.log(`Deactivating subscription for user: ${currentSelectedUser}`);
+                deactivateSubscriptionButton.disabled = true; // Disable button during API call
+                try {
+                    const response = await fetch(`${CLOUDFLARE_WORKER_URL}deactivate-user`, { // This endpoint needs to be added to Worker.js
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({ username: currentSelectedUser })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `Failed to deactivate user: ${response.statusText}`);
+                    }
+
+                    alert(`اشتراک کاربر ${currentSelectedUser} با موفقیت غیرفعال شد.`); 
+                    hideUserActionModal();
+                    fetchUserLists(); // Refresh lists after action
+                } catch (error) {
+                    console.error('Error deactivating user:', error);
+                    alert(`خطا در غیرفعال کردن اشتراک ${currentSelectedUser}: ${error.message}`);
+                } finally {
+                    deactivateSubscriptionButton.disabled = false; // Re-enable button
+                }
+            }
+        });
+
+
+        // --- Login Logic ---
+        loginButton.addEventListener('click', async () => {
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+
+            if (!username || !password) {
+                loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                loginErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginErrorMessage.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden'); 
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
+                }
+
+                const data = await response.json();
+                accessToken = data.access_token;
+                localStorage.setItem('marzban_access_token', accessToken);
+
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                
+                fetchUserLists(); 
+
+            } catch (error) {
+                console.error('Login error:', error);
+                loginErrorMessage.textContent = error.message;
+                loginErrorMessage.classList.remove('hidden');
+            } finally {
+                loginButton.disabled = false;
+                loadingIndicator.classList.add('hidden'); 
+            }
+        });
+
+        // --- Fetch Top/Least Consuming Users ---
+        async function fetchUserLists() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch user lists.");
+                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                userUsageLists.classList.remove('hidden'); 
+                return;
+            }
+
+            topUsersList.innerHTML = ''; 
+            leastUsersList.innerHTML = '';
+            userUsageLists.classList.add('hidden'); 
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
+                        loginErrorMessage.classList.remove('hidden');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("User summary data:", data);
+
+                if (data.top_users && data.top_users.length > 0) {
+                    data.top_users.slice(0, 10).forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item top-user-item'; 
+                        div.setAttribute('data-username', user.username); 
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${user.used_traffic_formatted}</span>
+                        `;
+                        div.addEventListener('click', () => showUserActionModal(user.username));
+                        topUsersList.appendChild(div);
+                    });
+                } else {
+                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                }
+
+                if (data.least_users && data.least_users.length > 0) {
+                    data.least_users.slice(0, 10).forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item least-user-item'; 
+                        div.setAttribute('data-username', user.username); 
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${user.used_traffic_formatted}</span>
+                        `;
+                        div.addEventListener('click', () => showUserActionModal(user.username));
+                        leastUsersList.appendChild(div);
+                    });
+                } else {
+                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                }
+
+                userUsageLists.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error fetching user lists:', error);
+                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                userUsageLists.classList.remove('hidden'); 
+            }
+        }
+
+        // Function to fetch and display user data
+        async function fetchUserData(username) {
+            if (!username) return;
+
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            dataCards.classList.add('hidden');
+
+            try {
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
+                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
+
+                const response = await fetch(fetchUrl);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
+                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
+                    } else if (data.auth_error) { 
+                        errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                    }
+                    else {
+                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
+                    }
+                    errorMessage.classList.remove('hidden');
+                    dataCards.classList.add('hidden');
+                    return;
+                }
+
+                currentTrafficData = data; 
+                updateUI(data); 
+                
+                dataCards.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error fetching individual user data:', error);
+                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
+                dataCards.classList.add('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // Event listener for the main fetch data button
+        fetchDataButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            fetchUserData(username);
+        });
 
         // Helper to convert formatted traffic string (e.g., "10 GB") to MB
         function convertTrafficToMB(trafficString) {

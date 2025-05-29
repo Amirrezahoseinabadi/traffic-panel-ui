@@ -34,12 +34,6 @@
             --least-user-color: #FFC107; 
             --deactivate-button-bg: #dc2626; /* Red for deactivation */
             --deactivate-button-hover-bg: #b91c1c;
-
-            /* Node Status Colors */
-            --node-status-online: #4cd137; /* Green */
-            --node-status-offline: #ef4444; /* Red */
-            --node-status-warning: #f6b93b; /* Yellow */
-            --node-status-disconnected: #888; /* Gray for disconnected */
         }
 
         /* Light mode theme variables */
@@ -69,12 +63,6 @@
             --least-user-color: #ffc107;
             --deactivate-button-bg: #ef4444;
             --deactivate-button-hover-bg: #dc2626;
-
-            /* Node Status Colors */
-            --node-status-online: #22c55e;
-            --node-status-offline: #dc2626;
-            --node-status-warning: #fbbf24;
-            --node-status-disconnected: #aaa;
         }
 
         /* Base body styles */
@@ -208,7 +196,7 @@
         }
         
         /* Error message styling */
-        #errorMessage, #loginErrorMessage, #nodeErrorMessage {
+        #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
             padding: 0.625rem 1.25rem;
@@ -341,13 +329,13 @@
         .least-user-item .user-list-icon {
             color: var(--least-user-color); 
         }
-        #userUsageLists h2, #nodeMonitoringSection h2 {
+        #userUsageLists h2 {
             display: flex;
             align-items: center;
             justify-content: flex-end; 
             margin-bottom: 1rem; 
         }
-        #userUsageLists h2 span, #nodeMonitoringSection h2 span {
+        #userUsageLists h2 span {
             margin-right: 0.5rem; 
         }
 
@@ -402,56 +390,6 @@
             transform: translateY(0);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
         }
-
-        /* Node card styling */
-        .node-card {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .node-card .node-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .node-card .node-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--accent-blue);
-        }
-        .node-card .node-status {
-            font-weight: 600;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-        }
-        .node-status.online {
-            background-color: rgba(76, 209, 55, 0.2);
-            color: var(--node-status-online);
-        }
-        .node-status.offline {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: var(--node-status-offline);
-        }
-        .node-status.warning {
-            background-color: rgba(246, 185, 59, 0.2);
-            color: var(--node-status-warning);
-        }
-        .node-status.disconnected {
-            background-color: rgba(136, 136, 136, 0.2);
-            color: var(--node-status-disconnected);
-        }
-        .node-stats p {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-        }
-        .node-stats p strong {
-            color: var(--text-primary);
-        }
-
 
         /* Responsive adjustments for smaller screens */
         @media (max-width: 640px) {
@@ -521,12 +459,6 @@
                 padding: 0.625rem 1.25rem;
                 font-size: 0.9rem;
              }
-             .node-card .node-name {
-                font-size: 1.1rem;
-             }
-             .node-stats p {
-                font-size: 0.85rem;
-             }
         }
     </style>
 </head>
@@ -570,21 +502,6 @@
             
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
-            <p id="nodeErrorMessage" class="text-red-500 text-center mt-6 hidden" data-key="nodeErrorMessage">خطا در دریافت وضعیت سرورها. لطفا دوباره تلاش کنید.</p>
-
-            <div id="nodeMonitoringSection" class="mb-10 mx-auto">
-                <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
-                    <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9l-7-7zM6 20V4h6v5h5v11H6z"/>
-                    </svg>
-                    <span data-key="nodeMonitoringHeader">مانیتورینگ سرورها</span>
-                </h2>
-                <div id="nodesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div class="card flex items-center justify-center p-8" data-key="loadingNodes">
-                        <p class="text-secondary">در حال بارگذاری وضعیت سرورها...</p>
-                    </div>
-                </div>
-            </div>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
@@ -592,7 +509,7 @@
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
             </div>
 
-            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 hidden mx-auto">
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto">
                 <div class="card">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
                     <p id="total2" class="text-3xl">...</p>
@@ -611,6 +528,10 @@
                 <div class="card col-span-full lg:col-span-1">
                     <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
                     <p id="date2" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
+                    <p id="predictionMessage" class="text-3xl">...</p>
                 </div>
             </div>
 
@@ -684,7 +605,6 @@
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
-        const nodeErrorMessage = document.getElementById('nodeErrorMessage'); // New
         const dataCards = document.getElementById('dataCards');
         const userUsageLists = document.getElementById('userUsageLists'); 
         const topUsersList = document.getElementById('topUsersList');     
@@ -696,8 +616,8 @@
         const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
         const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
 
-        // Node monitoring elements
-        const nodesContainer = document.getElementById('nodesContainer'); // New
+        // Prediction elements
+        const predictionMessage = document.getElementById('predictionMessage'); // New
 
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
@@ -715,7 +635,6 @@
                 usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
                 fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
-                nodeErrorMessage: 'خطا در دریافت وضعیت سرورها. لطفا دوباره تلاش کنید. جزئیات: {error}', 
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی کاربر',
@@ -745,19 +664,10 @@
                 userActionModalTitle: 'عملیات کاربر',
                 userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
                 deactivateButton: 'خاموش کردن اشتراک',
-                nodeMonitoringHeader: 'مانیتورینگ سرورها', 
-                loadingNodes: 'در حال بارگذاری وضعیت سرورها...', 
-                nodeName: 'نام سرور:', 
-                nodeStatus: 'وضعیت:', 
-                nodeCPU: 'CPU:', 
-                nodeRAM: 'RAM:', 
-                nodeTrafficIn: 'ترافیک ورودی:', 
-                nodeTrafficOut: 'ترافیک خروجی:', 
-                statusOnline: 'آنلاین', 
-                statusOffline: 'آفلاین', 
-                statusWarning: 'هشدار', 
-                statusDisconnected: 'قطع شده', // New translation for disconnected status
-                noNodesFound: 'هیچ سروری یافت نشد.' 
+                predictionHeader: 'پیش‌بینی اتمام حجم', // New
+                predictionMessageNoData: 'اطلاعات کافی نیست.', // New
+                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', // New
+                predictionMessageDepleted: 'حجم به اتمام رسیده.' // New
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -765,7 +675,6 @@
                 usernameLabel: 'Enter your username to view usage details:',
                 fetchDataButton: 'Get Details',
                 errorMessage: 'Error fetching data. Please try again.',
-                nodeErrorMessage: 'Error fetching node status. Please try again. Details: {error}', 
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
                 totalVolume: 'Total User Volume',
@@ -795,21 +704,46 @@
                 userActionModalTitle: 'User Action',
                 userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
                 deactivateButton: 'Deactivate Subscription',
-                nodeMonitoringHeader: 'Server Monitoring', 
-                loadingNodes: 'Loading server status...', 
-                nodeName: 'Server Name:', 
-                nodeStatus: 'Status:', 
-                nodeCPU: 'CPU:', 
-                nodeRAM: 'RAM:', 
-                nodeTrafficIn: 'Traffic In:', 
-                nodeTrafficOut: 'Traffic Out:', 
-                statusOnline: 'Online', 
-                statusOffline: 'Offline', 
-                statusWarning: 'Warning', 
-                statusDisconnected: 'Disconnected',
-                noNodesFound: 'No nodes found.' 
+                predictionHeader: 'Data Depletion Prediction', // New
+                predictionMessageNoData: 'Insufficient data.', // New
+                predictionMessageNoConsumption: 'No consumption recorded.', // New
+                predictionMessageDepleted: 'Data depleted.' // New
             }
         };
+
+        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
+        function convertTrafficToMB(trafficString) {
+            if (!trafficString || trafficString === translations[currentLanguage].unknown) return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
+
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            const KB_TO_MB = 1 / 1024;
+            const GB_TO_MB = 1024;
+            const TB_TO_MB = 1024 * 1024;
+
+            switch (unit) {
+                case 'بایت': 
+                case 'bytes':
+                    return value / (1024 * 1024);
+                case 'کیلوبایت': 
+                case 'kb':
+                    return value * KB_TO_MB;
+                case 'مگابایت': 
+                case 'mb':
+                    return value;
+                case 'گیگابایت': 
+                case 'gb':
+                    return value * GB_TO_MB;
+                case 'ترابایت': 
+                case 'tb':
+                    return value * TB_TO_MB;
+                default:
+                    return 0;
+            }
+        }
 
         function applyTranslations(lang) {
             const currentTrans = translations[lang];
@@ -846,13 +780,16 @@
             // Trigger re-fetch for user lists if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 fetchUserLists(); 
-                fetchNodeStats(); // Re-fetch node stats on language change
             }
             // Update the user action modal message if it's visible and a user is selected
             if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
                 selectedUsernameForAction.textContent = currentSelectedUser;
                 userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
                     currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
+            }
+            // Re-update prediction if data is loaded
+            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
+                updateUI(currentTrafficData);
             }
         }
 
@@ -877,7 +814,6 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 fetchUserLists(); 
-                fetchNodeStats(); // Fetch node stats on dashboard load
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -1012,7 +948,6 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
-                fetchNodeStats(); // Fetch node stats after successful login
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -1106,84 +1041,6 @@
             }
         }
 
-        // --- Fetch Node Stats ---
-        async function fetchNodeStats() {
-            if (!accessToken) {
-                console.warn("No access token available. Cannot fetch node stats.");
-                nodesContainer.innerHTML = `<div class="card flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage.replace('{error}', 'توکن احراز هویت موجود نیست.')}</p></div>`;
-                nodeErrorMessage.classList.remove('hidden');
-                return;
-            }
-
-            nodesContainer.innerHTML = `<div class="card flex items-center justify-center p-8"><p class="text-secondary" data-key="loadingNodes">${translations[currentLanguage].loadingNodes}</p></div>`;
-            nodeErrorMessage.classList.add('hidden');
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}node-stats`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json(); 
-                    const errorMessageText = errorData.error || `Failed to fetch node stats: ${response.statusText}`;
-                    console.error("Error fetching node stats:", errorMessageText);
-                    
-                    if (response.status === 401) {
-                        console.error("Unauthorized: Access token might be expired or invalid for node stats. Please log in again.");
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
-                        loginErrorMessage.classList.remove('hidden');
-                    }
-                    nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage.replace('{error}', errorMessageText)}</p></div>`;
-                    nodeErrorMessage.classList.remove('hidden'); 
-                    return; 
-                }
-
-                const data = await response.json();
-                console.log("Node stats data:", data);
-
-                nodesContainer.innerHTML = ''; // Clear loading message
-
-                if (data.nodes && data.nodes.length > 0) {
-                    data.nodes.forEach(node => {
-                        const statusClass = node.status === 'online' ? 'online' : 
-                                            (node.status === 'offline' ? 'offline' : 
-                                            (node.status === 'disconnected' ? 'disconnected' : 'warning')); // Added 'disconnected'
-                        const statusTextKey = `status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`;
-                        
-                        const nodeCard = document.createElement('div');
-                        nodeCard.className = 'card node-card';
-                        nodeCard.innerHTML = `
-                            <div class="node-header">
-                                <span class="node-name">${node.name}</span>
-                                <span class="node-status ${statusClass}" data-key="${statusTextKey}">${translations[currentLanguage][statusTextKey] || node.status}</span>
-                            </div>
-                            <div class="node-stats">
-                                <p><span data-key="nodeCPU">${translations[currentLanguage].nodeCPU}</span> <strong>${node.cpu_usage}%</strong></p>
-                                <p><span data-key="nodeRAM">${translations[currentLanguage].nodeRAM}</span> <strong>${node.ram_usage_percent}%</strong></p>
-                                <p><span data-key="nodeTrafficIn">${translations[currentLanguage].nodeTrafficIn}</span> <strong>${node.traffic_in_formatted}</strong></p>
-                                <p><span data-key="nodeTrafficOut">${translations[currentLanguage].nodeTrafficOut}</span> <strong>${node.traffic_out_formatted}</strong></p>
-                            </div>
-                        `;
-                        nodesContainer.appendChild(nodeCard);
-                    });
-                } else {
-                    nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="noNodesFound">${translations[currentLanguage].noNodesFound}</p></div>`;
-                }
-
-            } catch (error) {
-                console.error('Error fetching node stats:', error);
-                nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage.replace('{error}', error.message)}</p></div>`;
-                nodeErrorMessage.classList.remove('hidden');
-            }
-        }
-
-
         // Function to fetch and display user data
         async function fetchUserData(username) {
             if (!username) return;
@@ -1244,7 +1101,47 @@
             fetchUserData(username);
         });
 
-        // Function to update UI elements (no chart logic)
+        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
+        function convertTrafficToMB(trafficString) {
+            const currentTrans = translations[currentLanguage]; // Get current translations
+            if (!trafficString || trafficString === currentTrans.unknown) return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
+
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            const KB_TO_MB = 1 / 1024;
+            const GB_TO_MB = 1024;
+            const TB_TO_MB = 1024 * 1024;
+
+            // Map Persian units to English for internal consistency in switch
+            const persianUnitMap = {
+                'بایت': 'bytes',
+                'کیلوبایت': 'kb',
+                'مگابایت': 'mb',
+                'گیگابایت': 'gb',
+                'ترابایت': 'tb'
+            };
+            const normalizedUnit = persianUnitMap[unit] || unit;
+
+            switch (normalizedUnit) {
+                case 'bytes':
+                    return value / (1024 * 1024);
+                case 'kb':
+                    return value * KB_TO_MB;
+                case 'mb':
+                    return value;
+                case 'gb':
+                    return value * GB_TO_MB;
+                case 'tb':
+                    return value * TB_TO_MB;
+                default:
+                    return 0;
+            }
+        }
+
+        // Function to update UI elements (including prediction)
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
@@ -1280,6 +1177,32 @@
             }
 
             document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
+
+            // Prediction Logic
+            const totalVolumeMB = convertTrafficToMB(data.total2);
+            const usedVolumeMB = convertTrafficToMB(data.usage);
+            const daysPassed = parseFloat(data.date2); // data.date2 contains the number of days passed
+
+            if (daysPassed > 0 && usedVolumeMB > 0) {
+                const dailyAverageMB = usedVolumeMB / daysPassed;
+                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
+
+                if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
+                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
+                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
+                    predictionMessage.style.color = 'var(--accent-blue)'; 
+                } else if (remainingVolumeMB <= 0) {
+                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
+                    predictionMessage.style.color = 'var(--error-red)';
+                } else {
+                    predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
+                    predictionMessage.style.color = 'var(--text-secondary)';
+                }
+            } else {
+                // No sufficient data for prediction (e.g., first day, or no usage yet)
+                predictionMessage.textContent = currentTrans.predictionMessageNoData;
+                predictionMessage.style.color = 'var(--text-secondary)';
+            }
         }
 
         window.onload = function() {

@@ -192,15 +192,7 @@
         #baghi { 
             color: var(--accent-yellow);
         }
-        /* Admin specific colors (related to removed elements) */
-        /* These are now unused due to element removal but kept for reference */
-        #adminTotalVolume, #adminConsumed {
-            color: var(--accent-green);
-        }
-        #adminRemaining {
-            color: var(--accent-yellow);
-        }
-
+        
         #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
@@ -240,7 +232,7 @@
         .time-range-button.active:hover {
             background-color: var(--accent-blue-hover);
         }
-        #date3, #adminCreationDateValue { 
+        #date3 { 
             font-size: 1.25rem;
             line-height: 1.4;
             margin-top: 0.5rem;
@@ -318,55 +310,54 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 0.5rem; /* Reduced horizontal padding slightly */
-            /* Removed background-color for individual items */
-            border-bottom: 1px solid var(--border-color); /* Add a subtle bottom border */
-            margin-bottom: 0; /* Remove margin-bottom */
+            padding: 0.75rem 0.5rem; 
+            border-bottom: 1px solid var(--border-color); 
+            margin-bottom: 0; 
             font-size: 0.95rem;
             transition: background-color 0.2s ease;
         }
         .user-list-item:last-child {
-            border-bottom: none; /* No border for the very last item */
+            border-bottom: none; 
         }
         .user-list-item:hover {
-            background-color: var(--user-list-item-hover-bg); /* Subtle hover */
+            background-color: var(--user-list-item-hover-bg); 
         }
-        .user-list-item span:first-child { /* Username */
+        .user-list-item span:first-child { 
             font-weight: 500;
             color: var(--text-primary);
             flex-grow: 1; 
-            text-align: right; /* Align username to the right for RTL */
-            padding-right: 0.5rem; /* Space before traffic value */
+            text-align: right; 
+            padding-right: 0.5rem; 
         }
-        .user-list-item span:last-child { /* Traffic */
+        .user-list-item span:last-child { 
             font-weight: 600;
             color: var(--text-primary); 
             margin-left: 0.5rem; 
-            text-align: left; /* Keep numbers aligned left */
+            text-align: left; 
             min-width: 90px; 
-            direction: ltr; /* Ensure numbers are LTR */
+            direction: ltr; 
         }
         .user-list-icon {
-            width: 1.1rem; /* Slightly smaller icon */
+            width: 1.1rem; 
             height: 1.1rem;
-            margin-left: 0.5rem; /* Adjusted margin for RTL */
-            flex-shrink: 0; /* Prevent icon from shrinking */
+            margin-left: 0.5rem; 
+            flex-shrink: 0; 
         }
         .top-user-item .user-list-icon {
-            color: var(--top-user-color); /* Greenish for top users */
+            color: var(--top-user-color); 
         }
         .least-user-item .user-list-icon {
-            color: var(--least-user-color); /* Yellowish for least users */
+            color: var(--least-user-color); 
         }
         /* Adjusted header for user lists */
         #userUsageLists h2 {
             display: flex;
             align-items: center;
-            justify-content: flex-end; /* Align title and icon to right */
-            margin-bottom: 1rem; /* Spacing below header */
+            justify-content: flex-end; 
+            margin-bottom: 1rem; 
         }
         #userUsageLists h2 span {
-            margin-right: 0.5rem; /* Space between text and icon in header */
+            margin-right: 0.5rem; 
         }
 
 
@@ -382,7 +373,7 @@
             .card p:last-child {
                 font-size: 1.75rem;
             }
-            #date3, #adminCreationDateValue {
+            #date3 {
                 font-size: 1rem;
             }
             .chart-title {
@@ -477,6 +468,7 @@
         </div>
 
         <div id="dashboardContent" class="hidden">
+            
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
@@ -535,7 +527,8 @@
                         </svg>
                         <span data-key="topUsersHeader">۵ کاربر پرمصرف</span>
                     </h2>
-                    <div id="topUsersList" class="space-y-0"> </div>
+                    <div id="topUsersList" class="space-y-0"> 
+                        </div>
                 </div>
                 <div class="card">
                     <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
@@ -634,14 +627,8 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                // Admin stats translations are now unused but kept for completeness in translations object
-                adminTotalVolume: 'حجم کلی پنل',
-                adminConsumed: 'مصرفی پنل',
-                adminRemaining: 'باقیمانده پنل',
-                adminCreationDate: 'تاریخ ساخت ادمین',
-                adminDaysPassed: 'مدت زمان ساخت ادمین',
                 topUsersHeader: '۵ کاربر پرمصرف',
-                leastUsersHeader: '۵ کاربر کم‌مصرف', // Text remains the same
+                leastUsersHeader: '۵ کاربر کم‌مصرف', 
                 noUsersFound: 'کاربری یافت نشد.'
             },
             en: {
@@ -714,7 +701,7 @@
                 updateUI(currentTrafficData);
             }
             if (accessToken) { 
-                fetchUserLists(); // Re-render user lists to apply new translations/styles
+                fetchUserLists(); 
             }
         }
 
@@ -738,7 +725,6 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                // fetchAdminStats() call removed
                 fetchUserLists(); 
             } else {
                 loginForm.classList.remove('hidden');
@@ -864,7 +850,6 @@
                 console.log("User summary data:", data);
 
                 if (data.top_users && data.top_users.length > 0) {
-                    // Display up to 10 top users
                     data.top_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
@@ -880,7 +865,6 @@
                 }
 
                 if (data.least_users && data.least_users.length > 0) {
-                    // Display up to 10 least users
                     data.least_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 

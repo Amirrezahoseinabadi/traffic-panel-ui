@@ -83,7 +83,7 @@
             height: 3rem;
             border-width: 4px;
             animation: spin 1s linear infinite;
-            margin: 2rem auto; /* Center spinner */
+            margin: 2rem auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -514,11 +514,10 @@
         const adminCreationDateValue = document.getElementById('adminCreationDateValue');
         const adminDaysPassedValue = document.getElementById('adminDaysPassedValue');
 
-        // Removed individual user search elements: usernameInput, fetchDataButton
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
-        const dataCards = document.getElementById('dataCards'); // Now always hidden unless re-purposed
-        const chartContainer = document.getElementById('chartContainer'); // Now always hidden unless re-purposed
+        const dataCards = document.getElementById('dataCards');
+        const chartContainer = document.getElementById('chartContainer');
         const userUsageLists = document.getElementById('userUsageLists');
         const topUsersList = document.getElementById('topUsersList');
         const leastUsersList = document.getElementById('leastUsersList');
@@ -536,8 +535,8 @@
             fa: {
                 pageTitle: 'پنل مصرف ترافیک مرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'نام کاربری کاربر را وارد کنید:', // Kept for consistency in translations, though UI element is removed
-                fetchDataButton: 'دریافت اطلاعات کاربر', // Kept for consistency in translations, though UI element is removed
+                usernameLabel: 'نام کاربری کاربر را وارد کنید:', 
+                fetchDataButton: 'دریافت اطلاعات کاربر', 
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
@@ -720,8 +719,9 @@
 
             loginButton.disabled = true;
             loginErrorMessage.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.classList.remove('hidden'); // Show loading indicator
 
+            console.log("Sending login request to worker...");
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
                     method: 'POST',
@@ -731,12 +731,16 @@
                     body: JSON.stringify({ username, password })
                 });
 
+                console.log("Login response received. Status:", response.status);
+
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error("Login API error details:", errorData);
                     throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
                 }
 
                 const data = await response.json();
+                console.log("Login successful. Data:", data);
                 accessToken = data.access_token;
                 adminUsername = username;
                 localStorage.setItem('marzban_access_token', accessToken);
@@ -753,7 +757,7 @@
                 loginErrorMessage.classList.remove('hidden');
             } finally {
                 loginButton.disabled = false;
-                loadingIndicator.classList.add('hidden');
+                loadingIndicator.classList.add('hidden'); // Hide loading indicator
             }
         });
 
@@ -772,6 +776,7 @@
             dataCards.classList.add('hidden');
             chartContainer.classList.add('hidden');
 
+            console.log("Fetching initial dashboard data...");
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init?admin_username=${adminUsername}`, {
                     headers: {
@@ -779,8 +784,11 @@
                     }
                 });
 
+                console.log("Dashboard init response received. Status:", response.status);
+
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error("Dashboard init API error details:", errorData);
                     if (response.status === 401) {
                         localStorage.removeItem('marzban_access_token');
                         localStorage.removeItem('marzban_admin_username');
@@ -796,7 +804,7 @@
                 }
 
                 const data = await response.json();
-                console.log("Initial Dashboard Data:", data);
+                console.log("Initial Dashboard Data successful. Data:", data);
 
                 adminTotalVolume.textContent = data.admin_total_volume || translations[currentLanguage].unknown;
                 adminConsumed.textContent = data.admin_consumed_volume || translations[currentLanguage].unknown;
@@ -836,9 +844,6 @@
                 loadingIndicator.classList.add('hidden');
             }
         }
-
-        // Removed fetchDataButton.addEventListener and updateIndividualUserDataUI as they are no longer needed
-        // The individual user data cards and chart will remain hidden.
 
         function updateChart(usageString, usageUnit) {
             const currentTrans = translations[currentLanguage];

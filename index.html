@@ -31,7 +31,8 @@
             --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            /* Removed --deactivate-button-bg and --deactivate-button-hover-bg */
+            --deactivate-button-bg: #dc2626; /* Red for deactivation */
+            --deactivate-button-hover-bg: #b91c1c;
             --prediction-color: #8B5CF6; /* A new accent color for prediction */
         }
 
@@ -58,7 +59,8 @@
             --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            /* Removed --deactivate-button-bg and --deactivate-button-hover-bg */
+            --deactivate-button-bg: #ef4444;
+            --deactivate-button-hover-bg: #b91c1c;
             --prediction-color: #7C3AED; 
         }
 
@@ -300,8 +302,8 @@
             opacity: 1;
             visibility: visible;
         }
-        /* Refined modal content styling (now applies to support modal) */
-        .modal-content {
+        /* Adjusted modal content (for support modal) */
+        .modal-content { /* Used to be .support-modal-content in previous turn, now back to .modal-content */
             background-color: var(--modal-bg);
             border-radius: 1.5rem; /* More rounded modals */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
@@ -312,10 +314,10 @@
             transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
             
             width: 90%; /* Max width for responsiveness */
-            max-width: 600px; /* Larger max-width */
-            height: 80%; /* Larger height */
-            max-height: 700px; /* Larger max-height */
-            overflow: hidden; /* Hide overflow */
+            max-width: 600px; /* Larger max-width (original large size) */
+            height: auto; /* Let content determine height, better for iframe */
+            max-height: 90vh; /* Max height to fit viewport */
+            overflow-y: auto; /* Allow scrolling if content overflows max-height */
             display: flex;
             flex-direction: column; /* Stack content */
         }
@@ -339,7 +341,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 1001; /* Ensure button is above modal content */
             transition: all 0.2s ease;
         }
         .modal-close-button:hover {
@@ -347,23 +349,6 @@
             color: var(--accent-blue);
         }
 
-        /* Responsive Adjustments for Modals */
-        @media (max-width: 640px) {
-            /* ... (سایر استایل‌های ریسپانسیو) ... */
-            .modal-content {
-                padding: 1.5rem; /* Adjusted padding for smaller screens */
-                max-width: 95%; /* Make it wider on very small screens */
-                height: 90%; /* Adjust height for small screens */
-                border-radius: 1rem;
-            }
-            .modal-close-button {
-                top: 0.75rem;
-                left: 0.75rem;
-                width: 2.25rem;
-                height: 2.25rem;
-                font-size: 1.1rem;
-            }
-        }
         /* Removed .small-modal-content and .deactivate-button styles as they are no longer used */
 
 
@@ -408,9 +393,10 @@
                 font-size: 0.8rem;
             }
             /* Support modal content on small screens */
-            .support-modal-content {
+            .modal-content { /* Applies to support modal now */
                 padding: 1.5rem;
                 max-width: 95%; /* Adjust max-width for small screens */
+                height: 90%; /* Adjust height for small screens */
                 border-radius: 1rem;
             }
             .modal-close-button {
@@ -725,10 +711,9 @@
                         element.title = currentTrans.themeToggleTitle;
                     } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
                         element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'closeSupportModalButton') { // Changed to closeSupportModalButton
+                    } else if (element.tagName === 'BUTTON' && element.id === 'closeSupportModalButton') {
                         element.title = currentTrans.closeButtonTitle;
                     }
-                    // Removed condition for selectedUsernameForAction
                     else {
                         element.textContent = currentTrans[key];
                     }
@@ -749,12 +734,6 @@
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 fetchUserLists(); 
             }
-            // Removed user action modal update
-            // if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
-            //     selectedUsernameForAction.textContent = currentSelectedUser;
-            //     userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
-            //         currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
-            // }
             // Re-update prediction if data is loaded
             if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
                 updateUI(currentTrafficData);
@@ -824,12 +803,18 @@
             goftinoIframe.src = '';
         }
 
-        // Removed User Action Modal Logic entirely
-        // function showUserActionModal(username) { ... }
-        // function hideUserActionModal() { ... }
-        // closeUserActionModalButton.addEventListener('click', hideUserActionModal);
-        // userActionModal.addEventListener('click', (event) => { ... });
-        // deactivateSubscriptionButton.addEventListener('click', async () => { ... });
+        // Removed all User Action Modal Logic
+        // This includes:
+        // - const userActionModal = document.getElementById('userActionModal');
+        // - const closeUserActionModalButton = document.getElementById('closeUserActionModalButton');
+        // - const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
+        // - const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
+        // - let currentSelectedUser = null;
+        // - showUserActionModal(username) function
+        // - hideUserActionModal() function
+        // - Event listeners on topUsersList/leastUsersList items for showUserActionModal
+        // - Event listeners on closeUserActionModalButton and userActionModal for hideUserActionModal
+        // - deactivateSubscriptionButton.addEventListener
 
 
         // --- Login Logic ---
@@ -924,7 +909,7 @@
                         div.className = 'user-list-item top-user-item'; 
                         div.setAttribute('data-username', user.username); 
                         // Removed event listener for showUserActionModal
-                        // div.addEventListener('click', () => showUserActionModal(user.username));
+                        // div.addEventListener('click', () => showUserActionModal(user.username)); // Removed this
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
@@ -942,7 +927,7 @@
                         div.className = 'user-list-item least-user-item'; 
                         div.setAttribute('data-username', user.username); 
                         // Removed event listener for showUserActionModal
-                        // div.addEventListener('click', () => showUserActionModal(user.username));
+                        // div.addEventListener('click', () => showUserActionModal(user.username)); // Removed this
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>

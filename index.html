@@ -6,7 +6,6 @@
     <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
     <style>
         :root {
             --bg-primary: #121820;
@@ -25,7 +24,6 @@
             --shadow-color-dark: rgba(0, 0, 0, 0.3);
             --shadow-color-light: rgba(0, 0, 0, 0.15);
             --border-color: #2d3748;
-            --chart-grid-color: rgba(255, 255, 255, 0.1);
             --footer-text-color: #6b7280;
             --modal-overlay-bg: rgba(0, 0, 0, 0.7);
             --modal-bg: #1a222c;
@@ -33,6 +31,18 @@
             --user-list-item-hover-bg: rgba(255, 255, 255, 0.05); 
             --top-user-color: #4CAF50; 
             --least-user-color: #FFC107; 
+
+            /* User status badge colors (main widget) */
+            --status-active-bg: #28a745; /* Green */
+            --status-disabled-bg: #6c757d; /* Gray */
+            --status-expired-bg: #dc3545; /* Red */
+            --status-online-bg: #007bff; /* Blue */
+            --status-onhold-bg: #ffc107; /* Yellow */
+
+            /* Modal list item alternating background */
+            --modal-list-odd-bg: rgba(255, 255, 255, 0.03); 
+            --modal-list-even-bg: transparent;
+            --modal-list-hover-bg: rgba(255, 255, 255, 0.08); 
         }
 
         body.light-mode {
@@ -52,7 +62,6 @@
             --shadow-color-dark: rgba(0, 0, 0, 0.1);
             --shadow-color-light: rgba(0, 0, 0, 0.05);
             --border-color: #e2e8f0;
-            --chart-grid-color: rgba(0, 0, 0, 0.1);
             --footer-text-color: #9ca3af;
             --modal-overlay-bg: rgba(0, 0, 0, 0.5);
             --modal-bg: #ffffff;
@@ -60,6 +69,18 @@
             --user-list-item-hover-bg: rgba(0, 0, 0, 0.03);
             --top-user-color: #28a745; 
             --least-user-color: #ffc107;
+
+            /* User status badge colors (main widget) - Light Mode */
+            --status-active-bg: #28a745;
+            --status-disabled-bg: #6c757d;
+            --status-expired-bg: #dc3545;
+            --status-online-bg: #007bff;
+            --status-onhold-bg: #ffc107;
+
+            /* Modal list item alternating background - Light Mode */
+            --modal-list-odd-bg: rgba(0, 0, 0, 0.02);
+            --modal-list-even-bg: transparent;
+            --modal-list-hover-bg: rgba(0, 0, 0, 0.05);
         }
 
         body {
@@ -70,14 +91,6 @@
             padding-bottom: 2.5rem;
         }
         .card {
-            background-color: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
-        .chart-container {
             background-color: var(--bg-card);
             border-radius: 1rem;
             padding: 1.5rem;
@@ -191,7 +204,7 @@
             color: var(--accent-yellow);
         }
         
-        #errorMessage, #loginErrorMessage {
+        #errorMessage, #loginErrorMessage, #userListModalError { 
             color: var(--error-red);
             font-weight: 600;
             padding: 0.625rem 1.25rem;
@@ -200,36 +213,7 @@
             border: 1px solid var(--error-red);
             font-size: 0.95rem;
         }
-        .chartjs-render-monitor {
-            background-color: transparent !important;
-        }
-        .chart-title {
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 1.5rem;
-        }
-        .chart-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .time-range-button {
-            background-color: var(--button-bg-general);
-            color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-        .time-range-button:hover {
-            background-color: var(--button-hover-bg-general);
-        }
-        .time-range-button.active {
-            background-color: var(--accent-blue);
-            color: white;
-        }
-        .time-range-button.active:hover {
-            background-color: var(--accent-blue-hover);
-        }
+        
         #date3 { 
             font-size: 1.25rem;
             line-height: 1.4;
@@ -303,6 +287,7 @@
             border: none;
         }
 
+        /* User List Item Styles */
         .user-list-item {
             display: flex;
             justify-content: space-between;
@@ -356,13 +341,140 @@
             margin-right: 0.5rem; 
         }
 
+        /* Styles for User Status Widget (smaller and more refined) */
+        .user-stats-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem; 
+        }
+        .user-stats-widget h2 {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            margin-bottom: 1rem; 
+            color: var(--text-primary);
+        }
+        .user-stats-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem; 
+            justify-content: center;
+        }
+        .user-stat-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem 0.8rem; 
+            border-radius: 9999px; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+            color: white; 
+            min-width: 60px; 
+        }
+        .user-stat-badge:hover {
+            transform: translateY(-1px); 
+            box-shadow: 0 3px 6px rgba(0,0,0,0.25); 
+        }
+        .user-stat-badge.active { background-color: var(--status-active-bg); }
+        .user-stat-badge.disabled { background-color: var(--status-disabled-bg); }
+        .user-stat-badge.expired { background-color: var(--status-expired-bg); }
+        .user-stat-badge.online { background-color: var(--status-online-bg); }
+        .user-stat-badge.on_hold { background-color: var(--status-onhold-bg); }
+
+        /* Styles for User List Modal (popup) */
+        .user-list-modal-body {
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 1rem;
+        }
+        .user-list-modal-body ul {
+            list-style: none; 
+            padding: 0;
+            margin: 0;
+        }
+        .user-list-modal-body li {
+            padding: 0.75rem 0.5rem; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+        .user-list-modal-body li:last-child {
+            border-bottom: none;
+        }
+        .user-list-modal-body li:nth-child(odd) { 
+            background-color: var(--modal-list-odd-bg);
+        }
+        .user-list-modal-body li:hover {
+            background-color: var(--modal-list-hover-bg);
+        }
+        .user-list-modal-body li span {
+            font-size: 0.95rem; 
+            color: var(--text-primary);
+        }
+        .user-list-modal-body li .user-name-link { 
+            font-weight: 500;
+            text-align: right; 
+            flex-grow: 1;
+            padding-right: 0.5rem;
+            color: var(--accent-blue); 
+            cursor: pointer;
+            text-decoration: none; 
+            transition: color 0.2s ease;
+        }
+        .user-list-modal-body li .user-name-link:hover {
+            color: var(--accent-blue-hover);
+            text-decoration: underline;
+        }
+        .user-list-modal-body li .user-status-text { 
+             font-weight: 400;
+             text-align: left; 
+             color: var(--text-secondary);
+             min-width: 70px; 
+             display: flex; 
+             align-items: center;
+             justify-content: flex-end;
+             gap: 0.3rem; 
+        }
+        .user-status-icon-modal { 
+            width: 0.9rem; 
+            height: 0.9rem;
+            flex-shrink: 0;
+        }
+        .modal-title {
+            font-size: 1.5rem; 
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-title .modal-icon { 
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.5rem; 
+            color: var(--accent-blue); 
+        }
+        /* Specific colors for modal status icons */
+        .modal-title.active .modal-icon, .user-list-modal-body .status-active .user-status-icon-modal { color: var(--status-active-bg); }
+        .modal-title.disabled .modal-icon, .user-list-modal-body .status-disabled .user-status-icon-modal { color: var(--status-disabled-bg); }
+        .modal-title.expired .modal-icon, .user-list-modal-body .status-expired .user-status-icon-modal { color: var(--status-expired-bg); }
+        .modal-title.online .modal-icon, .user-list-modal-body .status-online .user-status-icon-modal { color: var(--status-online-bg); }
+        .modal-title.on_hold .modal-icon, .user-list-modal-body .status-on_hold .user-status-icon-modal { color: var(--status-onhold-bg); }
+
 
         @media (max-width: 640px) {
             .card {
-                padding: 1rem;
-                border-radius: 0.75rem;
-            }
-            .chart-container {
                 padding: 1rem;
                 border-radius: 0.75rem;
             }
@@ -371,16 +483,6 @@
             }
             #date3 {
                 font-size: 1rem;
-            }
-            .chart-title {
-                font-size: 1.25rem;
-            }
-            .chart-subtitle {
-                font-size: 0.8rem;
-            }
-            .time-range-button {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
             }
             .main-button {
                 padding: 0.625rem 1.25rem;
@@ -424,6 +526,23 @@
                 padding: 0.6rem 0.8rem;
                 font-size: 0.85rem;
              }
+            .user-stat-badge {
+                padding: 0.4rem 0.7rem;
+                font-size: 1rem;
+                min-width: 50px;
+            }
+            .user-stats-widget h2 {
+                font-size: 1.2rem;
+            }
+            .modal-title {
+                font-size: 1.25rem;
+            }
+            .user-list-modal-body li span {
+                font-size: 0.85rem;
+            }
+            .user-list-modal-body li .user-status-text {
+                min-width: 60px; 
+            }
         }
     </style>
 </head>
@@ -468,6 +587,26 @@
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
+            <div id="userStatsWidget" class="card mb-10 mx-auto">
+                <div class="user-stats-widget">
+                    <h2 data-key="usersOverallHeader">کاربران</h2>
+                    <div class="user-stats-badges">
+                        <button class="user-stat-badge active" data-status="active">
+                            <span id="activeUsersCount">...</span>
+                        </button>
+                        <button class="user-stat-badge disabled" data-status="disabled">
+                            <span id="disabledUsersCount">...</span>
+                        </button>
+                        <button class="user-stat-badge expired" data-status="expired">
+                            <span id="expiredUsersCount">...</span>
+                        </button>
+                        <button class="user-stat-badge online" data-status="online">
+                            <span id="onlineUsersCount">...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
                 <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-6 text-center">
@@ -493,25 +632,6 @@
                 <div class="card col-span-full lg:col-span-1">
                     <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
                     <p id="date2" class="text-3xl">...</p>
-                </div>
-            </div>
-
-            <div id="chartContainer" class="chart-container hidden mx-auto mb-10">
-                <div class="flex justify-between items-center mb-5 flex-wrap">
-                    <div>
-                        <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک کاربر</h2>
-                        <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی</p>
-                    </div>
-                    <div class="flex space-x-2 mt-4 sm:mt-0" dir="ltr"> 
-                        <button class="time-range-button active" data-range="24h">24H</button>
-                        <button class="time-range-button" data-range="7d">7D</button>
-                        <button class="time-range-button" data-range="30d">30D</button>
-                        <button class="time-range-button" data-range="6m">6M</button>
-                        <button class="time-range-button" data-range="12m">12M</button>
-                    </div>
-                </div>
-                <div class="relative h-96">
-                    <canvas id="trafficChart"></canvas>
                 </div>
             </div>
 
@@ -545,6 +665,27 @@
         تمامی حقوق برای آقای مرزبان محفوظ است.
     </footer>
 
+    <div id="userListModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="closeUserListModalButton" class="modal-close-button">✖️</button>
+            <h3 id="userListModalTitle" class="modal-title">
+                <svg class="modal-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10.5 12 10.5 9.5 9.38 9.5 8 10.62 5.5 12 5.5zm0 14.2c-2.47 0-4.75-1.19-6.19-3.04.03-2.07 4.14-3.21 6.19-3.21s6.16 1.14 6.19 3.21c-1.44 1.85-3.72 3.04-6.19 3.04z"/></svg>
+                <span data-key="userListModalDefaultTitle"></span>
+            </h3>
+            <p id="userListModalError" class="text-red-500 text-center mt-4 hidden"></p>
+            <div id="userListModalBody" class="user-list-modal-body">
+                <div class="flex justify-between items-center pb-2 text-sm font-semibold text-secondary">
+                    <span class="flex-grow text-right pr-2" data-key="usernameHeader">نام کاربری</span>
+                    <span class="flex-shrink-0 text-left pl-2" data-key="statusHeader">وضعیت</span>
+                </div>
+                <ul id="userListContent">
+                    </ul>
+                <div id="userListModalLoading" class="loading-spinner hidden"></div>
+            </div>
+        </div>
+    </div>
+
+
     <div id="supportModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="closeModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
@@ -553,6 +694,7 @@
     </div>
 
     <script>
+        // DOM element references
         const htmlElement = document.documentElement;
         const bodyElement = document.body;
         const themeToggle = document.getElementById('themeToggle');
@@ -573,25 +715,40 @@
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const individualUserLookup = document.getElementById('individualUserLookup'); 
-        const timeRangeButtons = document.querySelectorAll('.time-range-button'); 
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
-        const chartContainer = document.getElementById('chartContainer');
         const userUsageLists = document.getElementById('userUsageLists'); 
         const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
-        let trafficChart;
-        let currentTrafficData = {}; 
+        // Elements for User Status Widget
+        const userStatsWidget = document.getElementById('userStatsWidget');
+        const activeUsersCountSpan = document.getElementById('activeUsersCount');
+        const disabledUsersCountSpan = document.getElementById('disabledUsersCount');
+        const expiredUsersCountSpan = document.getElementById('expiredUsersCount');
+        const onlineUsersCountSpan = document.getElementById('onlineUsersCount');
+        const userStatBadges = document.querySelectorAll('.user-stat-badge');
+
+        // Elements for User List Modal
+        const userListModal = document.getElementById('userListModal');
+        const closeUserListModalButton = document.getElementById('closeUserListModalButton');
+        const userListModalTitle = document.getElementById('userListModalTitle');
+        const userListModalError = document.getElementById('userListModalError');
+        const userListContent = document.getElementById('userListContent');
+        const userListModalLoading = document.getElementById('userListModalLoading');
+
+
+        // Global state variables
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        let currentSelectedTimeRange = '24h'; 
 
+        // !!! IMPORTANT: Replace with your Cloudflare Worker URL !!!
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
+        // Translations object
         const translations = {
             fa: {
                 pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
@@ -606,8 +763,6 @@
                 consumed: 'حجم مصرفی کاربر',
                 creationDate: 'تاریخ ساخت کاربر',
                 daysPassed: 'مدت زمان ساخت کاربر',
-                trafficChartHeader: 'نمودار مصرف ترافیک کاربر',
-                trafficChartSubtitle: 'ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی',
                 notAvailable: 'در دسترس نیست',
                 invalidDateFormat: 'فرمت تاریخ نامعتبر', 
                 daysUnit: 'روز',
@@ -625,9 +780,27 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                topUsersHeader: 'کاربران پرمصرف', // Shortened from '۵ کاربر پرمصرف'
-                leastUsersHeader: 'کاربران کم‌مصرف', // Shortened from '۵ کاربر کم‌مصرف'
-                noUsersFound: 'کاربری یافت نشد.'
+                topUsersHeader: 'کاربران پرمصرف', 
+                leastUsersHeader: 'کاربران کم‌مصرف', 
+                noUsersFound: 'کاربری یافت نشد.',
+                usersOverallHeader: 'کاربران', 
+                activeUsersCount: 'فعال',
+                disabledUsersCount: 'غیرفعال',
+                expiredUsersCount: 'منقضی',
+                onlineUsersCount: 'آنلاین',
+                userListModalDefaultTitle: 'لیست کاربران',
+                userListModalActive: 'لیست کاربران فعال',
+                userListModalDisabled: 'لیست کاربران غیرفعال',
+                userListModalExpired: 'لیست کاربران منقضی',
+                userListModalOnline: 'لیست کاربران آنلاین',
+                userListModalError: 'خطا در دریافت لیست کاربران: {error}',
+                usernameHeader: 'نام کاربری', 
+                statusHeader: 'وضعیت', 
+                status_active: 'فعال', 
+                status_disabled: 'غیرفعال',
+                status_expired: 'منقضی',
+                status_on_hold: 'در انتظار',
+                status_limited: 'محدود شده'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -642,8 +815,6 @@
                 consumed: 'Consumed User Traffic',
                 creationDate: 'User Creation Date',
                 daysPassed: 'User Days Passed',
-                trafficChartHeader: 'User Traffic Consumption Chart',
-                trafficChartSubtitle: 'Your traffic consumption based on the selected time range',
                 notAvailable: 'Not Available',
                 invalidDateFormat: 'Invalid Date Format',
                 daysUnit: 'days',
@@ -663,25 +834,39 @@
                 loginErrorMessage: 'Incorrect username or password.',
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
-                noUsersFound: 'No users found.'
+                noUsersFound: 'No users found.',
+                usersOverallHeader: 'Users',
+                activeUsersCount: 'Active',
+                disabledUsersCount: 'Disabled',
+                expiredUsersCount: 'Expired',
+                onlineUsersCount: 'Online',
+                userListModalDefaultTitle: 'User List',
+                userListModalActive: 'Active Users List',
+                userListModalDisabled: 'Disabled Users List',
+                userListModalExpired: 'Expired Users List',
+                userListModalOnline: 'Online Users List',
+                userListModalError: 'Error fetching user list: {error}',
+                usernameHeader: 'Username',
+                statusHeader: 'Status',
+                status_active: 'Active',
+                status_disabled: 'Disabled',
+                status_expired: 'Expired',
+                status_on_hold: 'On Hold',
+                status_limited: 'Limited'
             }
         };
 
+        // Function to apply translations based on current language
         function applyTranslations(lang) {
             const currentTrans = translations[lang];
             document.querySelectorAll('[data-key]').forEach(element => {
                 const key = element.getAttribute('data-key');
-                if (currentTrans[key]) {
-                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
-                        element.title = currentTrans.themeToggleTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
-                        element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'closeModalButton') {
-                        element.title = currentTrans.closeButtonTitle;
-                    }
-                    else {
-                        element.textContent = currentTrans[key];
-                    }
+                // Special handling for modal title span as it contains SVG
+                if (element.id === 'userListModalTitle') {
+                    const span = element.querySelector('span');
+                    if (span) span.textContent = currentTrans[key] || '';
+                } else {
+                    element.textContent = currentTrans[key] || '';
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
@@ -695,15 +880,19 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            // Trigger re-fetch for chart and user lists if language changes while dashboard is visible
+            // Re-fetch dashboard data (including user stats and lists) if language changes and logged in
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                if (usernameInput && usernameInput.value.trim() !== '') {
-                    fetchUserData(usernameInput.value.trim(), currentSelectedTimeRange);
+                // If a user's details are currently displayed, re-fetch them for translation update
+                if (currentTrafficData && currentTrafficData.user_name) {
+                    // Time range is no longer relevant for individual user data fetch as chart is removed
+                    fetchUserData(currentTrafficData.user_name); 
                 }
                 fetchUserLists(); 
+                fetchSystemStats(); 
             }
         }
 
+        // Function to set the theme (light/dark mode)
         function setTheme(theme) {
             if (theme === 'light') {
                 bodyElement.classList.add('light-mode');
@@ -716,6 +905,7 @@
             currentTheme = theme;
         }
 
+        // Initialize preferences on page load
         function initializePreferences() {
             setTheme(currentTheme);
             languageSelector.value = currentLanguage;
@@ -725,12 +915,14 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 fetchUserLists(); 
+                fetchSystemStats(); 
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
             }
         }
 
+        // Event listeners for theme and language toggles
         themeToggle.addEventListener('click', () => {
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             setTheme(newTheme);
@@ -742,6 +934,7 @@
             applyTranslations(currentLanguage);
         });
 
+        // Support Modal functionality
         supportButton.addEventListener('click', () => {
             supportModal.classList.remove('hidden');
             supportModal.classList.add('show');
@@ -762,10 +955,30 @@
             }
         });
 
-        // --- Login Logic ---
+        // User List Modal functionality
+        closeUserListModalButton.addEventListener('click', () => {
+            userListModal.classList.remove('show');
+            userListModal.classList.add('hidden');
+            userListContent.innerHTML = ''; 
+            userListModalError.classList.add('hidden');
+            userListModalTitle.className = 'modal-title'; // Reset classes
+        });
+
+        userListModal.addEventListener('click', (event) => {
+            if (event.target === userListModal) {
+                userListModal.classList.remove('show');
+                userListModal.classList.add('hidden');
+                userListContent.innerHTML = ''; 
+                userListModalError.classList.add('hidden');
+                userListModalTitle.className = 'modal-title'; 
+            }
+        });
+
+
+        // Login Logic
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
-            const password = loginPasswordInput.value.trim();
+            const password = loginPasswordInput.value.trim(); 
 
             if (!username || !password) {
                 loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
@@ -799,6 +1012,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
+                fetchSystemStats(); 
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -810,22 +1024,19 @@
             }
         });
 
-        // --- Fetch Top/Least Consuming Users ---
-        async function fetchUserLists() {
+        // Fetch System Stats for User Status Widget
+        async function fetchSystemStats() {
             if (!accessToken) {
-                console.warn("No access token available. Cannot fetch user lists.");
-                topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
-                userUsageLists.classList.remove('hidden'); 
+                console.warn("No access token available. Cannot fetch system stats.");
+                activeUsersCountSpan.textContent = '...';
+                disabledUsersCountSpan.textContent = '...';
+                expiredUsersCountSpan.textContent = '...';
+                onlineUsersCountSpan.textContent = '...';
                 return;
             }
 
-            topUsersList.innerHTML = ''; 
-            leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden'); 
-
             try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}system-stats`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
@@ -833,7 +1044,7 @@
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
+                        console.error("Unauthorized: Access token might be expired or invalid for system stats. Logging out.");
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
                         loginForm.classList.remove('hidden');
@@ -842,64 +1053,165 @@
                         loginErrorMessage.classList.remove('hidden');
                     }
                     const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
+                    throw new Error(errorData.error || `Failed to fetch system stats: ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                console.log("User summary data:", data);
+                console.log("System Stats data:", data);
 
-                if (data.top_users && data.top_users.length > 0) {
-                    data.top_users.slice(0, 10).forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'user-list-item top-user-item'; 
-                        div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
-                            <span>${user.username}</span>
-                            <span>${user.used_traffic_formatted}</span>
-                        `;
-                        topUsersList.appendChild(div);
-                    });
-                } else {
-                    topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
-                }
-
-                if (data.least_users && data.least_users.length > 0) {
-                    data.least_users.slice(0, 10).forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'user-list-item least-user-item'; 
-                        div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
-                            <span>${user.username}</span>
-                            <span>${user.used_traffic_formatted}</span>
-                        `;
-                        leastUsersList.appendChild(div);
-                    });
-                } else {
-                    leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
-                }
-
-                userUsageLists.classList.remove('hidden');
+                activeUsersCountSpan.textContent = data.users_active !== undefined ? data.users_active : '...';
+                disabledUsersCountSpan.textContent = data.users_disabled !== undefined ? data.users_disabled : '...';
+                expiredUsersCountSpan.textContent = data.users_expired !== undefined ? data.users_expired : '...';
+                onlineUsersCountSpan.textContent = data.online_users !== undefined ? data.online_users : '...';
 
             } catch (error) {
-                console.error('Error fetching user lists:', error);
-                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
-                userUsageLists.classList.remove('hidden'); 
+                console.error('Error fetching system stats:', error);
+                activeUsersCountSpan.textContent = 'Err';
+                disabledUsersCountSpan.textContent = 'Err';
+                expiredUsersCountSpan.textContent = 'Err';
+                onlineUsersCountSpan.textContent = 'Err';
+                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
             }
         }
 
-        // Function to fetch and display user data (including chart data)
-        async function fetchUserData(username, timeRange) {
+        // Fetch Users By Status for Modal
+        async function fetchUsersByStatus(status) {
+            if (!accessToken) {
+                userListModalError.textContent = translations[currentLanguage].loginErrorMessage;
+                userListModalError.classList.remove('hidden');
+                return;
+            }
+
+            userListContent.innerHTML = '';
+            userListModalError.classList.add('hidden');
+            userListModalLoading.classList.remove('hidden');
+
+            try {
+                let apiUrl = `${CLOUDFLARE_WORKER_URL}users-by-status?status=${status}`;
+                
+                const response = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch users for status ${status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log(`Users for status ${status}:`, data);
+
+                if (data.users && data.users.length > 0) {
+                    data.users.forEach(user => {
+                        const li = document.createElement('li');
+                        const translatedStatus = translations[currentLanguage][`status_${user.status}`] || user.status;
+                        
+                        let statusIconSvg = '';
+                        if (user.status === 'active') {
+                            statusIconSvg = `<svg class="user-status-icon-modal status-active" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`; 
+                        } else if (user.status === 'disabled' || user.status === 'on_hold') {
+                            statusIconSvg = `<svg class="user-status-icon-modal status-disabled" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm6-4v2h-2V7h2z"/></svg>`; 
+                        } else if (user.status === 'expired') {
+                            statusIconSvg = `<svg class="user-status-icon-modal status-expired" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`; 
+                        } else if (user.status === 'limited') {
+                            statusIconSvg = `<svg class="user-status-icon-modal status-limited" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h-1V10h1v1.99zm0-4h-1V7h1v4z"/></svg>`; 
+                        }
+                        
+                        if (user.is_online) { 
+                             statusIconSvg += `<svg class="user-status-icon-modal status-online" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8"/></svg>`; 
+                        }
+
+                        li.innerHTML = `
+                            <a href="#" class="user-name-link" data-username="${user.username}">${user.username}</a>
+                            <span class="user-status-text">${statusIconSvg} ${translatedStatus}</span>
+                        `;
+                        userListContent.appendChild(li);
+                    });
+
+                    // Add event listener to each newly created username link in modal
+                    userListContent.querySelectorAll('.user-name-link').forEach(link => {
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault(); 
+                            const usernameToFetch = event.target.dataset.username;
+                            if (usernameToFetch) {
+                                closeUserListModalButton.click(); 
+                                usernameInput.value = usernameToFetch; 
+                                fetchDataButton.click(); 
+                            }
+                        });
+                    });
+
+                } else {
+                    userListContent.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                }
+
+            } catch (error) {
+                console.error(`Error fetching users for status ${status}:`, error);
+                userListModalError.textContent = translations[currentLanguage].userListModalError.replace('{error}', error.message);
+                userListModalError.classList.remove('hidden');
+            } finally {
+                userListModalLoading.classList.add('hidden');
+            }
+        }
+
+        // Event listener for the main fetch data button
+        fetchDataButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            // Chart is removed, so timeRange parameter is not used/passed here
+            fetchUserData(username); 
+        });
+
+        // Event listeners for user status badges to open modal
+        userStatBadges.forEach(badge => {
+            badge.addEventListener('click', () => {
+                const status = badge.dataset.status;
+                let modalTitleKey = 'userListModalDefaultTitle';
+                let modalIconPath = ''; 
+
+                switch (status) {
+                    case 'active': 
+                        modalTitleKey = 'userListModalActive'; 
+                        modalIconPath = 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'; // Checkmark
+                        break;
+                    case 'disabled': 
+                        modalTitleKey = 'userListModalDisabled'; 
+                        modalIconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm6-4v2h-2V7h2z'; // Pause/Warning
+                        break;
+                    case 'expired': 
+                        modalTitleKey = 'userListModalExpired'; 
+                        modalIconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'; // Error/Exclamation
+                        break;
+                    case 'online': 
+                        modalTitleKey = 'userListModalOnline'; 
+                        modalIconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10.5 12 10.5 9.5 9.38 9.5 8 10.62 5.5 12 5.5zm0 14.2c-2.47 0-4.75-1.19-6.19-3.04.03-2.07 4.14-3.21 6.19-3.21s6.16 1.14 6.19 3.21c-1.44 1.85-3.72 3.04-6.19 3.04z'; // User icon (generic)
+                        break;
+                }
+                
+                userListModalTitle.innerHTML = `
+                    <svg class="modal-icon ${status}" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="${modalIconPath}"/></svg>
+                    <span data-key="${modalTitleKey}">${translations[currentLanguage][modalTitleKey] || translations[currentLanguage].userListModalDefaultTitle}</span>
+                `;
+                
+                userListModal.classList.remove('hidden');
+                userListModal.classList.add('show');
+                fetchUsersByStatus(status);
+            });
+        });
+
+        // fetchUserData function (chart logic removed)
+        async function fetchUserData(username) { // Removed timeRange param as chart is gone
             if (!username) return;
 
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
             dataCards.classList.add('hidden');
-            chartContainer.classList.add('hidden');
+            // chartContainer.classList.add('hidden'); // Removed as chart is removed
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}&range=${timeRange}`; 
-                console.log(`Fetching data for individual user ${username} in range ${timeRange} from: ${fetchUrl}`);
+                // timeRange parameter no longer sent as chart is removed
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
+                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
 
                 const response = await fetch(fetchUrl);
 
@@ -925,49 +1237,28 @@
                     }
                     errorMessage.classList.remove('hidden');
                     dataCards.classList.add('hidden');
-                    chartContainer.classList.add('hidden');
+                    // chartContainer.classList.add('hidden'); // Removed
                     return;
                 }
 
-                currentTrafficData = data; 
+                currentTrafficData = data; // Keep user data for potential re-translations
                 updateUI(data); 
                 
                 dataCards.classList.remove('hidden');
-                chartContainer.classList.remove('hidden');
+                // chartContainer.classList.remove('hidden'); // Removed
 
             } catch (error) {
                 console.error('Error fetching individual user data:', error);
                 errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
                 errorMessage.classList.remove('hidden');
                 dataCards.classList.add('hidden');
-                chartContainer.classList.add('hidden');
+                // chartContainer.classList.add('hidden'); // Removed
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
         }
 
-        // Event listener for the main fetch data button
-        fetchDataButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            fetchUserData(username, currentSelectedTimeRange);
-        });
-
-        // Event listeners for time range buttons
-        timeRangeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                timeRangeButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                currentSelectedTimeRange = button.dataset.range;
-
-                const username = usernameInput.value.trim();
-                if (username) { 
-                    fetchUserData(username, currentSelectedTimeRange);
-                }
-            });
-        });
-
-
-        // Function to update UI elements and draw/update chart
+        // updateUI function (chart logic removed)
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
@@ -1003,125 +1294,10 @@
             }
 
             document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
-
-            // --- Chart update logic ---
-            const ctx = document.getElementById('trafficChart').getContext('2d');
-
-            if (trafficChart) {
-                trafficChart.destroy();
-            }
-
-            // Extract labels and data from the chart_data provided by the worker
-            const chartLabels = data.chart_data ? data.chart_data.map(item => item.time) : [];
-            const chartValuesBytes = data.chart_data ? data.chart_data.map(item => item.usage_bytes) : [];
-            
-            // Determine the best unit for the Y-axis based on max value
-            const maxUsageBytes = Math.max(...chartValuesBytes, 0); 
-            let displayUnit = translations[currentLanguage].gb; 
-            let scaleFactor = 1;
-
-            if (maxUsageBytes < 1024) { 
-                displayUnit = translations[currentLanguage].bytes;
-                scaleFactor = 1;
-            } else if (maxUsageBytes < 1024 * 1024) { 
-                displayUnit = translations[currentLanguage].bytes; 
-                scaleFactor = 1; 
-            } else if (maxUsageBytes < 1024 * 1024 * 1024) { 
-                displayUnit = translations[currentLanguage].mb;
-                scaleFactor = 1024 * 1024;
-            } else if (maxUsageBytes < 1024 * 1024 * 1024 * 1024) { 
-                displayUnit = translations[currentLanguage].gb;
-                scaleFactor = 1024 * 1024 * 1024;
-            } else {
-                displayUnit = translations[currentLanguage].tb;
-                scaleFactor = 1024 * 1024 * 1024 * 1024;
-            }
-
-            const chartValuesDisplay = chartValuesBytes.map(val => val / scaleFactor);
-
-            const defaultBarColor = getComputedStyle(document.documentElement).getPropertyValue('--button-bg-general').trim();
-            const accentGreenColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim();
-            
-            const backgroundColors = chartValuesDisplay.map(val => val > 0 ? accentGreenColor : defaultBarColor);
-
-
-            trafficChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: chartLabels, 
-                    datasets: [{
-                        label: `${currentTrans.consumed} (${displayUnit})`,
-                        data: chartValuesDisplay, 
-                        backgroundColor: backgroundColors,
-                        borderColor: backgroundColors,
-                        borderWidth: 1,
-                        borderRadius: 5,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false,
-                        },
-                        tooltip: {
-                            rtl: currentLanguage === 'fa',
-                            callbacks: {
-                                title: function(context) {
-                                    return context[0].label;
-                                },
-                                label: function(context) {
-                                    let value = context.parsed.y;
-                                    if (value * scaleFactor < 1 && value !== 0 && maxUsageBytes > 0) { 
-                                        return `${(value * scaleFactor).toFixed(0)} ${translations[currentLanguage].bytes}`;
-                                    } else if (value === 0 && context.raw !== 0) { 
-                                        return `0 ${displayUnit}`;
-                                    }
-                                    return `${value.toFixed(2)} ${displayUnit}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'var(--chart-grid-color)',
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                color: 'var(--text-secondary)',
-                                font: {
-                                    family: 'Vazirmatn',
-                                    size: 12
-                                }
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'var(--chart-grid-color)',
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                color: 'var(--text-secondary)',
-                                callback: function(value) {
-                                    if (value === 0.01) return '0 ' + displayUnit; 
-                                    return value + ' ' + displayUnit;
-                                },
-                                min: 0,
-                                max: maxUsageBytes > 0 ? (maxUsageBytes / scaleFactor) * 1.2 : 8, 
-                                font: {
-                                    family: 'Vazirmatn',
-                                    size: 12
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            // Chart update logic removed
         }
 
+        // Initialize on page load
         window.onload = function() {
             initializePreferences();
         };

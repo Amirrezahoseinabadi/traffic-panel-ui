@@ -7,127 +7,152 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Define CSS variables for dark and light themes */
+        /* Modern & Refined Color Palette */
         :root {
-            --bg-primary: #121820;
-            --bg-card: #1a222c;
-            --text-primary: #e2e8f0;
-            --text-secondary: #a0aec0;
-            --input-bg: #2d3748;
-            --input-border: #4a5568;
-            --button-bg-general: #3b424e;
-            --button-hover-bg-general: #5a626e;
-            --accent-blue: #4299e1;
-            --accent-blue-hover: #3182ce;
-            --accent-green: #4cd137;
-            --accent-yellow: #f6b93b;
-            --error-red: #ef4444;
-            --shadow-color-dark: rgba(0, 0, 0, 0.3);
-            --shadow-color-light: rgba(0, 0, 0, 0.15);
-            --border-color: #2d3748;
-            --footer-text-color: #6b7280;
-            --modal-overlay-bg: rgba(0, 0, 0, 0.7);
-            --modal-bg: #1a222c;
-            --user-list-item-bg: transparent; 
-            --user-list-item-hover-bg: rgba(255, 255, 255, 0.05); 
-            --top-user-color: #4CAF50; 
-            --least-user-color: #FFC107; 
-            --deactivate-button-bg: #dc2626; /* Red for deactivation */
-            --deactivate-button-hover-bg: #b91c1c;
+            --bg-primary: #0F172A; /* Darker blue-gray, deep and sophisticated */
+            --bg-card: #1E293B; /* Slightly lighter than primary, for contrast */
+            --text-primary: #E2E8F0; /* Off-white, soft on dark background */
+            --text-secondary: #94A3B8; /* Muted gray for secondary info */
+            --input-bg: #334155; /* Darker input fields */
+            --input-border: #475569; /* Subtle input border */
+            --button-bg-general: #3B424E; /* General button base color */
+            --button-hover-bg-general: #4A5568; /* Hover for general buttons */
+            --accent-blue: #3B82F6; /* Vibrant blue for main actions */
+            --accent-blue-hover: #2563EB; /* Darker blue on hover */
+            --accent-green: #22C55E; /* Fresh green for success/positive values */
+            --accent-yellow: #FACC15; /* Warm yellow for warnings/remaining */
+            --error-red: #EF4444; /* Bold red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.4); /* Deeper, more diffused shadows */
+            --shadow-color-light: rgba(0, 0, 0, 0.2); /* Lighter part of shadow */
+            --border-color: #334155; /* Subtle border for separation */
+            --footer-text-color: #64748B; /* Darker gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.8); /* More opaque overlay */
+            --modal-bg: #1E293B; /* Modal background same as card */
+            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
+            --top-user-color: var(--accent-green);
+            --least-user-color: var(--accent-yellow);
+            --deactivate-button-bg: var(--error-red);
+            --deactivate-button-hover-bg: #DC2626; /* Slightly darker red */
+            --prediction-color: #8B5CF6; /* A new accent color for prediction */
         }
 
-        /* Light mode theme variables */
         body.light-mode {
-            --bg-primary: #f0f2f5;
-            --bg-card: #ffffff;
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
-            --input-bg: #e2e8f0;
-            --input-border: #cbd5e0;
-            --button-bg-general: #e2e8f0;
-            --button-hover-bg-general: #cbd5e0;
-            --accent-blue: #3b82f6;
-            --accent-blue-hover: #2563eb;
-            --accent-green: #22c55e;
-            --accent-yellow: #fbbf24;
-            --error-red: #dc2626;
-            --shadow-color-dark: rgba(0, 0, 0, 0.1);
-            --shadow-color-light: rgba(0, 0, 0, 0.05);
-            --border-color: #e2e8f0;
-            --footer-text-color: #9ca3af;
-            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
-            --modal-bg: #ffffff;
-            --user-list-item-bg: transparent;
-            --user-list-item-hover-bg: rgba(0, 0, 0, 0.03);
-            --top-user-color: #28a745; 
-            --least-user-color: #ffc107;
-            --deactivate-button-bg: #ef4444;
-            --deactivate-button-hover-bg: #dc2626;
+            --bg-primary: #F0F2F5;
+            --bg-card: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --input-bg: #E2E8F0;
+            --input-border: #CBD5E0;
+            --button-bg-general: #E2E8F0;
+            --button-hover-bg-general: #CBD5E0;
+            --accent-blue: #3B82F6;
+            --accent-blue-hover: #2563EB;
+            --accent-green: #22C55E;
+            --accent-yellow: #FACC15;
+            --error-red: #DC2626;
+            --shadow-color-dark: rgba(0, 0, 0, 0.15);
+            --shadow-color-light: rgba(0, 0, 0, 0.08);
+            --border-color: #E2E8F0;
+            --footer-text-color: #94A3B8;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.6);
+            --modal-bg: #FFFFFF;
+            --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
+            --top-user-color: var(--accent-green);
+            --least-user-color: var(--accent-yellow);
+            --deactivate-button-bg: var(--error-red);
+            --deactivate-button-hover-bg: #B91C1C;
+            --prediction-color: #7C3AED; 
         }
 
-        /* Base body styles */
+        /* General Body & Typography */
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
-            padding-bottom: 2.5rem;
+            padding-bottom: 3rem; /* More space at bottom */
+            line-height: 1.6; /* Improved readability */
         }
-        /* Card styling */
+        h1, h2, h3 {
+            font-weight: 700; /* Bolder headings */
+            line-height: 1.2;
+        }
+
+        /* Card Styles */
         .card {
             background-color: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 8px 16px -6px var(--shadow-color-dark), 0 5px 10px -3px var(--shadow-color-light);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--border-color);
+            border-radius: 1.25rem; /* Slightly more rounded */
+            padding: 2rem; /* Increased padding */
+            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light); /* Softer, deeper shadow */
+            transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
+            border: 1px solid var(--border-color); /* Subtle border */
         }
-        /* Loading spinner animation */
+        .card:hover {
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 15px 35px -10px var(--shadow-color-dark), 0 8px 15px -5px var(--shadow-color-light);
+        }
+        .card p:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem; /* Slightly larger labels */
+            margin-bottom: 0.75rem; /* More space below label */
+        }
+        .card p:last-child {
+            font-weight: 700; /* Bolder values */
+            font-size: 2.5rem; /* Larger primary values */
+            line-height: 1.1; /* Tighter line height */
+            margin-top: 0;
+        }
+
+        /* Loading Spinner */
         .loading-spinner {
             border-left-color: var(--accent-blue);
-            width: 3rem;
-            height: 3rem;
-            border-width: 4px;
+            width: 3.5rem; /* Slightly larger */
+            height: 3.5rem;
+            border-width: 5px; /* Thicker border */
             animation: spin 1s linear infinite;
-            margin: 2rem auto;
+            margin: 3rem auto; /* More vertical space */
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Input field styling */
+        /* Input Fields */
         input[type="text"], input[type="password"] {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            padding: 0.9rem 1.2rem; /* More padding */
+            border-radius: 0.65rem; /* Slightly more rounded */
+            font-size: 1rem; /* Clearer font size */
+            transition: all 0.3s ease;
         }
         input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* More prominent focus ring */
         }
-        /* Main button styling */
+
+        /* Main Button */
         .main-button {
             background-color: var(--accent-blue);
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            padding: 1rem 2rem; /* More padding */
+            border-radius: 0.65rem; /* Consistent rounding */
             font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            font-size: 1.1rem; /* Slightly larger text */
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* Stronger initial shadow */
         }
         .main-button:hover {
             background-color: var(--accent-blue-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px); /* More noticeable lift */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
         }
         .main-button:active {
             transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reset shadow on click */
         }
         .main-button:disabled {
             background-color: var(--button-bg-general);
@@ -135,330 +160,239 @@
             box-shadow: none;
             transform: none;
         }
-        /* Select dropdown styling */
+
+        /* Select Dropdown */
         select {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
-            padding: 0.625rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1.2rem; /* Adjusted padding */
+            border-radius: 0.65rem;
+            font-size: 1rem;
             cursor: pointer;
-            appearance: none; /* Remove default arrow */
+            appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1.25em 1.25em;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            background-position: right 1rem center; /* Adjusted arrow position */
+            background-size: 1.1em 1.1em; /* Smaller arrow */
+            transition: all 0.3s ease;
         }
         select:focus {
             outline: none;
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
-        /* Icon button styling */
+
+        /* Icon Buttons (Theme/Support) */
         .icon-button {
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             cursor: pointer;
-            font-size: 1.25rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            font-size: 1.4rem; /* Larger icon size */
+            width: 3rem; /* Larger button size */
+            height: 3rem;
+            border-radius: 0.75rem; /* More rounded */
+            transition: all 0.2s ease;
         }
         .icon-button:hover {
             background-color: var(--button-hover-bg-general);
             color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        /* Card paragraph styling */
-        .card p:first-child {
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-        .card p:last-child {
-            font-weight: 700;
-            font-size: 2.25rem;
-            line-height: 1.2;
-            margin-top: 0;
-        }
-        /* Specific text colors for data values */
+
+        /* Data Card Values */
         #total2, #usage { 
             color: var(--accent-green);
         }
         #baghi { 
             color: var(--accent-yellow);
         }
-        
-        /* Error message styling */
+        #date3 { 
+            font-size: 1.4rem; /* Larger date text */
+            line-height: 1.3;
+            margin-top: 0.75rem;
+        }
+        #predictionMessage {
+            color: var(--prediction-color); /* Specific color for prediction */
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        /* Error Messages */
         #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            background-color: rgba(239, 68, 68, 0.1);
+            padding: 0.8rem 1.5rem; /* More padding */
+            border-radius: 0.75rem; /* Consistent rounding */
+            background-color: rgba(239, 68, 68, 0.15); /* Slightly darker background */
             border: 1px solid var(--error-red);
-            font-size: 0.95rem;
+            font-size: 1rem; /* Clearer font size */
+            margin-top: 1.5rem; /* More space */
         }
-        /* Date display styling */
-        #date3 { 
-            font-size: 1.25rem;
-            line-height: 1.4;
-            margin-top: 0.5rem;
+
+        /* User Lists (Top/Least Consuming) */
+        #userUsageLists h2 {
+            font-size: 1.6rem; /* Larger heading */
+            color: var(--accent-blue); /* Consistent accent color */
+            margin-bottom: 1.5rem; /* More space */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
         }
-        /* Footer styling */
+        #userUsageLists h2 span {
+            margin-right: 0.75rem; 
+        }
+        .user-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0.75rem; /* More padding */
+            border-bottom: 1px solid var(--border-color); /* Consistent border */
+            margin-bottom: 0; 
+            font-size: 1rem; /* Slightly larger text */
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border-radius: 0.5rem; /* Slight rounding for hover effect */
+        }
+        .user-list-item:hover {
+            background-color: var(--user-list-item-hover-bg); 
+        }
+        .user-list-icon {
+            width: 1.25rem; /* Larger icon */
+            height: 1.25rem;
+            margin-left: 0.75rem; 
+        }
+
+        /* Footer */
         .app-footer {
-            margin-top: 2.5rem;
+            margin-top: 3.5rem; /* More space from content */
             text-align: center;
             color: var(--footer-text-color);
-            font-size: 0.875rem;
+            font-size: 0.9rem; /* Slightly larger */
             font-weight: 400;
         }
-        /* Modal overlay styling */
+
+        /* Modals */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
             background-color: var(--modal-overlay-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        /* Modal content styling */
-        .modal-content {
+        .modal-content, .small-modal-content {
             background-color: var(--modal-bg);
-            border-radius: 1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-            position: relative;
-            width: 90%;
-            max-width: 600px;
-            height: 80%;
-            max-height: 700px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            border-radius: 1.5rem; /* More rounded modals */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
             border: 1px solid var(--border-color);
         }
-        /* Modal close button styling */
         .modal-close-button {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
             background: var(--button-bg-general);
-            color: var(--text-primary);
             border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            cursor: pointer;
-            z-index: 1001;
-            transition: background-color 0.2s ease, color 0.2s ease;
+            color: var(--text-primary);
+            width: 2.8rem; /* Larger close button */
+            height: 2.8rem;
+            font-size: 1.35rem; /* Larger X icon */
+            border-radius: 50%; /* Perfect circle */
         }
         .modal-close-button:hover {
             background-color: var(--button-hover-bg-general);
             color: var(--accent-blue);
         }
-        /* Modal iframe styling */
-        .modal-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* User list item styling */
-        .user-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0.5rem; 
-            border-bottom: 1px solid var(--border-color); 
-            margin-bottom: 0; 
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease;
-            cursor: pointer; /* Indicate clickable */
-        }
-        .user-list-item:last-child {
-            border-bottom: none; 
-        }
-        .user-list-item:hover {
-            background-color: var(--user-list-item-hover-bg); 
-        }
-        .user-list-item span:first-child { 
-            font-weight: 500;
-            color: var(--text-primary);
-            flex-grow: 1; 
-            text-align: right; 
-            padding-right: 0.5rem; 
-        }
-        .user-list-item span:last-child { 
-            font-weight: 600;
-            color: var(--text-primary); 
-            margin-left: 0.5rem; 
-            text-align: left; 
-            min-width: 90px; 
-            direction: ltr; 
-        }
-        .user-list-icon {
-            width: 1.1rem; 
-            height: 1.1rem;
-            margin-left: 0.5rem; 
-            flex-shrink: 0; 
-        }
-        .top-user-item .user-list-icon {
-            color: var(--top-user-color); 
-        }
-        .least-user-item .user-list-icon {
-            color: var(--least-user-color); 
-        }
-        #userUsageLists h2 {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end; 
-            margin-bottom: 1rem; 
-        }
-        #userUsageLists h2 span {
-            margin-right: 0.5rem; 
-        }
-
-
-        /* Small modal for user actions */
         .small-modal-content {
-            background-color: var(--modal-bg);
-            border-radius: 1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-            padding: 1.5rem;
-            width: 90%;
-            max-width: 350px; /* Smaller max-width */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            transform: scale(0.9);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .modal-overlay.show .small-modal-content {
-            transform: scale(1);
-            opacity: 1;
+            padding: 2rem; /* More padding */
+            max-width: 400px; /* Adjusted max width */
         }
         .small-modal-content h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
+            font-size: 1.5rem; /* Larger modal title */
+            margin-bottom: 1.25rem;
         }
         .small-modal-content p {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
+            font-size: 1.1rem; /* Larger modal message */
+            margin-bottom: 2rem;
+            color: var(--text-secondary); /* Consistent text color */
         }
         .deactivate-button {
-            background-color: var(--deactivate-button-bg);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-            width: 100%;
+            padding: 1rem 2rem; /* More padding */
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
         }
         .deactivate-button:hover {
-            background-color: var(--deactivate-button-hover-bg);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-        .deactivate-button:active {
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
         }
 
-        /* Responsive adjustments for smaller screens */
+
+        /* Responsive Adjustments */
         @media (max-width: 640px) {
-            .card {
+            body {
                 padding: 1rem;
-                border-radius: 0.75rem;
+            }
+            .card {
+                padding: 1.25rem;
+                border-radius: 1rem;
             }
             .card p:last-child {
-                font-size: 1.75rem;
+                font-size: 2rem; /* Slightly smaller for mobile */
             }
-            #date3 {
-                font-size: 1rem;
-            }
-            .main-button {
-                padding: 0.625rem 1.25rem;
-                font-size: 0.9rem;
-            }
-            input[type="text"], input[type="password"] {
-                padding: 0.625rem 1rem;
-                font-size: 0.9rem;
-            }
-            select {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.9rem;
-            }
-            .icon-button {
-                width: 2.25rem;
-                height: 2.25rem;
+            #date3, #predictionMessage {
                 font-size: 1.1rem;
             }
+            .main-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            input[type="text"], input[type="password"], select {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 0.5rem;
+            }
+            .icon-button {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.2rem;
+                border-radius: 0.6rem;
+            }
             h1 {
-                font-size: 2.25rem;
+                font-size: 2.5rem; /* Adjusted main header */
             }
             .text-xl {
-                font-size: 1.125rem;
+                font-size: 1.2rem; /* Adjusted subheadings */
             }
             .app-footer {
-                margin-top: 2rem;
-                font-size: 0.75rem;
+                margin-top: 2.5rem;
+                font-size: 0.8rem;
             }
             .modal-content {
                 width: 95%;
                 height: 90%;
             }
             .modal-close-button {
-                top: 0.5rem;
-                left: 0.5rem;
-                width: 2rem;
-                height: 2rem;
+                top: 0.75rem;
+                left: 0.75rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 1.1rem;
+            }
+            .user-list-item {
+                padding: 0.8rem 0.6rem;
+                font-size: 0.9rem;
+            }
+            .small-modal-content {
+                padding: 1.25rem;
+                max-width: 95%;
+                border-radius: 1.25rem;
+            }
+            .small-modal-content h3 {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+            .small-modal-content p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .deactivate-button {
+                padding: 0.8rem 1.5rem;
                 font-size: 1rem;
             }
-             .user-list-item {
-                padding: 0.6rem 0.8rem;
-                font-size: 0.85rem;
-             }
-             .small-modal-content {
-                padding: 1rem;
-                max-width: 95%;
-             }
-             .small-modal-content h3 {
-                font-size: 1.1rem;
-             }
-             .small-modal-content p {
-                font-size: 0.9rem;
-             }
-             .deactivate-button {
-                padding: 0.625rem 1.25rem;
-                font-size: 0.9rem;
-             }
         }
     </style>
 </head>
@@ -617,7 +551,7 @@
         const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
 
         // Prediction elements
-        const predictionMessage = document.getElementById('predictionMessage'); // New
+        const predictionMessage = document.getElementById('predictionMessage'); 
 
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
@@ -664,10 +598,10 @@
                 userActionModalTitle: 'عملیات کاربر',
                 userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
                 deactivateButton: 'خاموش کردن اشتراک',
-                predictionHeader: 'پیش‌بینی اتمام حجم', // New
-                predictionMessageNoData: 'اطلاعات کافی نیست.', // New
-                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', // New
-                predictionMessageDepleted: 'حجم به اتمام رسیده.' // New
+                predictionHeader: 'پیش‌بینی اتمام حجم', 
+                predictionMessageNoData: 'اطلاعات کافی نیست.', 
+                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
+                predictionMessageDepleted: 'حجم به اتمام رسیده.' 
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -704,402 +638,12 @@
                 userActionModalTitle: 'User Action',
                 userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
                 deactivateButton: 'Deactivate Subscription',
-                predictionHeader: 'Data Depletion Prediction', // New
-                predictionMessageNoData: 'Insufficient data.', // New
-                predictionMessageNoConsumption: 'No consumption recorded.', // New
-                predictionMessageDepleted: 'Data depleted.' // New
+                predictionHeader: 'Data Depletion Prediction', 
+                predictionMessageNoData: 'Insufficient data.', 
+                predictionMessageNoConsumption: 'No consumption recorded.', 
+                predictionMessageDepleted: 'Data depleted.' 
             }
         };
-
-        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
-        function convertTrafficToMB(trafficString) {
-            if (!trafficString || trafficString === translations[currentLanguage].unknown) return 0;
-            const parts = trafficString.trim().split(' ');
-            if (parts.length !== 2) return 0;
-
-            const value = parseFloat(parts[0]);
-            const unit = parts[1].toLowerCase();
-
-            const KB_TO_MB = 1 / 1024;
-            const GB_TO_MB = 1024;
-            const TB_TO_MB = 1024 * 1024;
-
-            switch (unit) {
-                case 'بایت': 
-                case 'bytes':
-                    return value / (1024 * 1024);
-                case 'کیلوبایت': 
-                case 'kb':
-                    return value * KB_TO_MB;
-                case 'مگابایت': 
-                case 'mb':
-                    return value;
-                case 'گیگابایت': 
-                case 'gb':
-                    return value * GB_TO_MB;
-                case 'ترابایت': 
-                case 'tb':
-                    return value * TB_TO_MB;
-                default:
-                    return 0;
-            }
-        }
-
-        function applyTranslations(lang) {
-            const currentTrans = translations[lang];
-            document.querySelectorAll('[data-key]').forEach(element => {
-                const key = element.getAttribute('data-key');
-                if (currentTrans[key]) {
-                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
-                        element.title = currentTrans.themeToggleTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
-                        element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && (element.id === 'closeSupportModalButton' || element.id === 'closeUserActionModalButton')) {
-                        element.title = currentTrans.closeButtonTitle;
-                    }
-                    else if (element.id === 'selectedUsernameForAction') {
-                        // This span's content is set dynamically, so we don't change its textContent here.
-                        // Its parent <p> will handle the message.
-                    }
-                    else {
-                        element.textContent = currentTrans[key];
-                    }
-                }
-            });
-            document.querySelector('title').textContent = currentTrans.pageTitle;
-            if (usernameInput) { 
-                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
-            }
-            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
-            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
-            
-            htmlElement.setAttribute('lang', lang);
-            htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
-            bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
-
-            // Trigger re-fetch for user lists if language changes while dashboard is visible
-            if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                fetchUserLists(); 
-            }
-            // Update the user action modal message if it's visible and a user is selected
-            if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
-                selectedUsernameForAction.textContent = currentSelectedUser;
-                userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
-                    currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
-            }
-            // Re-update prediction if data is loaded
-            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
-                updateUI(currentTrafficData);
-            }
-        }
-
-        function setTheme(theme) {
-            if (theme === 'light') {
-                bodyElement.classList.add('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
-            } else {
-                bodyElement.classList.remove('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
-            }
-            localStorage.setItem('theme', theme);
-            currentTheme = theme;
-        }
-
-        function initializePreferences() {
-            setTheme(currentTheme);
-            languageSelector.value = currentLanguage;
-            applyTranslations(currentLanguage);
-
-            if (accessToken) {
-                loginForm.classList.add('hidden');
-                dashboardContent.classList.remove('hidden');
-                fetchUserLists(); 
-            } else {
-                loginForm.classList.remove('hidden');
-                dashboardContent.classList.add('hidden');
-            }
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
-        });
-
-        languageSelector.addEventListener('change', (event) => {
-            currentLanguage = event.target.value;
-            localStorage.setItem('language', currentLanguage);
-            applyTranslations(currentLanguage);
-        });
-
-        supportButton.addEventListener('click', () => {
-            supportModal.classList.remove('hidden');
-            supportModal.classList.add('show');
-            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
-        });
-
-        closeSupportModalButton.addEventListener('click', () => {
-            supportModal.classList.remove('show');
-            supportModal.classList.add('hidden');
-            goftinoIframe.src = ''; 
-        });
-
-        supportModal.addEventListener('click', (event) => {
-            if (event.target === supportModal) {
-                hideSupportModal(); // Call a dedicated function for consistency
-            }
-        });
-
-        // Helper to hide support modal
-        function hideSupportModal() {
-            supportModal.classList.remove('show');
-            supportModal.classList.add('hidden');
-            goftinoIframe.src = '';
-        }
-
-        // --- New User Action Modal Logic ---
-        function showUserActionModal(username) {
-            currentSelectedUser = username;
-            selectedUsernameForAction.textContent = username;
-            userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
-                translations[currentLanguage].userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${username}</span>`);
-            userActionModal.classList.remove('hidden');
-            userActionModal.classList.add('show');
-        }
-
-        function hideUserActionModal() {
-            userActionModal.classList.remove('show');
-            userActionModal.classList.add('hidden');
-            currentSelectedUser = null;
-        }
-
-        closeUserActionModalButton.addEventListener('click', hideUserActionModal);
-        userActionModal.addEventListener('click', (event) => {
-            if (event.target === userActionModal) {
-                hideUserActionModal();
-            }
-        });
-
-        deactivateSubscriptionButton.addEventListener('click', async () => {
-            if (currentSelectedUser) {
-                console.log(`Deactivating subscription for user: ${currentSelectedUser}`);
-                deactivateSubscriptionButton.disabled = true; // Disable button during API call
-                try {
-                    const response = await fetch(`${CLOUDFLARE_WORKER_URL}deactivate-user`, { // This endpoint needs to be added to Worker.js
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${accessToken}`
-                        },
-                        body: JSON.stringify({ username: currentSelectedUser })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || `Failed to deactivate user: ${response.statusText}`);
-                    }
-
-                    alert(`اشتراک کاربر ${currentSelectedUser} با موفقیت غیرفعال شد.`); 
-                    hideUserActionModal();
-                    fetchUserLists(); // Refresh lists after action
-                } catch (error) {
-                    console.error('Error deactivating user:', error);
-                    alert(`خطا در غیرفعال کردن اشتراک ${currentSelectedUser}: ${error.message}`);
-                } finally {
-                    deactivateSubscriptionButton.disabled = false; // Re-enable button
-                }
-            }
-        });
-
-
-        // --- Login Logic ---
-        loginButton.addEventListener('click', async () => {
-            const username = loginUsernameInput.value.trim();
-            const password = loginPasswordInput.value.trim();
-
-            if (!username || !password) {
-                loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
-                loginErrorMessage.classList.remove('hidden');
-                return;
-            }
-
-            loginButton.disabled = true;
-            loginErrorMessage.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden'); 
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
-                }
-
-                const data = await response.json();
-                accessToken = data.access_token;
-                localStorage.setItem('marzban_access_token', accessToken);
-
-                loginForm.classList.add('hidden');
-                dashboardContent.classList.remove('hidden');
-                
-                fetchUserLists(); 
-
-            } catch (error) {
-                console.error('Login error:', error);
-                loginErrorMessage.textContent = error.message;
-                loginErrorMessage.classList.remove('hidden');
-            } finally {
-                loginButton.disabled = false;
-                loadingIndicator.classList.add('hidden'); 
-            }
-        });
-
-        // --- Fetch Top/Least Consuming Users ---
-        async function fetchUserLists() {
-            if (!accessToken) {
-                console.warn("No access token available. Cannot fetch user lists.");
-                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                userUsageLists.classList.remove('hidden'); 
-                return;
-            }
-
-            topUsersList.innerHTML = ''; 
-            leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden'); 
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
-                        loginErrorMessage.classList.remove('hidden');
-                    }
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log("User summary data:", data);
-
-                if (data.top_users && data.top_users.length > 0) {
-                    data.top_users.slice(0, 10).forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'user-list-item top-user-item'; 
-                        div.setAttribute('data-username', user.username); 
-                        div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
-                            <span>${user.username}</span>
-                            <span>${user.used_traffic_formatted}</span>
-                        `;
-                        div.addEventListener('click', () => showUserActionModal(user.username));
-                        topUsersList.appendChild(div);
-                    });
-                } else {
-                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                }
-
-                if (data.least_users && data.least_users.length > 0) {
-                    data.least_users.slice(0, 10).forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'user-list-item least-user-item'; 
-                        div.setAttribute('data-username', user.username); 
-                        div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
-                            <span>${user.username}</span>
-                            <span>${user.used_traffic_formatted}</span>
-                        `;
-                        div.addEventListener('click', () => showUserActionModal(user.username));
-                        leastUsersList.appendChild(div);
-                    });
-                } else {
-                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                }
-
-                userUsageLists.classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Error fetching user lists:', error);
-                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
-                userUsageLists.classList.remove('hidden'); 
-            }
-        }
-
-        // Function to fetch and display user data
-        async function fetchUserData(username) {
-            if (!username) return;
-
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
-
-            try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
-                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
-
-                const response = await fetch(fetchUrl);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
-                }
-
-                const data = await response.json();
-
-                if (data.error) {
-                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
-                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
-                    } else if (data.auth_error) { 
-                        errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                    }
-                    else {
-                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
-                    }
-                    errorMessage.classList.remove('hidden');
-                    dataCards.classList.add('hidden');
-                    return;
-                }
-
-                currentTrafficData = data; 
-                updateUI(data); 
-                
-                dataCards.classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Error fetching individual user data:', error);
-                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
-                errorMessage.classList.remove('hidden');
-                dataCards.classList.add('hidden');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        }
-
-        // Event listener for the main fetch data button
-        fetchDataButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            fetchUserData(username);
-        });
 
         // Helper to convert formatted traffic string (e.g., "10 GB") to MB
         function convertTrafficToMB(trafficString) {
@@ -1190,7 +734,7 @@
                 if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
                     const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
                     predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
-                    predictionMessage.style.color = 'var(--accent-blue)'; 
+                    predictionMessage.style.color = 'var(--prediction-color)'; 
                 } else if (remainingVolumeMB <= 0) {
                     predictionMessage.textContent = currentTrans.predictionMessageDepleted;
                     predictionMessage.style.color = 'var(--error-red)';

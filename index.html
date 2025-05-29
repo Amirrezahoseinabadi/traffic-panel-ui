@@ -31,8 +31,7 @@
             --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: var(--error-red);
-            --deactivate-button-hover-bg: #DC2626; /* Slightly darker red */
+            /* Removed --deactivate-button-bg and --deactivate-button-hover-bg */
             --prediction-color: #8B5CF6; /* A new accent color for prediction */
         }
 
@@ -59,8 +58,7 @@
             --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: var(--error-red);
-            --deactivate-button-hover-bg: #B91C1C;
+            /* Removed --deactivate-button-bg and --deactivate-button-hover-bg */
             --prediction-color: #7C3AED; 
         }
 
@@ -302,7 +300,8 @@
             opacity: 1;
             visibility: visible;
         }
-        .modal-content, .small-modal-content {
+        /* Adjusted modal content for support modal */
+        .support-modal-content { /* Renamed from .modal-content to be specific */
             background-color: var(--modal-bg);
             border-radius: 1.5rem; /* More rounded modals */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
@@ -311,9 +310,19 @@
             transform: scale(0.9); /* Initial smaller scale for animation */
             opacity: 0; /* Initial hidden state for animation */
             transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
+            
+            width: 90%;
+            max-width: 450px; /* Smaller max-width for support modal */
+            height: auto; /* Height adapts to content */
+            max-height: 90vh; /* Max height to fit viewport */
+            overflow: hidden; /* Hide overflow */
+            display: flex;
+            flex-direction: column; /* Stack content */
+            align-items: center; /* Center content horizontally */
+            text-align: center; /* Center text */
+            padding: 2rem; /* Generous padding */
         }
-        .modal-overlay.show .modal-content,
-        .modal-overlay.show .small-modal-content {
+        .modal-overlay.show .support-modal-content {
             transform: scale(1); /* Scale up on show */
             opacity: 1; /* Fade in on show */
         }
@@ -340,33 +349,7 @@
             background-color: var(--button-hover-bg-general);
             color: var(--accent-blue);
         }
-        .small-modal-content {
-            padding: 2rem; /* More padding */
-            width: 90%; /* Responsive width */
-            max-width: 400px; /* Adjusted max width */
-            display: flex; /* Ensure flex for internal content centering */
-            flex-direction: column;
-            align-items: center; /* Center internal content horizontally */
-            text-align: center; /* Center text within content */
-        }
-        .small-modal-content h3 {
-            font-size: 1.5rem; /* Larger modal title */
-            margin-bottom: 1.25rem;
-        }
-        .small-modal-content p {
-            font-size: 1.1rem; /* Larger modal message */
-            margin-bottom: 2rem;
-            color: var(--text-secondary); /* Consistent text color */
-        }
-        .deactivate-button {
-            padding: 1rem 2rem; /* More padding */
-            border-radius: 0.75rem;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
-        }
-        .deactivate-button:hover {
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
-        }
+        /* Removed .small-modal-content and .deactivate-button styles as they are no longer used */
 
 
         /* Responsive Adjustments */
@@ -409,9 +392,11 @@
                 margin-top: 2.5rem;
                 font-size: 0.8rem;
             }
-            .modal-content {
-                width: 95%;
-                height: 90%;
+            /* Support modal content on small screens */
+            .support-modal-content {
+                padding: 1.5rem;
+                max-width: 95%; /* Adjust max-width for small screens */
+                border-radius: 1rem;
             }
             .modal-close-button {
                 top: 0.75rem;
@@ -423,23 +408,6 @@
             .user-list-item {
                 padding: 0.8rem 0.6rem;
                 font-size: 0.9rem;
-            }
-            .small-modal-content {
-                padding: 1.25rem;
-                max-width: 95%;
-                border-radius: 1.25rem;
-            }
-            .small-modal-content h3 {
-                font-size: 1.2rem;
-                margin-bottom: 1rem;
-            }
-            .small-modal-content p {
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            .deactivate-button {
-                padding: 0.8rem 1.5rem;
-                font-size: 1rem;
             }
             /* Adjust icon alignment on small screens: center them */
             .top-bar-icons { 
@@ -556,18 +524,8 @@
     </footer>
 
     <div id="supportModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+        <div class="support-modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
-        </div>
-    </div>
-
-    <div id="userActionModal" class="modal-overlay hidden">
-        <div class="small-modal-content">
-            <button id="closeUserActionModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
-            <h3 data-key="userActionModalTitle">عملیات کاربر</h3>
-            <p data-key="userActionModalMessage">آیا از غیرفعال کردن اشتراک <span id="selectedUsernameForAction" class="font-bold text-accent-blue"></span> مطمئن هستید؟</p>
-            <button id="deactivateSubscriptionButton" class="deactivate-button" data-key="deactivateButton">خاموش کردن اشتراک</button>
         </div>
     </div>
 
@@ -600,11 +558,11 @@
         const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
-        // New modal elements
-        const userActionModal = document.getElementById('userActionModal');
-        const closeUserActionModalButton = document.getElementById('closeUserActionModalButton');
-        const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
-        const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
+        // Removed references to user action modal elements:
+        // const userActionModal = document.getElementById('userActionModal');
+        // const closeUserActionModalButton = document.getElementById('closeUserActionModalButton');
+        // const selectedUsernameForAction = document.getElementById('selectedUsernameForAction');
+        // const deactivateSubscriptionButton = document.getElementById('deactivateSubscriptionButton');
 
         // Prediction elements
         const predictionMessage = document.getElementById('predictionMessage'); 
@@ -613,7 +571,7 @@
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        let currentSelectedUser = null; 
+        // Removed currentSelectedUser = null; 
 
         // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
@@ -651,9 +609,10 @@
                 topUsersHeader: 'کاربران پرمصرف', 
                 leastUsersHeader: 'کاربران کم‌مصرف', 
                 noUsersFound: 'کاربری یافت نشد.',
-                userActionModalTitle: 'عملیات کاربر',
-                userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
-                deactivateButton: 'خاموش کردن اشتراک',
+                // Removed user action modal translations:
+                // userActionModalTitle: 'عملیات کاربر',
+                // userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
+                // deactivateButton: 'خاموش کردن اشتراک',
                 predictionHeader: 'پیش‌بینی اتمام حجم', 
                 predictionMessageNoData: 'اطلاعات کافی نیست.', 
                 predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
@@ -691,9 +650,10 @@
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
                 noUsersFound: 'No users found.',
-                userActionModalTitle: 'User Action',
-                userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
-                deactivateButton: 'Deactivate Subscription',
+                // Removed user action modal translations:
+                // userActionModalTitle: 'User Action',
+                // userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
+                // deactivateButton: 'Deactivate Subscription',
                 predictionHeader: 'Data Depletion Prediction', 
                 predictionMessageNoData: 'Insufficient data.', 
                 predictionMessageNoConsumption: 'No consumption recorded.', 
@@ -750,13 +710,10 @@
                         element.title = currentTrans.themeToggleTitle;
                     } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
                         element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && (element.id === 'closeSupportModalButton' || element.id === 'closeUserActionModalButton')) {
+                    } else if (element.tagName === 'BUTTON' && element.id === 'closeSupportModalButton') { // Changed to closeSupportModalButton
                         element.title = currentTrans.closeButtonTitle;
                     }
-                    else if (element.id === 'selectedUsernameForAction') {
-                        // This span's content is set dynamically, so we don't change its textContent here.
-                        // Its parent <p> will handle the message.
-                    }
+                    // Removed condition for selectedUsernameForAction
                     else {
                         element.textContent = currentTrans[key];
                     }
@@ -777,12 +734,12 @@
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 fetchUserLists(); 
             }
-            // Update the user action modal message if it's visible and a user is selected
-            if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
-                selectedUsernameForAction.textContent = currentSelectedUser;
-                userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
-                    currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
-            }
+            // Removed user action modal update
+            // if (!userActionModal.classList.contains('hidden') && currentSelectedUser) {
+            //     selectedUsernameForAction.textContent = currentSelectedUser;
+            //     userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
+            //         currentTrans.userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${currentSelectedUser}</span>`);
+            // }
             // Re-update prediction if data is loaded
             if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
                 updateUI(currentTrafficData);
@@ -852,60 +809,12 @@
             goftinoIframe.src = '';
         }
 
-        // --- New User Action Modal Logic ---
-        function showUserActionModal(username) {
-            currentSelectedUser = username;
-            selectedUsernameForAction.textContent = username;
-            userActionModal.querySelector('[data-key="userActionModalMessage"]').innerHTML = 
-                translations[currentLanguage].userActionModalMessage.replace('{username}', `<span id="selectedUsernameForAction" class="font-bold text-accent-blue">${username}</span>`);
-            userActionModal.classList.remove('hidden');
-            userActionModal.classList.add('show');
-        }
-
-        function hideUserActionModal() {
-            userActionModal.classList.remove('show');
-            userActionModal.classList.add('hidden');
-            currentSelectedUser = null;
-        }
-
-        closeUserActionModalButton.addEventListener('click', hideUserActionModal);
-        userActionModal.addEventListener('click', (event) => {
-            // Only close if the click target is the overlay itself, not the modal content
-            if (event.target === userActionModal) {
-                hideUserActionModal();
-            }
-        });
-
-        deactivateSubscriptionButton.addEventListener('click', async () => {
-            if (currentSelectedUser) {
-                console.log(`Deactivating subscription for user: ${currentSelectedUser}`);
-                deactivateSubscriptionButton.disabled = true; // Disable button during API call
-                try {
-                    const response = await fetch(`${CLOUDFLARE_WORKER_URL}deactivate-user`, { // This endpoint needs to be added to Worker.js
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${accessToken}`
-                        },
-                        body: JSON.stringify({ username: currentSelectedUser })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || `Failed to deactivate user: ${response.statusText}`);
-                    }
-
-                    alert(`اشتراک کاربر ${currentSelectedUser} با موفقیت غیرفعال شد.`); 
-                    hideUserActionModal();
-                    fetchUserLists(); // Refresh lists after action
-                } catch (error) {
-                    console.error('Error deactivating user:', error);
-                    alert(`خطا در غیرفعال کردن اشتراک ${currentSelectedUser}: ${error.message}`);
-                } finally {
-                    deactivateSubscriptionButton.disabled = false; // Re-enable button
-                }
-            }
-        });
+        // Removed User Action Modal Logic entirely
+        // function showUserActionModal(username) { ... }
+        // function hideUserActionModal() { ... }
+        // closeUserActionModalButton.addEventListener('click', hideUserActionModal);
+        // userActionModal.addEventListener('click', (event) => { ... });
+        // deactivateSubscriptionButton.addEventListener('click', async () => { ... });
 
 
         // --- Login Logic ---
@@ -999,12 +908,13 @@
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
                         div.setAttribute('data-username', user.username); 
+                        // Removed event listener for showUserActionModal
+                        // div.addEventListener('click', () => showUserActionModal(user.username));
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
                             <span>${user.used_traffic_formatted}</span>
                         `;
-                        div.addEventListener('click', () => showUserActionModal(user.username));
                         topUsersList.appendChild(div);
                     });
                 } else {
@@ -1016,12 +926,13 @@
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 
                         div.setAttribute('data-username', user.username); 
+                        // Removed event listener for showUserActionModal
+                        // div.addEventListener('click', () => showUserActionModal(user.username));
                         div.innerHTML = `
                             <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>
                             <span>${user.used_traffic_formatted}</span>
                         `;
-                        div.addEventListener('click', () => showUserActionModal(user.username));
                         leastUsersList.appendChild(div);
                     });
                 } else {

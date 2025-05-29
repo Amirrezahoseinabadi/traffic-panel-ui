@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان - پیشنمایش مانیتورینگ سرور</title>
+    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -39,6 +39,7 @@
             --node-status-online: #4cd137; /* Green */
             --node-status-offline: #ef4444; /* Red */
             --node-status-warning: #f6b93b; /* Yellow */
+            --node-status-disconnected: #888; /* Gray for disconnected */
         }
 
         /* Light mode theme variables */
@@ -73,6 +74,7 @@
             --node-status-online: #22c55e;
             --node-status-offline: #dc2626;
             --node-status-warning: #fbbf24;
+            --node-status-disconnected: #aaa;
         }
 
         /* Base body styles */
@@ -436,6 +438,10 @@
             background-color: rgba(246, 185, 59, 0.2);
             color: var(--node-status-warning);
         }
+        .node-status.disconnected {
+            background-color: rgba(136, 136, 136, 0.2);
+            color: var(--node-status-disconnected);
+        }
         .node-stats p {
             display: flex;
             justify-content: space-between;
@@ -699,16 +705,17 @@
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
         let currentSelectedUser = null; 
 
+        // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
         const translations = {
             fa: {
-                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان - پیشنمایش مانیتورینگ سرور', 
+                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
                 usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
                 fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
-                nodeErrorMessage: 'خطا در دریافت وضعیت سرورها. لطفا دوباره تلاش کنید.', // New
+                nodeErrorMessage: 'خطا در دریافت وضعیت سرورها. لطفا دوباره تلاش کنید. جزئیات: {error}', 
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی کاربر',
@@ -738,25 +745,27 @@
                 userActionModalTitle: 'عملیات کاربر',
                 userActionModalMessage: 'آیا از غیرفعال کردن اشتراک {username} مطمئن هستید؟',
                 deactivateButton: 'خاموش کردن اشتراک',
-                nodeMonitoringHeader: 'مانیتورینگ سرورها', // New
-                loadingNodes: 'در حال بارگذاری وضعیت سرورها...', // New
-                nodeName: 'نام سرور:', // New
-                nodeStatus: 'وضعیت:', // New
-                nodeCPU: 'CPU:', // New
-                nodeRAM: 'RAM:', // New
-                nodeTrafficIn: 'ترافیک ورودی:', // New
-                nodeTrafficOut: 'ترافیک خروجی:', // New
-                statusOnline: 'آنلاین', // New
-                statusOffline: 'آفلاین', // New
-                statusWarning: 'هشدار', // New
+                nodeMonitoringHeader: 'مانیتورینگ سرورها', 
+                loadingNodes: 'در حال بارگذاری وضعیت سرورها...', 
+                nodeName: 'نام سرور:', 
+                nodeStatus: 'وضعیت:', 
+                nodeCPU: 'CPU:', 
+                nodeRAM: 'RAM:', 
+                nodeTrafficIn: 'ترافیک ورودی:', 
+                nodeTrafficOut: 'ترافیک خروجی:', 
+                statusOnline: 'آنلاین', 
+                statusOffline: 'آفلاین', 
+                statusWarning: 'هشدار', 
+                statusDisconnected: 'قطع شده', // New translation for disconnected status
+                noNodesFound: 'هیچ سروری یافت نشد.' 
             },
             en: {
-                pageTitle: 'Mr. Marzban Traffic Usage Panel - Server Monitoring Preview', 
+                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
                 mainHeader: 'Your Usage Details Panel', 
                 usernameLabel: 'Enter your username to view usage details:',
                 fetchDataButton: 'Get Details',
                 errorMessage: 'Error fetching data. Please try again.',
-                nodeErrorMessage: 'Error fetching node status. Please try again.', // New
+                nodeErrorMessage: 'Error fetching node status. Please try again. Details: {error}', 
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
                 totalVolume: 'Total User Volume',
@@ -786,17 +795,19 @@
                 userActionModalTitle: 'User Action',
                 userActionModalMessage: 'Are you sure you want to deactivate {username}\'s subscription?',
                 deactivateButton: 'Deactivate Subscription',
-                nodeMonitoringHeader: 'Server Monitoring', // New
-                loadingNodes: 'Loading server status...', // New
-                nodeName: 'Server Name:', // New
-                nodeStatus: 'Status:', // New
-                nodeCPU: 'CPU:', // New
-                nodeRAM: 'RAM:', // New
-                nodeTrafficIn: 'Traffic In:', // New
-                nodeTrafficOut: 'Traffic Out:', // New
-                statusOnline: 'Online', // New
-                statusOffline: 'Offline', // New
-                statusWarning: 'Warning', // New
+                nodeMonitoringHeader: 'Server Monitoring', 
+                loadingNodes: 'Loading server status...', 
+                nodeName: 'Server Name:', 
+                nodeStatus: 'Status:', 
+                nodeCPU: 'CPU:', 
+                nodeRAM: 'RAM:', 
+                nodeTrafficIn: 'Traffic In:', 
+                nodeTrafficOut: 'Traffic Out:', 
+                statusOnline: 'Online', 
+                statusOffline: 'Offline', 
+                statusWarning: 'Warning', 
+                statusDisconnected: 'Disconnected',
+                noNodesFound: 'No nodes found.' 
             }
         };
 
@@ -898,11 +909,16 @@
 
         supportModal.addEventListener('click', (event) => {
             if (event.target === supportModal) {
-                supportModal.classList.remove('show');
-                supportModal.classList.add('hidden');
-                goftinoIframe.src = ''; 
+                hideSupportModal(); // Call a dedicated function for consistency
             }
         });
+
+        // Helper to hide support modal
+        function hideSupportModal() {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            goftinoIframe.src = '';
+        }
 
         // --- New User Action Modal Logic ---
         function showUserActionModal(username) {
@@ -1094,7 +1110,7 @@
         async function fetchNodeStats() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch node stats.");
-                nodesContainer.innerHTML = `<div class="card flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage}</p></div>`;
+                nodesContainer.innerHTML = `<div class="card flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage.replace('{error}', 'توکن احراز هویت موجود نیست.')}</p></div>`;
                 nodeErrorMessage.classList.remove('hidden');
                 return;
             }
@@ -1110,6 +1126,10 @@
                 });
 
                 if (!response.ok) {
+                    const errorData = await response.json(); 
+                    const errorMessageText = errorData.error || `Failed to fetch node stats: ${response.statusText}`;
+                    console.error("Error fetching node stats:", errorMessageText);
+                    
                     if (response.status === 401) {
                         console.error("Unauthorized: Access token might be expired or invalid for node stats. Please log in again.");
                         localStorage.removeItem('marzban_access_token');
@@ -1119,8 +1139,9 @@
                         loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
                         loginErrorMessage.classList.remove('hidden');
                     }
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch node stats: ${response.statusText}`);
+                    nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="nodeErrorMessage">${translations[currentLanguage].nodeErrorMessage.replace('{error}', errorMessageText)}</p></div>`;
+                    nodeErrorMessage.classList.remove('hidden'); 
+                    return; 
                 }
 
                 const data = await response.json();
@@ -1130,7 +1151,9 @@
 
                 if (data.nodes && data.nodes.length > 0) {
                     data.nodes.forEach(node => {
-                        const statusClass = node.status === 'online' ? 'online' : (node.status === 'offline' ? 'offline' : 'warning');
+                        const statusClass = node.status === 'online' ? 'online' : 
+                                            (node.status === 'offline' ? 'offline' : 
+                                            (node.status === 'disconnected' ? 'disconnected' : 'warning')); // Added 'disconnected'
                         const statusTextKey = `status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`;
                         
                         const nodeCard = document.createElement('div');
@@ -1138,7 +1161,7 @@
                         nodeCard.innerHTML = `
                             <div class="node-header">
                                 <span class="node-name">${node.name}</span>
-                                <span class="node-status ${statusClass}" data-key="${statusTextKey}">${translations[currentLanguage][statusTextKey]}</span>
+                                <span class="node-status ${statusClass}" data-key="${statusTextKey}">${translations[currentLanguage][statusTextKey] || node.status}</span>
                             </div>
                             <div class="node-stats">
                                 <p><span data-key="nodeCPU">${translations[currentLanguage].nodeCPU}</span> <strong>${node.cpu_usage}%</strong></p>
@@ -1150,7 +1173,7 @@
                         nodesContainer.appendChild(nodeCard);
                     });
                 } else {
-                    nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="noNodesFound">${translations[currentLanguage].noNodesFound || 'هیچ سروری یافت نشد.'}</p></div>`;
+                    nodesContainer.innerHTML = `<div class="card col-span-full flex items-center justify-center p-8"><p class="text-secondary" data-key="noNodesFound">${translations[currentLanguage].noNodesFound}</p></div>`;
                 }
 
             } catch (error) {

@@ -80,7 +80,7 @@
         .loading-spinner {
             border-left-color: var(--accent-blue);
         }
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
@@ -88,7 +88,7 @@
             border-radius: 0.5rem;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        input[type="text"]:focus {
+        input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--accent-blue);
             box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4);
@@ -314,7 +314,7 @@
                 padding: 0.625rem 1.25rem;
                 font-size: 0.9rem;
             }
-            input[type="text"] {
+            input[type="text"], input[type="password"] {
                 padding: 0.625rem 1rem;
                 font-size: 0.9rem;
             }
@@ -376,53 +376,79 @@
 
         <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
 
-        <div class="card mb-10 w-full max-w-md mx-auto">
-            <label for="usernameInput" class="text-lg mb-4 text-center" data-key="usernameLabel">نام کاربری را وارد کنید:</label>
-            <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
-            <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
+        <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
+            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
+            <input type="text" id="loginUsernameInput" placeholder="نام کاربری" class="w-full max-w-md mb-4 text-center">
+            
+            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
+            <input type="password" id="loginPasswordInput" placeholder="رمز عبور" class="w-full max-w-md mb-6 text-center">
+            
+            <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
+            <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
         </div>
 
-        <div id="loadingIndicator" class="loading-spinner hidden"></div>
-        <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+        <div id="dashboardContent" class="hidden">
+            <div class="card mb-10 w-full max-w-md mx-auto">
+                <label for="usernameInput" class="text-lg mb-4 text-center" data-key="usernameLabel">نام کاربری کاربر را وارد کنید:</label>
+                <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
+                <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات</button>
+            </div>
 
-        <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
-            <div class="card">
-                <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
-                <p id="total2" class="text-3xl">...</p>
-            </div>
-            <div class="card">
-                <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده</p>
-                <p id="baghi" class="text-3xl">...</p>
-            </div>
-            <div class="card">
-                <p class="text-sm mb-2" data-key="consumed">مصرفی</p>
-                <p id="usage" class="text-3xl">...</p>
-            </div>
-            <div class="card">
-                <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت</p>
-                <p id="date3" class="text-lg">...</p> </div>
-            <div class="card col-span-full lg:col-span-1">
-                <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت</p>
-                <p id="date2" class="text-3xl">...</p>
-            </div>
-        </div>
+            <div id="loadingIndicator" class="loading-spinner hidden"></div>
+            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
 
-        <div id="chartContainer" class="chart-container hidden mx-auto">
-            <div class="flex justify-between items-center mb-5 flex-wrap">
-                <div>
-                    <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک</h2>
-                    <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی شما بر اساس بازه زمانی انتخابی</p>
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 hidden mx-auto">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی</p>
+                    <p id="total2" class="text-3xl">...</p>
                 </div>
-                <div class="flex space-x-2 mt-4 sm:mt-0" dir="ltr"> 
-                    <button class="time-range-button active" data-range="24h">24H</button>
-                    <button class="time-range-button" data-range="7d">7D</button>
-                    <button class="time-range-button" data-range="30d">30D</button>
-                    <button class="time-range-button" data-range="6m">6M</button>
-                    <button class="time-range-button" data-range="12m">12M</button>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده</p>
+                    <p id="baghi" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumed">مصرفی</p>
+                    <p id="usage" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت</p>
+                    <p id="date3" class="text-lg">...</p> </div>
+                <div class="card col-span-full lg:col-span-1">
+                    <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت</p>
+                    <p id="date2" class="text-3xl">...</p>
                 </div>
             </div>
-            <div class="relative h-96">
-                <canvas id="trafficChart"></canvas>
+
+            <div id="chartContainer" class="chart-container hidden mx-auto">
+                <div class="flex justify-between items-center mb-5 flex-wrap">
+                    <div>
+                        <h2 class="chart-title mb-1" data-key="trafficChartHeader">نمودار مصرف ترافیک</h2>
+                        <p class="chart-subtitle" data-key="trafficChartSubtitle">ترافیک مصرفی شما بر اساس بازه زمانی انتخابی</p>
+                    </div>
+                    <div class="flex space-x-2 mt-4 sm:mt-0" dir="ltr"> 
+                        <button class="time-range-button active" data-range="24h">24H</button>
+                        <button class="time-range-button" data-range="7d">7D</button>
+                        <button class="time-range-button" data-range="30d">30D</button>
+                        <button class="time-range-button" data-range="6m">6M</button>
+                        <button class="time-range-button" data-range="12m">12M</button>
+                    </div>
+                </div>
+                <div class="relative h-96">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto hidden">
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="topUsersHeader">۵ کاربر پرمصرف</h2>
+                    <ul id="topUsersList" class="list-disc pr-5 text-gray-300">
+                        </ul>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right" data-key="leastUsersHeader">۵ کاربر کم‌مصرف</h2>
+                    <ul id="leastUsersList" class="list-disc pr-5 text-gray-300">
+                        </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -449,23 +475,36 @@
         const closeModalButton = document.getElementById('closeModalButton');
         const goftinoIframe = document.getElementById('goftinoIframe');
 
+        const loginForm = document.getElementById('loginForm');
+        const loginUsernameInput = document.getElementById('loginUsernameInput');
+        const loginPasswordInput = document.getElementById('loginPasswordInput');
+        const loginButton = document.getElementById('loginButton');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        const dashboardContent = document.getElementById('dashboardContent');
+
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
         const chartContainer = document.getElementById('chartContainer');
+        const userUsageLists = document.getElementById('userUsageLists'); // New: User usage lists container
+        const topUsersList = document.getElementById('topUsersList');     // New: Top users list
+        const leastUsersList = document.getElementById('leastUsersList'); // New: Least users list
 
         let trafficChart;
         let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
+        let accessToken = localStorage.getItem('marzban_access_token') || null; // Store access token
+
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
 
         const translations = {
             fa: {
                 pageTitle: 'پنل جزئیات مصرف شما', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'نام کاربری را وارد کنید:',
+                usernameLabel: 'نام کاربری کاربر را وارد کنید:',
                 fetchDataButton: 'دریافت اطلاعات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
@@ -489,12 +528,19 @@
                 footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
                 themeToggleTitle: 'تغییر تم',
                 supportButtonTitle: 'پشتیبانی',
-                closeButtonTitle: 'بستن'
+                closeButtonTitle: 'بستن',
+                loginUsernameLabel: 'نام کاربری ادمین:',
+                loginPasswordLabel: 'رمز عبور ادمین:',
+                loginButton: 'ورود',
+                loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
+                topUsersHeader: '۵ کاربر پرمصرف',
+                leastUsersHeader: '۵ کاربر کم‌مصرف',
+                noUsersFound: 'کاربری یافت نشد.'
             },
             en: {
                 pageTitle: 'Your Usage Details Panel', 
                 mainHeader: 'Your Usage Details Panel', 
-                usernameLabel: 'Enter Username:',
+                usernameLabel: 'Enter User Username:',
                 fetchDataButton: 'Fetch Data',
                 errorMessage: 'Error fetching data. Please try again.',
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
@@ -518,7 +564,14 @@
                 footerText: 'All rights reserved for Mr. Marzban.', 
                 themeToggleTitle: 'Toggle Theme',
                 supportButtonTitle: 'Support',
-                closeButtonTitle: 'Close'
+                closeButtonTitle: 'Close',
+                loginUsernameLabel: 'Admin Username:',
+                loginPasswordLabel: 'Admin Password:',
+                loginButton: 'Login',
+                loginErrorMessage: 'Incorrect username or password.',
+                topUsersHeader: 'Top 5 Consuming Users',
+                leastUsersHeader: 'Least 5 Consuming Users',
+                noUsersFound: 'No users found.'
             }
         };
 
@@ -541,6 +594,8 @@
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
             usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
+            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
             
             htmlElement.setAttribute('lang', lang);
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
@@ -567,6 +622,18 @@
             setTheme(currentTheme);
             languageSelector.value = currentLanguage;
             applyTranslations(currentLanguage);
+
+            // Check for existing token on load
+            if (accessToken) {
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                // Optionally, fetch initial data for the dashboard here if needed
+                // fetchDataButton.click(); // Or fetch a default user's data
+                fetchUserLists(); // Fetch top/least users on dashboard load
+            } else {
+                loginForm.classList.remove('hidden');
+                dashboardContent.classList.add('hidden');
+            }
         }
 
         themeToggle.addEventListener('click', () => {
@@ -600,8 +667,57 @@
             }
         });
 
-        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
+        // --- Login Logic ---
+        loginButton.addEventListener('click', async () => {
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
 
+            if (!username || !password) {
+                loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; // "نام کاربری یا رمز عبور اشتباه است."
+                loginErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginErrorMessage.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
+                }
+
+                const data = await response.json();
+                accessToken = data.access_token;
+                localStorage.setItem('marzban_access_token', accessToken);
+
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+                
+                // Fetch user lists immediately after successful login
+                fetchUserLists();
+
+            } catch (error) {
+                console.error('Login error:', error);
+                loginErrorMessage.textContent = error.message;
+                loginErrorMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+            } finally {
+                loginButton.disabled = false;
+            }
+        });
+
+        // --- Fetch Individual User Data Logic (Existing) ---
         fetchDataButton.addEventListener('click', async () => {
             const username = usernameInput.value.trim();
             if (!username) {
@@ -616,7 +732,7 @@
             chartContainer.classList.add('hidden');
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`;
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; // Still uses main worker route for individual user data
                 console.log('Fetching data from:', fetchUrl);
 
                 const response = await fetch(fetchUrl);
@@ -656,6 +772,73 @@
                 loadingIndicator.classList.add('hidden');
             }
         });
+
+        // --- New: Fetch Top/Least Consuming Users ---
+        async function fetchUserLists() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch user lists.");
+                userUsageLists.classList.add('hidden');
+                return;
+            }
+
+            topUsersList.innerHTML = ''; // Clear previous lists
+            leastUsersList.innerHTML = '';
+            userUsageLists.classList.add('hidden'); // Hide until loaded
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; // Or a specific "Session expired" message
+                        loginErrorMessage.classList.remove('hidden');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("User summary data:", data);
+
+                if (data.top_users && data.top_users.length > 0) {
+                    data.top_users.forEach(user => {
+                        const li = document.createElement('li');
+                        li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
+                        topUsersList.appendChild(li);
+                    });
+                } else {
+                    topUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                }
+
+                if (data.least_users && data.least_users.length > 0) {
+                    data.least_users.forEach(user => {
+                        const li = document.createElement('li');
+                        li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
+                        leastUsersList.appendChild(li);
+                    });
+                } else {
+                    leastUsersList.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                }
+
+                userUsageLists.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error fetching user lists:', error);
+                // Display error in the user list section or general error message
+                topUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
+                leastUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
+                userUsageLists.classList.remove('hidden'); // Show container even with error
+            }
+        }
 
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];

@@ -573,6 +573,7 @@
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
         const individualUserLookup = document.getElementById('individualUserLookup'); 
+        const timeRangeButtons = document.querySelectorAll('.time-range-button'); // انتخاب دکمه‌های بازه زمانی
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
@@ -587,6 +588,7 @@
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
+        let currentSelectedTimeRange = '24h'; // بازه زمانی پیش‌فرض برای نمودار
 
         // !!! مهم: این URL را با آدرس Worker خود جایگزین کنید.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
@@ -694,10 +696,12 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            if (trafficChart && Object.keys(currentTrafficData).length > 0) {
-                updateUI(currentTrafficData);
-            }
-            if (accessToken) { 
+            // Trigger re-fetch for chart and user lists if language changes while dashboard is visible
+            if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
+                // Re-fetch only if a username is already entered, otherwise, chart will be hidden
+                if (usernameInput && usernameInput.value.trim() !== '') {
+                    fetchUserData(usernameInput.value.trim(), currentSelectedTimeRange);
+                }
                 fetchUserLists(); 
             }
         }
@@ -886,14 +890,9 @@
             }
         }
 
-        // --- Individual User Data Lookup and Chart ---
-        fetchDataButton.addEventListener('click', async () => {
-            const username = usernameInput.value.trim();
-            if (!username) {
-                errorMessage.textContent = translations[currentLanguage].usernameLabel.replace(':', '').trim();
-                errorMessage.classList.remove('hidden');
-                return;
-            }
+        // Function to fetch and display user data (including chart data)
+        async function fetchUserData(username, timeRange) {
+            if (!username) return;
 
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
@@ -901,8 +900,9 @@
             chartContainer.classList.add('hidden');
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
-                console.log('Fetching data for individual user from:', fetchUrl);
+                // Pass timeRange to the worker
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}&range=${timeRange}`; 
+                console.log(`Fetching data for individual user ${username} in range ${timeRange} from: ${fetchUrl}`);
 
                 const response = await fetch(fetchUrl);
 
@@ -916,7 +916,14 @@
                 if (data.error) {
                     if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
                         errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
-                    } else {
+                    } else if (data.auth_error) { // Handle auth error specifically from Worker
+                        errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                    }
+                    else {
                         errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
                     }
                     errorMessage.classList.remove('hidden');
@@ -940,8 +947,30 @@
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
+        }
+
+        // Event listener for the main fetch data button
+        fetchDataButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            fetchUserData(username, currentSelectedTimeRange);
         });
 
+        // Event listeners for time range buttons
+        timeRangeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                timeRangeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentSelectedTimeRange = button.dataset.range;
+
+                const username = usernameInput.value.trim();
+                if (username) { // Only re-fetch if a username is already entered
+                    fetchUserData(username, currentSelectedTimeRange);
+                }
+            });
+        });
+
+
+        // Function to update UI elements and draw/update chart
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
@@ -952,28 +981,21 @@
             if (data.date3) {
                 let displayDate = data.date3;
                 try {
-                    if (data.date3.includes('✖️') || data.date3.length < 10) { 
-                        displayDate = currentTrans.notAvailable; 
-                    } else {
-                        const cleanDateString = data.date3.replace(/^\|\s*/, ''); 
-                        const dateObj = new Date(cleanDateString);
-                        
-                        if (isNaN(dateObj.getTime())) {
-                            throw new Error("Invalid date string after cleaning or unparsable format.");
-                        }
-
-                        const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-                        const persianDateOptions = { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric', 
-                            hour: '2-digit', 
-                            minute: '2-digit', 
-                            second: '2-digit',
-                            hour12: false 
-                        };
-                        displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
+                    const dateObj = new Date(displayDate); // Assuming date3 from worker is already formatted or parsable
+                    if (isNaN(dateObj.getTime())) {
+                        throw new Error("Invalid date string after cleaning or unparsable format.");
                     }
+                    const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+                    const persianDateOptions = { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: false 
+                    };
+                    displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
                 } catch (e) {
                     console.error("Error parsing date3:", e);
                     displayDate = currentTrans.notAvailable;
@@ -985,57 +1007,54 @@
 
             document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
 
-            const usageValue = parseFloat(data.usage); 
-            let usageUnit = '';
-            if (data.usage && typeof data.usage === 'string') {
-                const unitMatch = data.usage.match(/[A-Z]+/i);
-                if (unitMatch) {
-                    const unit = unitMatch[0].toLowerCase();
-                    if (unit === 'b') usageUnit = currentTrans.bytes;
-                    else if (unit === 'mb') usageUnit = currentTrans.mb;
-                    else if (unit === 'gb') usageUnit = currentTrans.gb;
-                    else if (unit === 'tb') usageUnit = currentTrans.tb;
-                    else usageUnit = unitMatch[0]; 
-                }
-            } else {
-                usageUnit = currentTrans.gb; 
-            }
-
+            // --- Chart update logic ---
             const ctx = document.getElementById('trafficChart').getContext('2d');
 
             if (trafficChart) {
                 trafficChart.destroy();
             }
 
-            const labels = [];
-            for (let i = 0; i < 24; i++) { 
-                labels.push(`${String(i).padStart(2, '0')}:48`);
+            // Extract labels and data from the chart_data provided by the worker
+            const chartLabels = data.chart_data ? data.chart_data.map(item => item.time) : [];
+            const chartValuesBytes = data.chart_data ? data.chart_data.map(item => item.usage_bytes) : [];
+            
+            // Determine the best unit for the Y-axis based on max value
+            const maxUsageBytes = Math.max(...chartValuesBytes, 0); // Ensure at least 0
+            let displayUnit = translations[currentLanguage].gb; // Default to GB
+            let scaleFactor = 1;
+
+            if (maxUsageBytes < 1024) { // Less than 1 KB
+                displayUnit = translations[currentLanguage].bytes;
+                scaleFactor = 1;
+            } else if (maxUsageBytes < 1024 * 1024) { // Less than 1 MB
+                displayUnit = translations[currentLanguage].bytes; // or KB, depends on desired granularity
+                scaleFactor = 1; // display as bytes
+            } else if (maxUsageBytes < 1024 * 1024 * 1024) { // Less than 1 GB
+                displayUnit = translations[currentLanguage].mb;
+                scaleFactor = 1024 * 1024;
+            } else if (maxUsageBytes < 1024 * 1024 * 1024 * 1024) { // Less than 1 TB
+                displayUnit = translations[currentLanguage].gb;
+                scaleFactor = 1024 * 1024 * 1024;
+            } else {
+                displayUnit = translations[currentLanguage].tb;
+                scaleFactor = 1024 * 1024 * 1024 * 1024;
             }
 
-            const chartData = new Array(labels.length).fill(0);
+            const chartValuesDisplay = chartValuesBytes.map(val => val / scaleFactor);
+
             const defaultBarColor = getComputedStyle(document.documentElement).getPropertyValue('--button-bg-general').trim();
             const accentGreenColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim();
-            const backgroundColors = new Array(labels.length).fill(defaultBarColor); 
+            
+            const backgroundColors = chartValuesDisplay.map(val => val > 0 ? accentGreenColor : defaultBarColor);
 
-            const targetHourIndex = labels.indexOf('11:48'); 
-            if (targetHourIndex !== -1) {
-                chartData[targetHourIndex] = usageValue; 
-                backgroundColors[targetHourIndex] = accentGreenColor;
-            }
-
-            const zeroByteHourIndex = labels.indexOf('14:48');
-            if (zeroByteHourIndex !== -1) {
-                chartData[zeroByteHourIndex] = 0.01; 
-                backgroundColors[zeroByteHourIndex] = defaultBarColor;
-            }
 
             trafficChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: chartLabels, // Use dynamic labels from Worker
                     datasets: [{
-                        label: `${currentTrans.consumed} (${usageUnit})`,
-                        data: chartData,
+                        label: `${currentTrans.consumed} (${displayUnit})`,
+                        data: chartValuesDisplay, // Use dynamic values from Worker
                         backgroundColor: backgroundColors,
                         borderColor: backgroundColors,
                         borderWidth: 1,
@@ -1056,15 +1075,14 @@
                                     return context[0].label;
                                 },
                                 label: function(context) {
-                                    let label = '';
-                                    if (context.parsed.y !== null) {
-                                        if (context.parsed.y === 0.01 && labels[context.dataIndex] === '14:48') {
-                                            label = `0 ${currentTrans.bytes}`; 
-                                        } else {
-                                            label = `${context.parsed.y} ${usageUnit}`;
-                                        }
+                                    let value = context.parsed.y;
+                                    // Handle the 0.01 placeholder value for display as 0
+                                    if (value * scaleFactor < 1 && value !== 0 && maxUsageBytes > 0) { // If original bytes were very small but non-zero, show as bytes
+                                        return `${(value * scaleFactor).toFixed(0)} ${translations[currentLanguage].bytes}`;
+                                    } else if (value === 0 && context.raw !== 0) { // If raw was 0.01 but should be 0
+                                        return `0 ${displayUnit}`;
                                     }
-                                    return label;
+                                    return `${value.toFixed(2)} ${displayUnit}`;
                                 }
                             }
                         }
@@ -1092,11 +1110,12 @@
                             ticks: {
                                 color: 'var(--text-secondary)',
                                 callback: function(value) {
-                                    if (value === 0.01) return '0 ' + currentTrans.bytes; 
-                                    return value + ' ' + usageUnit;
+                                    if (value === 0.01) return '0 ' + displayUnit; // Handle placeholder
+                                    return value + ' ' + displayUnit;
                                 },
                                 min: 0,
-                                max: usageValue > 0 ? usageValue * 1.2 : 8,
+                                // Adjust max Y-axis for better visual representation
+                                max: maxUsageBytes > 0 ? (maxUsageBytes / scaleFactor) * 1.2 : 8, // 20% padding
                                 font: {
                                     family: 'Vazirmatn',
                                     size: 12

@@ -79,7 +79,17 @@
         }
         .loading-spinner {
             border-left-color: var(--accent-blue);
+            width: 3rem;
+            height: 3rem;
+            border-width: 4px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto; /* Center spinner */
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         input[type="text"], input[type="password"] {
             background-color: var(--input-bg);
             color: var(--text-primary);
@@ -166,13 +176,13 @@
             line-height: 1.2;
             margin-top: 0;
         }
-        #total2, #usage {
+        #total2, #usage, #adminTotalVolume, #adminConsumed {
             color: var(--accent-green);
         }
-        #baghi {
+        #baghi, #adminRemaining {
             color: var(--accent-yellow);
         }
-        #errorMessage {
+        #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
             padding: 0.625rem 1.25rem;
@@ -211,7 +221,7 @@
         .time-range-button.active:hover {
             background-color: var(--accent-blue-hover);
         }
-        #date3 {
+        #date3, #adminCreationDateValue {
             font-size: 1.25rem;
             line-height: 1.4;
             margin-top: 0.5rem;
@@ -284,7 +294,6 @@
             border: none;
         }
 
-
         @media (max-width: 640px) {
             .card {
                 padding: 1rem;
@@ -297,7 +306,7 @@
             .card p:last-child {
                 font-size: 1.75rem;
             }
-            #date3 {
+            #date3, #adminCreationDateValue {
                 font-size: 1rem;
             }
             .chart-title {
@@ -390,15 +399,15 @@
         <div id="dashboardContent" class="hidden">
             <div id="adminStats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 mx-auto">
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی پنل</p>
+                    <p class="text-sm mb-2" data-key="adminTotalVolume">حجم کلی پنل</p>
                     <p id="adminTotalVolume" class="text-3xl">...</p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="consumed">مصرفی پنل</p>
+                    <p class="text-sm mb-2" data-key="adminConsumed">مصرفی پنل</p>
                     <p id="adminConsumed" class="text-3xl">...</p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="remainingVolume">باقیمانده پنل</p>
+                    <p class="text-sm mb-2" data-key="adminRemaining">باقیمانده پنل</p>
                     <p id="adminRemaining" class="text-3xl">...</p>
                 </div>
                 <div class="card">
@@ -422,12 +431,6 @@
                     <ul id="leastUsersList" class="list-disc pr-5 text-gray-300">
                         </ul>
                 </div>
-            </div>
-
-            <div class="card mb-10 w-full max-w-md mx-auto">
-                <label for="usernameInput" class="text-lg mb-4 text-center" data-key="usernameLabel">نام کاربری کاربر را وارد کنید:</label>
-                <input type="text" id="usernameInput" placeholder="مثال: dehghan_sa" class="w-full max-w-md mb-6 text-center">
-                <button id="fetchDataButton" class="main-button" data-key="fetchDataButton">دریافت اطلاعات کاربر</button>
             </div>
 
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
@@ -511,31 +514,30 @@
         const adminCreationDateValue = document.getElementById('adminCreationDateValue');
         const adminDaysPassedValue = document.getElementById('adminDaysPassedValue');
 
-        const usernameInput = document.getElementById('usernameInput');
-        const fetchDataButton = document.getElementById('fetchDataButton');
+        // Removed individual user search elements: usernameInput, fetchDataButton
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
-        const dataCards = document.getElementById('dataCards');
-        const chartContainer = document.getElementById('chartContainer');
+        const dataCards = document.getElementById('dataCards'); // Now always hidden unless re-purposed
+        const chartContainer = document.getElementById('chartContainer'); // Now always hidden unless re-purposed
         const userUsageLists = document.getElementById('userUsageLists');
         const topUsersList = document.getElementById('topUsersList');
         const leastUsersList = document.getElementById('leastUsersList');
 
         let trafficChart;
-        let currentTrafficData = {}; // For individual user data
+        let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null;
-        let adminUsername = localStorage.getItem('marzban_admin_username') || null; // Store admin username
+        let adminUsername = localStorage.getItem('marzban_admin_username') || null;
 
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
 
         const translations = {
             fa: {
-                pageTitle: 'پنل جزئیات مصرف شما', 
+                pageTitle: 'پنل مصرف ترافیک مرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'نام کاربری کاربر را وارد کنید:',
-                fetchDataButton: 'دریافت اطلاعات کاربر',
+                usernameLabel: 'نام کاربری کاربر را وارد کنید:', // Kept for consistency in translations, though UI element is removed
+                fetchDataButton: 'دریافت اطلاعات کاربر', // Kept for consistency in translations, though UI element is removed
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
@@ -633,7 +635,7 @@
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
-            usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            // Removed usernameInput.placeholder update as the element is removed
             loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
             loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
             
@@ -641,7 +643,6 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            // Re-render chart if already initialized
             if (trafficChart) {
                 updateChart(currentTrafficData.usage, currentTrafficData.usage_unit);
             }
@@ -667,7 +668,7 @@
             if (accessToken && adminUsername) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                await fetchDashboardInitialData(); // Fetch all dashboard data after successful login
+                await fetchDashboardInitialData();
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -705,7 +706,8 @@
             }
         });
 
-        // --- Login Logic ---
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
+
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -718,7 +720,7 @@
 
             loginButton.disabled = true;
             loginErrorMessage.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden'); // Use main loading indicator
+            loadingIndicator.classList.remove('hidden');
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
@@ -736,14 +738,14 @@
 
                 const data = await response.json();
                 accessToken = data.access_token;
-                adminUsername = username; // Store the logged-in admin's username
+                adminUsername = username;
                 localStorage.setItem('marzban_access_token', accessToken);
                 localStorage.setItem('marzban_admin_username', adminUsername);
 
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                await fetchDashboardInitialData(); // Fetch all dashboard data after successful login
+                await fetchDashboardInitialData();
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -751,11 +753,10 @@
                 loginErrorMessage.classList.remove('hidden');
             } finally {
                 loginButton.disabled = false;
-                loadingIndicator.classList.add('hidden'); // Hide loading indicator
+                loadingIndicator.classList.add('hidden');
             }
         });
 
-        // --- Fetch Dashboard Initial Data (Admin's overall stats + User Lists) ---
         async function fetchDashboardInitialData() {
             if (!accessToken || !adminUsername) {
                 console.warn("No access token or admin username available for initial dashboard fetch.");
@@ -766,11 +767,10 @@
 
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
-            // Hide all dashboard sections initially
             document.getElementById('adminStats').classList.add('hidden');
             userUsageLists.classList.add('hidden');
-            dataCards.classList.add('hidden'); // Hide individual user data
-            chartContainer.classList.add('hidden'); // Hide individual user chart
+            dataCards.classList.add('hidden');
+            chartContainer.classList.add('hidden');
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init?admin_username=${adminUsername}`, {
@@ -798,7 +798,6 @@
                 const data = await response.json();
                 console.log("Initial Dashboard Data:", data);
 
-                // Update Admin's Overall Stats
                 adminTotalVolume.textContent = data.admin_total_volume || translations[currentLanguage].unknown;
                 adminConsumed.textContent = data.admin_consumed_volume || translations[currentLanguage].unknown;
                 adminRemaining.textContent = data.admin_remaining_volume || translations[currentLanguage].unknown;
@@ -806,7 +805,6 @@
                 adminDaysPassedValue.textContent = data.admin_days_passed ? `${data.admin_days_passed} ${translations[currentLanguage].daysUnit}` : translations[currentLanguage].unknown;
                 document.getElementById('adminStats').classList.remove('hidden');
 
-                // Update Top/Least Consuming Users
                 topUsersList.innerHTML = '';
                 leastUsersList.innerHTML = '';
                 if (data.top_users && data.top_users.length > 0) {
@@ -839,110 +837,8 @@
             }
         }
 
-
-        // --- Fetch Individual User Data Logic (Existing, now called by button) ---
-        fetchDataButton.addEventListener('click', async () => {
-            const username = usernameInput.value.trim();
-            if (!username) {
-                errorMessage.textContent = translations[currentLanguage].usernameLabel.replace(':', '').trim();
-                errorMessage.classList.remove('hidden');
-                return;
-            }
-
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
-            chartContainer.classList.add('hidden');
-
-            try {
-                // This route still uses the main worker route for individual user data from a.php
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`;
-                console.log('Fetching individual user data from:', fetchUrl);
-
-                const response = await fetch(fetchUrl);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
-                }
-
-                const data = await response.json();
-
-                if (data.error) {
-                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
-                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
-                    } else {
-                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
-                    }
-                    errorMessage.classList.remove('hidden');
-                    dataCards.classList.add('hidden');
-                    chartContainer.classList.add('hidden');
-                    return;
-                }
-
-                currentTrafficData = data; // Store for chart re-rendering
-                updateIndividualUserDataUI(data);
-                
-                dataCards.classList.remove('hidden');
-                chartContainer.classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Error fetching individual user data:', error);
-                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
-                errorMessage.classList.remove('hidden');
-                dataCards.classList.add('hidden');
-                chartContainer.classList.add('hidden');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        });
-
-        // Function to update the UI elements for individual user data (total2, baghi, usage, date3, date2, chart)
-        function updateIndividualUserDataUI(data) {
-            const currentTrans = translations[currentLanguage];
-
-            document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
-            document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
-            document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
-            
-            if (data.date3) {
-                let displayDate = data.date3;
-                try {
-                    if (data.date3.includes('✖️') || data.date3.length < 10) { 
-                        displayDate = currentTrans.notAvailable; 
-                    } else {
-                        const cleanDateString = data.date3.replace(/^\|\s*/, ''); 
-                        const dateObj = new Date(cleanDateString);
-                        
-                        if (isNaN(dateObj.getTime())) {
-                            throw new Error("Invalid date string after cleaning or unparsable format.");
-                        }
-
-                        const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-                        const persianDateOptions = { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric', 
-                            hour: '2-digit', 
-                            minute: '2-digit', 
-                            second: '2-digit',
-                            hour12: false 
-                        };
-                        displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
-                    }
-                } catch (e) {
-                    console.error("Error parsing date3:", e);
-                    displayDate = currentTrans.notAvailable;
-                }
-                document.getElementById('date3').textContent = displayDate;
-            } else {
-                document.getElementById('date3').textContent = currentTrans.unknown;
-            }
-
-            document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
-
-            updateChart(data.usage, data.usage_unit); // Pass usage and its unit for chart
-        }
+        // Removed fetchDataButton.addEventListener and updateIndividualUserDataUI as they are no longer needed
+        // The individual user data cards and chart will remain hidden.
 
         function updateChart(usageString, usageUnit) {
             const currentTrans = translations[currentLanguage];

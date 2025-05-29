@@ -515,7 +515,6 @@
         const adminCreationDateValue = document.getElementById('adminCreationDateValue');
         const adminDaysPassedValue = document.getElementById('adminDaysPassedValue');
 
-        // Removed individual user search elements: usernameInput, fetchDataButton
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
@@ -525,11 +524,11 @@
         const leastUsersList = document.getElementById('leastUsersList');
 
         let trafficChart;
-        let currentTrafficData = {}; // For individual user data
+        let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
-        let accessToken = null; // Changed to null to force login every time
-        let adminUsername = null; // Changed to null to force login every time
+        let accessToken = null; 
+        let adminUsername = null; 
 
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
 
@@ -838,12 +837,7 @@
             }
         }
 
-        // Removed fetchDataButton.addEventListener and updateIndividualUserDataUI as they are no longer needed
-        // The individual user data cards and chart will remain hidden.
-
         function updateChart(usageString, usageUnit) {
-            // This function is now effectively unused since individual user search is removed.
-            // Keeping it for completeness in case you re-purpose it.
             const currentTrans = translations[currentLanguage];
             const usageValue = parseFloat(usageString); 
             

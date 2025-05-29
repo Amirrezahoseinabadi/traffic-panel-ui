@@ -34,12 +34,17 @@
             --top-user-color: #4CAF50; 
             --least-user-color: #FFC107; 
 
-            /* New colors for user status badges */
+            /* User status badge colors (main widget) */
             --status-active-bg: #28a745; /* Green */
             --status-disabled-bg: #6c757d; /* Gray */
             --status-expired-bg: #dc3545; /* Red */
             --status-online-bg: #007bff; /* Blue */
             --status-onhold-bg: #ffc107; /* Yellow */
+
+            /* Modal list item alternating background */
+            --modal-list-odd-bg: rgba(255, 255, 255, 0.03); /* Subtle light tint */
+            --modal-list-even-bg: transparent;
+            --modal-list-hover-bg: rgba(255, 255, 255, 0.08); /* More noticeable hover */
         }
 
         body.light-mode {
@@ -68,12 +73,17 @@
             --top-user-color: #28a745; 
             --least-user-color: #ffc107;
 
-            /* New colors for user status badges - Light Mode */
+            /* User status badge colors (main widget) - Light Mode */
             --status-active-bg: #28a745;
             --status-disabled-bg: #6c757d;
             --status-expired-bg: #dc3545;
             --status-online-bg: #007bff;
             --status-onhold-bg: #ffc107;
+
+            /* Modal list item alternating background - Light Mode */
+            --modal-list-odd-bg: rgba(0, 0, 0, 0.02);
+            --modal-list-even-bg: transparent;
+            --modal-list-hover-bg: rgba(0, 0, 0, 0.05);
         }
 
         body {
@@ -205,7 +215,7 @@
             color: var(--accent-yellow);
         }
         
-        #errorMessage, #loginErrorMessage, #userListModalError { /* Added userListModalError */
+        #errorMessage, #loginErrorMessage, #userListModalError { 
             color: var(--error-red);
             font-weight: 600;
             padding: 0.625rem 1.25rem;
@@ -371,94 +381,125 @@
             margin-right: 0.5rem; 
         }
 
-        /* NEW STYLES FOR USER STATS WIDGET */
+        /* Styles for User Status Widget (smaller and more refined) */
         .user-stats-widget {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding: 1rem; /* Reduced padding */
         }
         .user-stats-widget h2 {
-            font-size: 1.75rem;
+            font-size: 1.25rem; /* Smaller title */
             font-weight: 600;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem; /* Adjusted margin */
             color: var(--text-primary);
         }
         .user-stats-badges {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.5rem; /* Reduced gap between badges */
             justify-content: center;
         }
         .user-stat-badge {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.75rem 1.25rem;
-            border-radius: 9999px; /* Pill shape */
-            font-weight: 700;
-            font-size: 1.5rem;
+            padding: 0.4rem 0.8rem; /* Significantly smaller padding */
+            border-radius: 9999px; 
+            font-weight: 600; /* Slightly less bold */
+            font-size: 1rem; /* Smaller font size */
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            color: white; /* Text color for badges */
-            min-width: 90px; /* Ensure badges are somewhat uniform */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Softer shadow */
+            color: white; 
+            min-width: 60px; /* Even smaller min-width */
         }
         .user-stat-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            transform: translateY(-1px); /* More subtle hover effect */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.25); 
         }
         .user-stat-badge.active { background-color: var(--status-active-bg); }
         .user-stat-badge.disabled { background-color: var(--status-disabled-bg); }
         .user-stat-badge.expired { background-color: var(--status-expired-bg); }
         .user-stat-badge.online { background-color: var(--status-online-bg); }
-        .user-stat-badge.on_hold { background-color: var(--status-onhold-bg); } /* Fallback for on_hold if needed */
+        .user-stat-badge.on_hold { background-color: var(--status-onhold-bg); }
 
+        /* Styles for User List Modal (popup) */
         .user-list-modal-body {
-            flex-grow: 1; /* Allow content to fill space */
-            overflow-y: auto; /* Scrollable list */
+            flex-grow: 1; 
+            overflow-y: auto; 
             padding: 1rem;
         }
         .user-list-modal-body ul {
-            list-style: none; /* Remove default list bullets */
+            list-style: none; 
             padding: 0;
             margin: 0;
         }
         .user-list-modal-body li {
-            padding: 0.5rem 0;
-            border-bottom: 1px dashed var(--text-secondary); /* Dashed separator */
+            padding: 0.75rem 0.5rem; /* Slightly more padding for list items */
+            border-bottom: 1px solid var(--border-color); /* Solid separator */
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.2s ease;
         }
         .user-list-modal-body li:last-child {
             border-bottom: none;
         }
+        .user-list-modal-body li:nth-child(odd) { /* Stripe effect */
+            background-color: var(--modal-list-odd-bg);
+        }
+        .user-list-modal-body li:hover {
+            background-color: var(--modal-list-hover-bg);
+        }
         .user-list-modal-body li span {
-            font-size: 1rem;
+            font-size: 0.95rem; /* Slightly smaller font */
             color: var(--text-primary);
         }
-        .user-list-modal-body li span:first-child { /* username */
+        .user-list-modal-body li span:first-child { 
              font-weight: 500;
-             text-align: right; /* RTL */
+             text-align: right; 
              flex-grow: 1;
              padding-right: 0.5rem;
         }
-        .user-list-modal-body li span:last-child { /* status */
+        .user-list-modal-body li span:last-child { 
              font-weight: 400;
-             text-align: left; /* LTR for status words */
+             text-align: left; 
              color: var(--text-secondary);
+             min-width: 70px; /* Ensure space for status word */
+        }
+        .user-status-icon-modal { /* Icon inside modal list item */
+            width: 0.9rem; /* Smaller icon in list */
+            height: 0.9rem;
+            margin-left: 0.4rem;
+            flex-shrink: 0;
         }
         .modal-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem; /* Smaller modal title */
             font-weight: 600;
             color: var(--text-primary);
             text-align: center;
             margin-bottom: 1rem;
             padding: 1rem 0;
             border-bottom: 1px solid var(--border-color);
+            display: flex; /* For icon alignment */
+            align-items: center;
+            justify-content: center;
         }
+        .modal-title .modal-icon { /* Icon inside modal title */
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.5rem; /* Space between icon and title */
+            color: var(--accent-blue); /* Default icon color */
+        }
+        /* Specific colors for modal status icons */
+        .modal-title.active .modal-icon, .user-list-modal-body .status-active { color: var(--status-active-bg); }
+        .modal-title.disabled .modal-icon, .user-list-modal-body .status-disabled { color: var(--status-disabled-bg); }
+        .modal-title.expired .modal-icon, .user-list-modal-body .status-expired { color: var(--status-expired-bg); }
+        .modal-title.online .modal-icon, .user-list-modal-body .status-online { color: var(--status-online-bg); }
+        .modal-title.on_hold .modal-icon, .user-list-modal-body .status-on_hold { color: var(--status-onhold-bg); }
 
 
         @media (max-width: 640px) {
@@ -529,18 +570,18 @@
                 font-size: 0.85rem;
              }
             .user-stat-badge {
-                padding: 0.6rem 1rem;
-                font-size: 1.25rem;
-                min-width: 70px;
+                padding: 0.4rem 0.7rem;
+                font-size: 1rem;
+                min-width: 50px;
             }
             .user-stats-widget h2 {
-                font-size: 1.5rem;
+                font-size: 1.2rem;
             }
             .modal-title {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
             }
             .user-list-modal-body li span {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -686,9 +727,16 @@
     <div id="userListModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="closeUserListModalButton" class="modal-close-button">✖️</button>
-            <h3 id="userListModalTitle" class="modal-title" data-key="userListModalDefaultTitle">لیست کاربران</h3>
+            <h3 id="userListModalTitle" class="modal-title" data-key="userListModalDefaultTitle">
+                <svg class="modal-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10.5 12 10.5 9.5 9.38 9.5 8 10.62 5.5 12 5.5zm0 14.2c-2.47 0-4.75-1.19-6.19-3.04.03-2.07 4.14-3.21 6.19-3.21s6.16 1.14 6.19 3.21c-1.44 1.85-3.72 3.04-6.19 3.04z"/></svg>
+                <span></span>
+            </h3>
             <p id="userListModalError" class="text-red-500 text-center mt-4 hidden"></p>
             <div id="userListModalBody" class="user-list-modal-body">
+                <div class="flex justify-between items-center pb-2 text-sm font-semibold text-secondary">
+                    <span class="flex-grow text-right pr-2" data-key="usernameHeader">نام کاربری</span>
+                    <span class="flex-shrink-0 text-left pl-2" data-key="statusHeader">وضعیت</span>
+                </div>
                 <ul id="userListContent">
                     </ul>
                 <div id="userListModalLoading" class="loading-spinner hidden"></div>
@@ -797,7 +845,7 @@
                 topUsersHeader: 'کاربران پرمصرف', 
                 leastUsersHeader: 'کاربران کم‌مصرف', 
                 noUsersFound: 'کاربری یافت نشد.',
-                usersOverallHeader: 'کاربران', // For the new widget title
+                usersOverallHeader: 'کاربران', 
                 activeUsersCount: 'فعال',
                 disabledUsersCount: 'غیرفعال',
                 expiredUsersCount: 'منقضی',
@@ -807,7 +855,14 @@
                 userListModalDisabled: 'لیست کاربران غیرفعال',
                 userListModalExpired: 'لیست کاربران منقضی',
                 userListModalOnline: 'لیست کاربران آنلاین',
-                userListModalError: 'خطا در دریافت لیست کاربران: {error}'
+                userListModalError: 'خطا در دریافت لیست کاربران: {error}',
+                usernameHeader: 'نام کاربری', // New
+                statusHeader: 'وضعیت', // New
+                status_active: 'فعال', // For modal user list
+                status_disabled: 'غیرفعال',
+                status_expired: 'منقضی',
+                status_on_hold: 'در انتظار',
+                status_limited: 'محدود شده'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -854,7 +909,14 @@
                 userListModalDisabled: 'Disabled Users List',
                 userListModalExpired: 'Expired Users List',
                 userListModalOnline: 'Online Users List',
-                userListModalError: 'Error fetching user list: {error}'
+                userListModalError: 'Error fetching user list: {error}',
+                usernameHeader: 'Username',
+                statusHeader: 'Status',
+                status_active: 'Active',
+                status_disabled: 'Disabled',
+                status_expired: 'Expired',
+                status_on_hold: 'On Hold',
+                status_limited: 'Limited'
             }
         };
 
@@ -863,14 +925,11 @@
             document.querySelectorAll('[data-key]').forEach(element => {
                 const key = element.getAttribute('data-key');
                 if (currentTrans[key]) {
-                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
-                        element.title = currentTrans.themeToggleTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
-                        element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'closeModalButton') {
-                        element.title = currentTrans.closeButtonTitle;
-                    }
-                    else {
+                    // Specific handling for modal title span
+                    if (element.id === 'userListModalTitle') {
+                        const span = element.querySelector('span');
+                        if (span) span.textContent = currentTrans[key];
+                    } else {
                         element.textContent = currentTrans[key];
                     }
                 }
@@ -892,7 +951,7 @@
                     fetchUserData(usernameInput.value.trim(), currentSelectedTimeRange);
                 }
                 fetchUserLists(); 
-                fetchSystemStats(); // Also re-fetch system stats to update counts and titles
+                fetchSystemStats(); 
             }
         }
 
@@ -917,7 +976,7 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 fetchUserLists(); 
-                fetchSystemStats(); // Fetch system stats on dashboard load
+                fetchSystemStats(); 
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -959,7 +1018,7 @@
         closeUserListModalButton.addEventListener('click', () => {
             userListModal.classList.remove('show');
             userListModal.classList.add('hidden');
-            userListContent.innerHTML = ''; // Clear content
+            userListContent.innerHTML = ''; 
             userListModalError.classList.add('hidden');
         });
 
@@ -976,7 +1035,7 @@
         // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
-            const password = loginPasswordInput.value.trim();
+            const password = loginPasswordInputInput.value.trim();
 
             if (!username || !password) {
                 loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
@@ -1010,7 +1069,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
-                fetchSystemStats(); // Fetch system stats after successful login
+                fetchSystemStats(); 
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -1022,11 +1081,10 @@
             }
         });
 
-        // --- NEW: Fetch System Stats for Widget ---
+        // --- Fetch System Stats for Widget ---
         async function fetchSystemStats() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch system stats.");
-                // Set counts to '...' or '0' if not logged in
                 activeUsersCountSpan.textContent = '...';
                 disabledUsersCountSpan.textContent = '...';
                 expiredUsersCountSpan.textContent = '...';
@@ -1065,7 +1123,6 @@
 
             } catch (error) {
                 console.error('Error fetching system stats:', error);
-                // Display error or set to '...' if stats fail to load
                 activeUsersCountSpan.textContent = 'Err';
                 disabledUsersCountSpan.textContent = 'Err';
                 expiredUsersCountSpan.textContent = 'Err';
@@ -1075,7 +1132,7 @@
             }
         }
 
-        // --- NEW: Fetch Users By Status for Modal ---
+        // --- Fetch Users By Status for Modal ---
         async function fetchUsersByStatus(status) {
             if (!accessToken) {
                 userListModalError.textContent = translations[currentLanguage].loginErrorMessage;
@@ -1089,10 +1146,9 @@
 
             try {
                 let apiUrl = `${CLOUDFLARE_WORKER_URL}users-by-status?status=${status}`;
-                if (status === 'online') {
-                    apiUrl = `${CLOUDFLARE_WORKER_URL}users-by-status?status=active&online=true`; // For online users, fetch active and filter by online status
-                }
-
+                // No change to online filter logic here, it remains 'active' and filters in worker
+                // if (status === 'online') { ... } is handled in worker
+                
                 const response = await fetch(apiUrl, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
@@ -1108,7 +1164,32 @@
                 if (data.users && data.users.length > 0) {
                     data.users.forEach(user => {
                         const li = document.createElement('li');
-                        li.innerHTML = `<span>${user.username}</span><span>${translations[currentLanguage][user.status] || user.status}</span>`; // Display status in selected language
+                        // Get translated status string
+                        const translatedStatus = translations[currentLanguage][`status_${user.status}`] || user.status;
+                        
+                        // Add status-specific class to list item for potential icon/color (optional)
+                        // This class would be based on the actual status, not the badge color
+                        li.className = `user-list-item-detail status-${user.status.replace('_', '-')}`; 
+                        
+                        // Determine icon based on status
+                        let statusIconSvg = '';
+                        if (user.status === 'active') {
+                            statusIconSvg = `<svg class="user-status-icon-modal" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`; // Checkmark
+                        } else if (user.status === 'disabled' || user.status === 'on_hold') {
+                            statusIconSvg = `<svg class="user-status-icon-modal" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm6-4v2h-2V7h2z"/></svg>`; // Warning/pause
+                        } else if (user.status === 'expired') {
+                            statusIconSvg = `<svg class="user-status-icon-modal" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`; // Error
+                        }
+                        // Add online status icon if applicable
+                        if (user.is_online) { // Worker now sends is_online
+                             statusIconSvg += `<svg class="user-status-icon-modal status-online" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8"/></svg>`; // Dot for online
+                        }
+
+
+                        li.innerHTML = `
+                            <span>${user.username} ${statusIconSvg}</span>
+                            <span>${translatedStatus}</span>
+                        `;
                         userListContent.appendChild(li);
                     });
                 } else {
@@ -1129,15 +1210,33 @@
             badge.addEventListener('click', () => {
                 const status = badge.dataset.status;
                 let modalTitleKey = 'userListModalDefaultTitle';
+                let modalIconPath = ''; // SVG path for modal title icon
 
                 switch (status) {
-                    case 'active': modalTitleKey = 'userListModalActive'; break;
-                    case 'disabled': modalTitleKey = 'userListModalDisabled'; break;
-                    case 'expired': modalTitleKey = 'userListModalExpired'; break;
-                    case 'online': modalTitleKey = 'userListModalOnline'; break;
-                    case 'on_hold': modalTitleKey = 'userListModalOnHold'; break; // If you decide to track on_hold users
+                    case 'active': 
+                        modalTitleKey = 'userListModalActive'; 
+                        modalIconPath = 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'; // Checkmark
+                        break;
+                    case 'disabled': 
+                        modalTitleKey = 'userListModalDisabled'; 
+                        modalIconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm6-4v2h-2V7h2z'; // Pause/Warning
+                        break;
+                    case 'expired': 
+                        modalTitleKey = 'userListModalExpired'; 
+                        modalIconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'; // Error/Exclamation
+                        break;
+                    case 'online': 
+                        modalTitleKey = 'userListModalOnline'; 
+                        modalIconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10.5 12 10.5 9.5 9.38 9.5 8 10.62 5.5 12 5.5zm0 14.2c-2.47 0-4.75-1.19-6.19-3.04.03-2.07 4.14-3.21 6.19-3.21s6.16 1.14 6.19 3.21c-1.44 1.85-3.72 3.04-6.19 3.04z'; // User icon (generic)
+                        break;
+                    // Add more cases if you have other statuses like 'on_hold'
                 }
-                userListModalTitle.textContent = translations[currentLanguage][modalTitleKey] || translations[currentLanguage].userListModalDefaultTitle;
+                
+                // Set modal title and dynamically add class for icon color
+                userListModalTitle.innerHTML = `
+                    <svg class="modal-icon ${status}" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="${modalIconPath}"/></svg>
+                    <span>${translations[currentLanguage][modalTitleKey] || translations[currentLanguage].userListModalDefaultTitle}</span>
+                `;
                 
                 userListModal.classList.remove('hidden');
                 userListModal.classList.add('show');
@@ -1346,11 +1445,9 @@
                 trafficChart.destroy();
             }
 
-            // Extract labels and data from the chart_data provided by the worker
             const chartLabels = data.chart_data ? data.chart_data.map(item => item.time) : [];
             const chartValuesBytes = data.chart_data ? data.chart_data.map(item => item.usage_bytes) : [];
             
-            // Determine the best unit for the Y-axis based on max value
             const maxUsageBytes = Math.max(...chartValuesBytes, 0); 
             let displayUnit = translations[currentLanguage].gb; 
             let scaleFactor = 1;

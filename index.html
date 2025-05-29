@@ -509,26 +509,21 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
-        const adminTotalVolume = document.getElementById('adminTotalVolume');
-        const adminConsumed = document.getElementById('adminConsumed');
-        const adminRemaining = document.getElementById('adminRemaining');
-        const adminCreationDateValue = document.getElementById('adminCreationDateValue');
-        const adminDaysPassedValue = document.getElementById('adminDaysPassedValue');
-
+        const usernameInput = document.getElementById('usernameInput');
+        const fetchDataButton = document.getElementById('fetchDataButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
         const chartContainer = document.getElementById('chartContainer');
-        const userUsageLists = document.getElementById('userUsageLists');
-        const topUsersList = document.getElementById('topUsersList');
-        const leastUsersList = document.getElementById('leastUsersList');
+        const userUsageLists = document.getElementById('userUsageLists'); 
+        const topUsersList = document.getElementById('topUsersList');     
+        const leastUsersList = document.getElementById('leastUsersList'); 
 
         let trafficChart;
         let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
-        let accessToken = null; 
-        let adminUsername = null; 
+        let accessToken = localStorage.getItem('marzban_access_token') || null; 
 
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
 
@@ -536,18 +531,18 @@
             fa: {
                 pageTitle: 'پنل مصرف ترافیک مرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'نام کاربری کاربر را وارد کنید:', 
-                fetchDataButton: 'دریافت اطلاعات کاربر', 
+                usernameLabel: 'نام کاربری کاربر را وارد کنید:',
+                fetchDataButton: 'دریافت اطلاعات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
                 fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
-                totalVolume: 'حجم کلی کاربر',
-                remainingVolume: 'حجم باقیمانده کاربر',
-                consumed: 'مصرفی کاربر',
-                creationDate: 'تاریخ ساخت کاربر',
-                daysPassed: 'مدت زمان ساخت کاربر',
-                trafficChartHeader: 'نمودار مصرف ترافیک کاربر',
-                trafficChartSubtitle: 'ترافیک مصرفی کاربر بر اساس بازه زمانی انتخابی',
+                totalVolume: 'حجم کلی',
+                remainingVolume: 'حجم باقیمانده',
+                consumed: 'مصرفی',
+                creationDate: 'تاریخ ساخت',
+                daysPassed: 'مدت زمان ساخت',
+                trafficChartHeader: 'نمودار مصرف ترافیک',
+                trafficChartSubtitle: 'ترافیک مصرفی شما بر اساس بازه زمانی انتخابی',
                 notAvailable: 'در دسترس نیست',
                 invalidDateFormat: 'فرمت تاریخ نامعتبر', 
                 daysUnit: 'روز',
@@ -567,28 +562,23 @@
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
                 topUsersHeader: '۵ کاربر پرمصرف',
                 leastUsersHeader: '۵ کاربر کم‌مصرف',
-                noUsersFound: 'کاربری یافت نشد.',
-                adminTotalVolume: 'حجم کلی پنل',
-                adminConsumed: 'مصرفی پنل',
-                adminRemaining: 'باقیمانده پنل',
-                adminCreationDate: 'تاریخ ساخت ادمین',
-                adminDaysPassed: 'مدت زمان ساخت ادمین'
+                noUsersFound: 'کاربری یافت نشد.'
             },
             en: {
                 pageTitle: 'Your Usage Details Panel', 
                 mainHeader: 'Your Usage Details Panel', 
                 usernameLabel: 'Enter User Username:',
-                fetchDataButton: 'Fetch User Data',
+                fetchDataButton: 'Fetch Data',
                 errorMessage: 'Error fetching data. Please try again.',
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
                 fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
-                totalVolume: 'Total User Volume',
-                remainingVolume: 'Remaining User Volume',
-                consumed: 'User Consumed',
-                creationDate: 'User Creation Date',
-                daysPassed: 'User Days Passed',
-                trafficChartHeader: 'User Traffic Consumption Chart',
-                trafficChartSubtitle: 'User traffic consumption based on the selected time range',
+                totalVolume: 'Total Volume',
+                remainingVolume: 'Remaining Volume',
+                consumed: 'Consumed',
+                creationDate: 'Creation Date',
+                daysPassed: 'Days Passed',
+                trafficChartHeader: 'Traffic Consumption Chart',
+                trafficChartSubtitle: 'Your traffic consumption based on the selected time range',
                 notAvailable: 'Not Available',
                 invalidDateFormat: 'Invalid Date Format',
                 daysUnit: 'days',
@@ -608,12 +598,7 @@
                 loginErrorMessage: 'Incorrect username or password.',
                 topUsersHeader: 'Top 5 Consuming Users',
                 leastUsersHeader: 'Least 5 Consuming Users',
-                noUsersFound: 'No users found.',
-                adminTotalVolume: 'Total Panel Volume',
-                adminConsumed: 'Panel Consumed',
-                adminRemaining: 'Panel Remaining',
-                adminCreationDate: 'Admin Creation Date',
-                adminDaysPassed: 'Admin Days Passed'
+                noUsersFound: 'No users found.'
             }
         };
 
@@ -644,7 +629,7 @@
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
             if (trafficChart) {
-                updateChart(currentTrafficData.usage, currentTrafficData.usage_unit);
+                updateUI(currentTrafficData);
             }
         }
 
@@ -709,8 +694,7 @@
             }
         });
 
-        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
-
+        // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -824,9 +808,9 @@
                 return;
             }
 
-            topUsersList.innerHTML = '';
+            topUsersList.innerHTML = ''; // Clear previous lists
             leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden');
+            userUsageLists.classList.add('hidden'); // Hide until loaded
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
@@ -842,7 +826,7 @@
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; // Or a specific "Session expired" message
                         loginErrorMessage.classList.remove('hidden');
                     }
                     const errorData = await response.json();
@@ -876,9 +860,10 @@
 
             } catch (error) {
                 console.error('Error fetching user lists:', error);
+                // Display error in the user list section or general error message
                 topUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
                 leastUsersList.innerHTML = `<li>Error: ${error.message}</li>`;
-                userUsageLists.classList.remove('hidden');
+                userUsageLists.classList.remove('hidden'); // Show container even with error
             }
         }
 

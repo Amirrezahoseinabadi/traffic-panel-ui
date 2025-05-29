@@ -33,6 +33,13 @@
             --user-list-item-hover-bg: rgba(255, 255, 255, 0.05); 
             --top-user-color: #4CAF50; 
             --least-user-color: #FFC107; 
+
+            /* New colors for user status badges */
+            --status-active-bg: #28a745; /* Green */
+            --status-disabled-bg: #6c757d; /* Gray */
+            --status-expired-bg: #dc3545; /* Red */
+            --status-online-bg: #007bff; /* Blue */
+            --status-onhold-bg: #ffc107; /* Yellow */
         }
 
         body.light-mode {
@@ -60,6 +67,13 @@
             --user-list-item-hover-bg: rgba(0, 0, 0, 0.03);
             --top-user-color: #28a745; 
             --least-user-color: #ffc107;
+
+            /* New colors for user status badges - Light Mode */
+            --status-active-bg: #28a745;
+            --status-disabled-bg: #6c757d;
+            --status-expired-bg: #dc3545;
+            --status-online-bg: #007bff;
+            --status-onhold-bg: #ffc107;
         }
 
         body {
@@ -191,7 +205,7 @@
             color: var(--accent-yellow);
         }
         
-        #errorMessage, #loginErrorMessage {
+        #errorMessage, #loginErrorMessage, #userListModalError { /* Added userListModalError */
             color: var(--error-red);
             font-weight: 600;
             padding: 0.625rem 1.25rem;
@@ -303,6 +317,7 @@
             border: none;
         }
 
+        /* User List Item Styles */
         .user-list-item {
             display: flex;
             justify-content: space-between;
@@ -354,6 +369,95 @@
         }
         #userUsageLists h2 span {
             margin-right: 0.5rem; 
+        }
+
+        /* NEW STYLES FOR USER STATS WIDGET */
+        .user-stats-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .user-stats-widget h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        .user-stats-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .user-stat-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px; /* Pill shape */
+            font-weight: 700;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            color: white; /* Text color for badges */
+            min-width: 90px; /* Ensure badges are somewhat uniform */
+        }
+        .user-stat-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .user-stat-badge.active { background-color: var(--status-active-bg); }
+        .user-stat-badge.disabled { background-color: var(--status-disabled-bg); }
+        .user-stat-badge.expired { background-color: var(--status-expired-bg); }
+        .user-stat-badge.online { background-color: var(--status-online-bg); }
+        .user-stat-badge.on_hold { background-color: var(--status-onhold-bg); } /* Fallback for on_hold if needed */
+
+        .user-list-modal-body {
+            flex-grow: 1; /* Allow content to fill space */
+            overflow-y: auto; /* Scrollable list */
+            padding: 1rem;
+        }
+        .user-list-modal-body ul {
+            list-style: none; /* Remove default list bullets */
+            padding: 0;
+            margin: 0;
+        }
+        .user-list-modal-body li {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--text-secondary); /* Dashed separator */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-list-modal-body li:last-child {
+            border-bottom: none;
+        }
+        .user-list-modal-body li span {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        .user-list-modal-body li span:first-child { /* username */
+             font-weight: 500;
+             text-align: right; /* RTL */
+             flex-grow: 1;
+             padding-right: 0.5rem;
+        }
+        .user-list-modal-body li span:last-child { /* status */
+             font-weight: 400;
+             text-align: left; /* LTR for status words */
+             color: var(--text-secondary);
+        }
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
 
@@ -424,6 +528,20 @@
                 padding: 0.6rem 0.8rem;
                 font-size: 0.85rem;
              }
+            .user-stat-badge {
+                padding: 0.6rem 1rem;
+                font-size: 1.25rem;
+                min-width: 70px;
+            }
+            .user-stats-widget h2 {
+                font-size: 1.5rem;
+            }
+            .modal-title {
+                font-size: 1.5rem;
+            }
+            .user-list-modal-body li span {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -467,6 +585,26 @@
             
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+
+            <div id="userStatsWidget" class="card mb-10 mx-auto">
+                <div class="user-stats-widget">
+                    <h2 data-key="usersOverallHeader">کاربران</h2>
+                    <div class="user-stats-badges">
+                        <button class="user-stat-badge active" data-status="active" data-key="activeUsersCount">
+                            <span id="activeUsersCount">...</span>
+                        </button>
+                        <button class="user-stat-badge disabled" data-status="disabled" data-key="disabledUsersCount">
+                            <span id="disabledUsersCount">...</span>
+                        </button>
+                        <button class="user-stat-badge expired" data-status="expired" data-key="expiredUsersCount">
+                            <span id="expiredUsersCount">...</span>
+                        </button>
+                        <button class="user-stat-badge online" data-status="online" data-key="onlineUsersCount">
+                            <span id="onlineUsersCount">...</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
@@ -545,6 +683,20 @@
         تمامی حقوق برای آقای مرزبان محفوظ است.
     </footer>
 
+    <div id="userListModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="closeUserListModalButton" class="modal-close-button">✖️</button>
+            <h3 id="userListModalTitle" class="modal-title" data-key="userListModalDefaultTitle">لیست کاربران</h3>
+            <p id="userListModalError" class="text-red-500 text-center mt-4 hidden"></p>
+            <div id="userListModalBody" class="user-list-modal-body">
+                <ul id="userListContent">
+                    </ul>
+                <div id="userListModalLoading" class="loading-spinner hidden"></div>
+            </div>
+        </div>
+    </div>
+
+
     <div id="supportModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="closeModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
@@ -582,6 +734,23 @@
         const userUsageLists = document.getElementById('userUsageLists'); 
         const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
+
+        // New elements for User Status Widget
+        const userStatsWidget = document.getElementById('userStatsWidget');
+        const activeUsersCountSpan = document.getElementById('activeUsersCount');
+        const disabledUsersCountSpan = document.getElementById('disabledUsersCount');
+        const expiredUsersCountSpan = document.getElementById('expiredUsersCount');
+        const onlineUsersCountSpan = document.getElementById('onlineUsersCount');
+        const userStatBadges = document.querySelectorAll('.user-stat-badge');
+
+        // New elements for User List Modal
+        const userListModal = document.getElementById('userListModal');
+        const closeUserListModalButton = document.getElementById('closeUserListModalButton');
+        const userListModalTitle = document.getElementById('userListModalTitle');
+        const userListModalError = document.getElementById('userListModalError');
+        const userListContent = document.getElementById('userListContent');
+        const userListModalLoading = document.getElementById('userListModalLoading');
+
 
         let trafficChart;
         let currentTrafficData = {}; 
@@ -625,9 +794,20 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                topUsersHeader: 'کاربران پرمصرف', // Shortened from '۵ کاربر پرمصرف'
-                leastUsersHeader: 'کاربران کم‌مصرف', // Shortened from '۵ کاربر کم‌مصرف'
-                noUsersFound: 'کاربری یافت نشد.'
+                topUsersHeader: 'کاربران پرمصرف', 
+                leastUsersHeader: 'کاربران کم‌مصرف', 
+                noUsersFound: 'کاربری یافت نشد.',
+                usersOverallHeader: 'کاربران', // For the new widget title
+                activeUsersCount: 'فعال',
+                disabledUsersCount: 'غیرفعال',
+                expiredUsersCount: 'منقضی',
+                onlineUsersCount: 'آنلاین',
+                userListModalDefaultTitle: 'لیست کاربران',
+                userListModalActive: 'لیست کاربران فعال',
+                userListModalDisabled: 'لیست کاربران غیرفعال',
+                userListModalExpired: 'لیست کاربران منقضی',
+                userListModalOnline: 'لیست کاربران آنلاین',
+                userListModalError: 'خطا در دریافت لیست کاربران: {error}'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -663,7 +843,18 @@
                 loginErrorMessage: 'Incorrect username or password.',
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
-                noUsersFound: 'No users found.'
+                noUsersFound: 'No users found.',
+                usersOverallHeader: 'Users',
+                activeUsersCount: 'Active',
+                disabledUsersCount: 'Disabled',
+                expiredUsersCount: 'Expired',
+                onlineUsersCount: 'Online',
+                userListModalDefaultTitle: 'User List',
+                userListModalActive: 'Active Users List',
+                userListModalDisabled: 'Disabled Users List',
+                userListModalExpired: 'Expired Users List',
+                userListModalOnline: 'Online Users List',
+                userListModalError: 'Error fetching user list: {error}'
             }
         };
 
@@ -695,12 +886,13 @@
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            // Trigger re-fetch for chart and user lists if language changes while dashboard is visible
+            // Trigger re-fetch for dashboard data if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 if (usernameInput && usernameInput.value.trim() !== '') {
                     fetchUserData(usernameInput.value.trim(), currentSelectedTimeRange);
                 }
                 fetchUserLists(); 
+                fetchSystemStats(); // Also re-fetch system stats to update counts and titles
             }
         }
 
@@ -725,6 +917,7 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 fetchUserLists(); 
+                fetchSystemStats(); // Fetch system stats on dashboard load
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -761,6 +954,24 @@
                 goftinoIframe.src = ''; 
             }
         });
+
+        // --- User List Modal Logic ---
+        closeUserListModalButton.addEventListener('click', () => {
+            userListModal.classList.remove('show');
+            userListModal.classList.add('hidden');
+            userListContent.innerHTML = ''; // Clear content
+            userListModalError.classList.add('hidden');
+        });
+
+        userListModal.addEventListener('click', (event) => {
+            if (event.target === userListModal) {
+                userListModal.classList.remove('show');
+                userListModal.classList.add('hidden');
+                userListContent.innerHTML = ''; 
+                userListModalError.classList.add('hidden');
+            }
+        });
+
 
         // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
@@ -799,6 +1010,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
+                fetchSystemStats(); // Fetch system stats after successful login
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -808,6 +1020,129 @@
                 loginButton.disabled = false;
                 loadingIndicator.classList.add('hidden'); 
             }
+        });
+
+        // --- NEW: Fetch System Stats for Widget ---
+        async function fetchSystemStats() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch system stats.");
+                // Set counts to '...' or '0' if not logged in
+                activeUsersCountSpan.textContent = '...';
+                disabledUsersCountSpan.textContent = '...';
+                expiredUsersCountSpan.textContent = '...';
+                onlineUsersCountSpan.textContent = '...';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}system-stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.error("Unauthorized: Access token might be expired or invalid for system stats. Logging out.");
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
+                        loginErrorMessage.classList.remove('hidden');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch system stats: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("System Stats data:", data);
+
+                activeUsersCountSpan.textContent = data.users_active !== undefined ? data.users_active : '...';
+                disabledUsersCountSpan.textContent = data.users_disabled !== undefined ? data.users_disabled : '...';
+                expiredUsersCountSpan.textContent = data.users_expired !== undefined ? data.users_expired : '...';
+                onlineUsersCountSpan.textContent = data.online_users !== undefined ? data.online_users : '...';
+
+            } catch (error) {
+                console.error('Error fetching system stats:', error);
+                // Display error or set to '...' if stats fail to load
+                activeUsersCountSpan.textContent = 'Err';
+                disabledUsersCountSpan.textContent = 'Err';
+                expiredUsersCountSpan.textContent = 'Err';
+                onlineUsersCountSpan.textContent = 'Err';
+                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
+            }
+        }
+
+        // --- NEW: Fetch Users By Status for Modal ---
+        async function fetchUsersByStatus(status) {
+            if (!accessToken) {
+                userListModalError.textContent = translations[currentLanguage].loginErrorMessage;
+                userListModalError.classList.remove('hidden');
+                return;
+            }
+
+            userListContent.innerHTML = '';
+            userListModalError.classList.add('hidden');
+            userListModalLoading.classList.remove('hidden');
+
+            try {
+                let apiUrl = `${CLOUDFLARE_WORKER_URL}users-by-status?status=${status}`;
+                if (status === 'online') {
+                    apiUrl = `${CLOUDFLARE_WORKER_URL}users-by-status?status=active&online=true`; // For online users, fetch active and filter by online status
+                }
+
+                const response = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch users for status ${status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log(`Users for status ${status}:`, data);
+
+                if (data.users && data.users.length > 0) {
+                    data.users.forEach(user => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span>${user.username}</span><span>${translations[currentLanguage][user.status] || user.status}</span>`; // Display status in selected language
+                        userListContent.appendChild(li);
+                    });
+                } else {
+                    userListContent.innerHTML = `<li>${translations[currentLanguage].noUsersFound}</li>`;
+                }
+
+            } catch (error) {
+                console.error(`Error fetching users for status ${status}:`, error);
+                userListModalError.textContent = translations[currentLanguage].userListModalError.replace('{error}', error.message);
+                userListModalError.classList.remove('hidden');
+            } finally {
+                userListModalLoading.classList.add('hidden');
+            }
+        }
+
+        // Event listeners for user status badges to open modal
+        userStatBadges.forEach(badge => {
+            badge.addEventListener('click', () => {
+                const status = badge.dataset.status;
+                let modalTitleKey = 'userListModalDefaultTitle';
+
+                switch (status) {
+                    case 'active': modalTitleKey = 'userListModalActive'; break;
+                    case 'disabled': modalTitleKey = 'userListModalDisabled'; break;
+                    case 'expired': modalTitleKey = 'userListModalExpired'; break;
+                    case 'online': modalTitleKey = 'userListModalOnline'; break;
+                    case 'on_hold': modalTitleKey = 'userListModalOnHold'; break; // If you decide to track on_hold users
+                }
+                userListModalTitle.textContent = translations[currentLanguage][modalTitleKey] || translations[currentLanguage].userListModalDefaultTitle;
+                
+                userListModal.classList.remove('hidden');
+                userListModal.classList.add('show');
+                fetchUsersByStatus(status);
+            });
         });
 
         // --- Fetch Top/Least Consuming Users ---

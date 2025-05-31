@@ -1,328 +1,1170 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>داشبورد مدیریت مرزبان</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" />
-  <style>
-    body {
-      background-color: #f5f7fa;
-      font-family: 'Vazirmatn', sans-serif; /* فرض می\u200cکنیم فونت وزین متغیر موجود است، در غیر این صورت از فونت\u200cهای سیستمی استفاده می\u200cشود */
-    }
-    .card {
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      border-radius: 10px;
-    }
-    .header {
-      background: linear-gradient(90deg, #7f5af0, #2cb67d);
-      color: white;
-      padding: 20px;
-      border-radius: 0 0 10px 10px;
-    }
-    .metric-card {
-      background-color: #ffffff;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .metric-card .value {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #7f5af0; /* Purple for values */
-    }
-    .metric-card .label {
-      font-size: 0.9rem;
-      color: #6c757d;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Modern & Refined Color Palette */
+        :root {
+            --bg-primary: #0F172A; /* Darker blue-gray, deep and sophisticated */
+            --bg-card: #1E293B; /* Slightly lighter than primary, for contrast */
+            --text-primary: #E2E8F0; /* Off-white, soft on dark background */
+            --text-secondary: #94A3B8; /* Muted gray for secondary info */
+            --input-bg: #334155; /* Darker input fields */
+            --input-border: #475569; /* Subtle input border */
+            --button-bg-general: #3B424E; /* General button base color */
+            --button-hover-bg-general: #4A5568; /* Hover for general buttons */
+            --accent-blue: #3B82F6; /* Vibrant blue for main actions */
+            --accent-blue-hover: #2563EB; /* Darker blue on hover */
+            --accent-green: #22C55E; /* Fresh green for success/positive values */
+            --accent-yellow: #FACC15; /* Warm yellow for warnings/remaining */
+            --error-red: #EF4444; /* Bold red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.4); /* Deeper, more diffused shadows */
+            --shadow-color-light: rgba(0, 0, 0, 0.2); /* Lighter part of shadow */
+            --border-color: #334155; /* Subtle border for separation */
+            --footer-text-color: #64748B; /* Darker gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.8); /* More opaque overlay */
+            --modal-bg: #1E293B; /* Modal background same as card */
+            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
+            --top-user-color: var(--accent-green);
+            --least-user-color: var(--accent-yellow);
+            --deactivate-button-bg: #dc2626; /* Red for deactivation */
+            --deactivate-button-hover-bg: #b91c1c;
+            --prediction-color: #8B5CF6; /* A new accent color for prediction */
+        }
+
+        body.light-mode {
+            --bg-primary: #F0F2F5;
+            --bg-card: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --input-bg: #E2E8F0;
+            --input-border: #CBD5E0;
+            --button-bg-general: #E2E8F0;
+            --button-hover-bg-general: #CBD5E0;
+            --accent-blue: #3B82F6;
+            --accent-blue-hover: #2563EB;
+            --accent-green: #22C55E;
+            --accent-yellow: #FACC15;
+            --error-red: #DC2626;
+            --shadow-color-dark: rgba(0, 0, 0, 0.15);
+            --shadow-color-light: rgba(0, 0, 0, 0.08);
+            --border-color: #E2E8F0;
+            --footer-text-color: #94A3B8;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.6);
+            --modal-bg: #FFFFFF;
+            --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
+            --top-user-color: var(--accent-green);
+            --least-user-color: var(--accent-yellow);
+            --deactivate-button-bg: var(--error-red);
+            --deactivate-button-hover-bg: #B91C1C;
+            --prediction-color: #7C3AED; 
+        }
+
+        /* General Body & Typography */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 3rem; /* More space at bottom */
+            line-height: 1.6; /* Improved readability */
+        }
+        h1, h2, h3 {
+            font-weight: 700; /* Bolder headings */
+            line-height: 1.2;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 1.25rem; /* Slightly more rounded */
+            padding: 2rem; /* Increased padding */
+            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light); /* Softer, deeper shadow */
+            transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+        .card:hover {
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 15px 35px -10px var(--shadow-color-dark), 0 8px 15px -5px var(--shadow-color-light);
+        }
+        .card p:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem; /* Slightly larger labels */
+            margin-bottom: 0.75rem; /* More space below label */
+        }
+        .card p:last-child {
+            font-weight: 700; /* Bolder values */
+            font-size: 2.5rem; /* Larger primary values */
+            line-height: 1.1; /* Tighter line height */
+            margin-top: 0;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border-left-color: var(--accent-blue);
+            width: 3.5rem; /* Slightly larger */
+            height: 3.5rem;
+            border-width: 5px; /* Thicker border */
+            animation: spin 1s linear infinite;
+            margin: 3rem auto; /* More vertical space */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Input Fields */
+        input[type="text"], input[type="password"] {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.9rem 1.2rem; /* More padding */
+            border-radius: 0.65rem; /* Slightly more rounded */
+            font-size: 1rem; /* Clearer font size */
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* More prominent focus ring */
+        }
+
+        /* Main Button */
+        .main-button {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 1rem 2rem; /* More padding */
+            border-radius: 0.65rem; /* Consistent rounding */
+            font-weight: 600;
+            font-size: 1.1rem; /* Slightly larger text */
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* Stronger initial shadow */
+        }
+        .main-button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-2px); /* More noticeable lift */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
+        }
+        .main-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reset shadow on click */
+        }
+        .main-button:disabled {
+            background-color: var(--button-bg-general);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Select Dropdown */
+        select {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.75rem 1.2rem; /* Adjusted padding */
+            border-radius: 0.65rem;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            /* Moved background-image to the left for better visual balance in RTL */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1rem center; /* Moved arrow to left */
+            background-size: 1.1em 1.1em; /* Smaller arrow */
+            transition: all 0.3s ease;
+            text-align: center; /* Attempt to center text */
+            text-align-last: center; /* Attempt to center selected option text in some browsers */
+            padding-right: 1.2rem; /* Ensure enough space for text */
+            padding-left: 2.25em; /* Make space for the arrow on the left */
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        /* Icon Buttons (Theme/Support) */
+        .icon-button {
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.4rem; /* Larger icon size */
+            width: 3rem; /* Larger button size */
+            height: 3rem;
+            border-radius: 0.75rem; /* More rounded */
+            display: flex; /* Ensure flex for centering icon */
+            align-items: center; /* Center icon vertically */
+            justify-content: center; /* Center icon horizontally */
+            transition: all 0.2s ease;
+        }
+        .icon-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Data Card Values */
+        /* These are for individual user search results */
+        #total2, #usage { 
+            color: var(--accent-green);
+        }
+        #baghi { 
+            color: var(--accent-yellow);
+        }
+        #date3 { 
+            font-size: 1.4rem; /* Larger date text */
+            line-height: 1.3;
+            margin-top: 0.75rem;
+        }
+        #predictionMessage {
+            color: var(--prediction-color); /* Specific color for prediction */
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        /* Error Messages */
+        #errorMessage, #loginErrorMessage {
+            color: var(--error-red);
+            font-weight: 600;
+            padding: 0.8rem 1.5rem; /* More padding */
+            border-radius: 0.75rem; /* Consistent rounding */
+            background-color: rgba(239, 68, 68, 0.15); /* Slightly darker background */
+            border: 1px solid var(--error-red);
+            font-size: 1rem; /* Clearer font size */
+            margin-top: 1.5rem; /* More space */
+        }
+
+        /* User Lists (Top/Least Consuming) */
+        #userUsageLists h2 {
+            font-size: 1.6rem; /* Larger heading */
+            color: var(--accent-blue); /* Consistent accent color */
+            margin-bottom: 1.5rem; /* More space */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+        }
+        #userUsageLists h2 span {
+            margin-right: 0.75rem; 
+        }
+        .user-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0.75rem; /* More padding */
+            border-bottom: 1px solid var(--border-color); /* Consistent border */
+            margin-bottom: 0; 
+            font-size: 1rem; /* Slightly larger text */
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border-radius: 0.5rem; /* Slight rounding for hover effect */
+        }
+        .user-list-item:hover {
+            background-color: var(--user-list-item-hover-bg); 
+        }
+        .user-list-icon {
+            width: 1.25rem; /* Larger icon */
+            height: 1.25rem;
+            margin-left: 0.75rem; 
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-top: 3.5rem; /* More space from content */
+            text-align: center;
+            color: var(--footer-text-color);
+            font-size: 0.9rem; /* Slightly larger */
+            font-weight: 400;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--modal-overlay-bg);
+            display: flex;
+            justify-content: center; /* Centers horizontally */
+            align-items: center; /* Centers vertically */
+            z-index: 1000; /* Ensure it's on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* Adjusted modal content (for support modal) */
+        .modal-content { /* Used for support modal */
+            background-color: var(--modal-bg);
+            border-radius: 1.5rem; /* More rounded modals */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
+            border: 1px solid var(--border-color);
+            position: relative; /* Ensure position for absolute close button */
+            transform: scale(0.9); /* Initial smaller scale for animation */
+            opacity: 0; /* Initial hidden state for animation */
+            transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
+            
+            width: 95vw; /* Almost full viewport width */
+            max-width: 1200px; /* An even larger max-width for very wide screens */
+            height: 95vh; /* Almost full viewport height */
+            max-height: 95vh; /* Ensure it doesn't exceed viewport */
+            overflow-y: auto; /* Allow scrolling if content truly overflows */
+            display: flex;
+            flex-direction: column; /* Stack content */
+            padding: 0; /* Remove padding if iframe is to fill entirely */
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1); /* Scale up on show */
+            opacity: 1; /* Fade in on show */
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 1.5rem; /* Slightly further from corner */
+            left: 1.5rem; /* Slightly further from corner for RTL top-left */
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 2.8rem;
+            height: 2.8rem;
+            font-size: 1.35rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001; /* Ensure button is above iframe */
+            transition: all 0.2s ease;
+        }
+        .modal-close-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+        }
+
+        /* Ensure iframe fills the modal content */
+        .modal-iframe {
+            width: 100%;
+            height: 100%; /* Iframe should fill the modal content */
+            border: none;
+            display: block; /* Ensures it takes up full space */
+        }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.25rem;
+                border-radius: 1rem;
+            }
+            .card p:last-child {
+                font-size: 2rem; /* Slightly smaller for mobile */
+            }
+            #date3, #predictionMessage {
+                font-size: 1.1rem;
+            }
+            .main-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            input[type="text"], input[type="password"], select {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 0.5rem;
+            }
+            .icon-button {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.2rem;
+                border-radius: 0.6rem;
+            }
+            h1 {
+                font-size: 2.5rem; /* Adjusted main header */
+            }
+            .text-xl {
+                font-size: 1.2rem; /* Adjusted subheadings */
+            }
+            .app-footer {
+                margin-top: 2.5rem;
+                font-size: 0.8rem;
+            }
+            /* Support modal content on small screens */
+            .modal-content { /* Applies to support modal now */
+                padding: 0; /* No padding on mobile for full iframe space */
+                max-width: 98vw; /* Wider on very small screens */
+                height: 98vh; /* Taller on very small screens */
+                border-radius: 1rem;
+            }
+            .modal-close-button {
+                top: 0.75rem;
+                left: 0.75rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 1.1rem;
+            }
+            .user-list-item {
+                padding: 0.8rem 0.6rem;
+                font-size: 0.9rem;
+            }
+            /* Adjust icon alignment on small screens: center them */
+            .top-bar-icons { 
+                justify-content: center; /* Center items on small screens */
+                gap: 0.75rem; /* Slightly larger gap */
+            }
+            /* For RTL, move language selector visual order to be on the right (first item) */
+            .top-bar-icons .relative {
+                order: -1; 
+            }
+        }
+    </style>
 </head>
-<body>
-  <div class="container py-4">
-    <div class="header text-center mb-4">
-      <h2>داشبورد مدیریت مرزبان</h2>
-      <p>مشاهده وضعیت کاربران و سرورها</p>
-    </div>
+<body class="p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons">
+            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+                <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
+                </svg>
+            </button>
 
-    <div id="login-section">
-      <div class="row justify-content-center mb-4">
-        <div class="col-md-6">
-          <div class="card p-4">
-            <h5 class="card-title text-center mb-3">ورود مدیر</h5>
-            <input type="text" id="adminUser" class="form-control mb-2" placeholder="نام کاربری">
-            <input type="password" id="adminPass" class="form-control mb-3" placeholder="رمز عبور">
-            <button class="btn btn-primary w-100" onclick="login()">ورود</button>
-            <div id="loginResult" class="mt-3 text-danger small text-center"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <div class="relative">
+                <select id="languageSelector" class="px-3 py-2 rounded-md">
+                    <option value="fa">فارسی</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
 
-    <div id="dashboard-section" class="d-none">
-      <div class="row g-4 mb-4">
-        <div class="col-md-3">
-          <div class="metric-card">
-            <div class="label">حجم کلی پنل</div>
-            <div id="total-traffic" class="value">0 GB</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="metric-card">
-            <div class="label">حجم مصرفی</div>
-            <div id="used-traffic" class="value">0 GB</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="metric-card">
-            <div class="label">حجم باقیمانده</div>
-            <div id="remaining-traffic" class="value">0 GB</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="metric-card">
-            <div class="label">پیش\u200cبینی اتمام حجم</div>
-            <div id="estimated-expiry" class="value">نامشخص</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        <div class="col-md-6">
-          <div class="card p-3">
-            <h5 class="card-title">اطلاعات کاربر</h5>
-            <input type="text" id="searchUser" class="form-control mb-2" placeholder="نام کاربر">
-            <button class="btn btn-secondary w-100" onclick="fetchUser()">جستجو</button>
-            <div id="userInfo" class="mt-3 small"></div>
-            <div id="userSearchError" class="mt-2 text-danger small"></div>
-          </div>
+            <button id="supportButton" class="icon-button" data-key="supportButtonTitle">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                </svg>
+            </button>
         </div>
 
-        <div class="col-md-6">
-          <div class="card p-3">
-            <h5 class="card-title">کاربران پر مصرف / کم مصرف</h5>
-            <div class="row">
-                <div class="col-6">
-                    <h6>🔺 پر مصرف:</h6>
-                    <pre id="top-users-list" class="small text-muted"></pre>
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
+
+        <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
+            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
+            <input type="text" id="loginUsernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
+            
+            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
+            <input type="password" id="loginPasswordInput" placeholder="مثال: d64dgffv4f6s4fv" class="w-full max-w-md mb-6 text-center">
+            
+            <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
+            <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
+        </div>
+
+        <div id="dashboardContent" class="hidden">
+            
+            <div id="loadingIndicator" class="loading-spinner hidden rounded-full border-solid border-4 border-t-transparent"></div>
+            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+
+            <h2 class="text-2xl font-bold text-center mb-6" data-key="adminStatsHeader">آمار کلی پنل ادمین</h2>
+            <div id="adminDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10 mx-auto">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalPanelVolume">حجم کلی پنل</p>
+                    <p id="adminTotalTraffic" class="text-3xl text-green-400">...</p>
                 </div>
-                <div class="col-6">
-                    <h6>🔻 کم مصرف:</h6>
-                    <pre id="least-users-list" class="small text-muted"></pre>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumedPanelVolume">حجم مصرفی پنل</p>
+                    <p id="adminUsedTraffic" class="text-3xl text-yellow-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingPanelVolume">حجم باقیمانده پنل</p>
+                    <p id="adminRemainingTraffic" class="text-3xl text-red-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="estimatedPanelExpiry">پیش\u200cبینی اتمام پنل</p>
+                    <p id="adminEstimatedExpiry" class="text-3xl text-purple-400">...</p>
                 </div>
             </div>
-            <div id="summaryError" class="mt-2 text-danger small"></div>
-          </div>
+
+            <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
+                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
+                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-6 text-center">
+                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
+            </div>
+
+            <div id="individualUserDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto hidden">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
+                    <p id="userTotalTraffic" class="text-3xl text-green-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
+                    <p id="userRemainingTraffic" class="text-3xl text-yellow-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
+                    <p id="userUsedTraffic" class="text-3xl text-red-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت کاربر</p>
+                    <p id="userCreationDate" class="text-lg">...</p>
+                </div>
+                <div class="card col-span-full lg:col-span-1">
+                    <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
+                    <p id="userDaysPassed" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="predictionHeader">پیش\u200cبینی اتمام حجم</p>
+                    <p id="userPredictionMessage" class="text-3xl text-purple-400">...</p>
+                </div>
+            </div>
+            <p id="userSearchErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="userSearchErrorMessage">کاربر یافت نشد یا خطایی رخ داد.</p>
+
+
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto hidden">
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/>
+                        </svg>
+                        <span data-key="topUsersHeader">کاربران پرمصرف</span>
+                    </h2>
+                    <div id="topUsersList" class="space-y-0"> 
+                        </div>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
+                        </svg>
+                        <span data-key="leastUsersHeader">کاربران کم\u200cمصرف</span>
+                    </h2>
+                    <div id="leastUsersList" class="space-y-0">
+                        </div>
+                </div>
+            </div>
+
         </div>
-      </div>
     </div>
-  </div>
 
-  <script>
-    // Worker URL (replace with your actual worker URL)
-    const WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
+    <footer class="app-footer" data-key="footerText">
+        تمامی حقوق برای آقای مرزبان محفوظ است.
+    </footer>
 
-    let adminToken = localStorage.getItem('adminToken') || ""; // Load token from local storage
+    <div id="supportModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
+        </div>
+    </div>
 
-    // DOM Elements
-    const loginSection = document.getElementById('login-section');
-    const dashboardSection = document.getElementById('dashboard-section');
-    const adminUser = document.getElementById('adminUser');
-    const adminPass = document.getElementById('adminPass');
-    const loginResult = document.getElementById('loginResult');
-    const searchUser = document.getElementById('searchUser');
-    const userInfo = document.getElementById('userInfo');
-    const userSearchError = document.getElementById('userSearchError');
-    const topUsersList = document.getElementById('top-users-list');
-    const leastUsersList = document.getElementById('least-users-list');
-    const summaryError = document.getElementById('summaryError');
+    <script>
+        // DOM Elements
+        const htmlElement = document.documentElement;
+        const bodyElement = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const languageSelector = document.getElementById('languageSelector');
+        const supportButton = document.getElementById('supportButton'); 
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModalButton = document.getElementById('closeSupportModalButton');
+        const goftinoIframe = document.getElementById('goftinoIframe');
 
-    const totalTrafficElem = document.getElementById('total-traffic');
-    const usedTrafficElem = document.getElementById('used-traffic');
-    const remainingTrafficElem = document.getElementById('remaining-traffic');
-    const estimatedExpiryElem = document.getElementById('estimated-expiry');
-    // Note: Panel creation date and elapsed days are not directly available from Marzban API
-    // They will be displayed as '--' as per current API analysis
+        const loginForm = document.getElementById('loginForm');
+        const loginUsernameInput = document.getElementById('loginUsernameInput');
+        const loginPasswordInput = document.getElementById('loginPasswordInput');
+        const loginButton = document.getElementById('loginButton');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        const dashboardContent = document.getElementById('dashboardContent');
 
-    // Helper to format bytes
-    function formatBytes(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    function bytesToGb(bytes) {
-        return bytes / (1024 * 1024 * 1024);
-    }
+        // Admin Stats Elements
+        const adminDataCards = document.getElementById('adminDataCards');
+        const adminTotalTraffic = document.getElementById('adminTotalTraffic');
+        const adminUsedTraffic = document.getElementById('adminUsedTraffic');
+        const adminRemainingTraffic = document.getElementById('adminRemainingTraffic');
+        const adminEstimatedExpiry = document.getElementById('adminEstimatedExpiry');
 
-    async function login() {
-      const username = adminUser.value.trim();
-      const password = adminPass.value.trim();
-      loginResult.textContent = "در حال ورود...";
-      loginResult.classList.remove('text-success', 'text-danger');
-      loginResult.classList.add('text-info');
+        // Individual User Search Elements
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
+        const usernameInput = document.getElementById('usernameInput'); // Input for searching individual user
+        const fetchDataButton = document.getElementById('fetchDataButton');
+        const individualUserDataCards = document.getElementById('individualUserDataCards'); // Container for individual user data
+        const userTotalTraffic = document.getElementById('userTotalTraffic');
+        const userUsedTraffic = document.getElementById('userUsedTraffic');
+        const userRemainingTraffic = document.getElementById('userRemainingTraffic');
+        const userCreationDate = document.getElementById('userCreationDate');
+        const userDaysPassed = document.getElementById('userDaysPassed');
+        const userPredictionMessage = document.getElementById('userPredictionMessage');
+        const userSearchErrorMessage = document.getElementById('userSearchErrorMessage');
 
-      if (!username || !password) {
-        loginResult.textContent = "نام کاربری و رمز عبور لازم است.";
-        loginResult.classList.remove('text-info');
-        loginResult.classList.add('text-danger');
-        return;
-      }
+        // General Error/Loading
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage'); // General dashboard error message
 
-      try {
-        const res = await fetch(`${WORKER_URL}login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-        });
+        // User Lists Elements
+        const userUsageLists = document.getElementById('userUsageLists'); 
+        const topUsersList = document.getElementById('topUsersList');     
+        const leastUsersList = document.getElementById('leastUsersList'); 
 
-        const data = await res.json();
-        if (res.ok) {
-          adminToken = data.access_token;
-          localStorage.setItem('adminToken', adminToken); // Save token
-          loginResult.textContent = "ورود موفق!";
-          loginResult.classList.remove('text-info', 'text-danger');
-          loginResult.classList.add('text-success');
-          loadDashboardData(); // Load all dashboard data
-          loginSection.classList.add('d-none'); // Hide login section
-          dashboardSection.classList.remove('d-none'); // Show dashboard
-        } else {
-          loginResult.textContent = data.message || data.error || "خطا در ورود";
-          loginResult.classList.remove('text-info', 'text-success');
-          loginResult.classList.add('text-danger');
+        // State variables
+        let currentLanguage = localStorage.getItem('language') || 'fa';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let accessToken = localStorage.getItem('marzban_access_token') || null; 
+        let currentIndividualUserData = null; // To store data of the currently searched individual user
+
+        // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
+
+        // --- Localization Data ---
+        const translations = {
+            fa: {
+                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
+                mainHeader: 'پنل جزئیات مصرف شما', 
+                usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
+                fetchDataButton: 'دریافت جزئیات',
+                errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
+                invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
+                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
+                totalVolume: 'حجم کلی کاربر',
+                remainingVolume: 'حجم باقیمانده کاربر',
+                consumed: 'حجم مصرفی کاربر',
+                creationDate: 'تاریخ ساخت کاربر',
+                daysPassed: 'مدت زمان ساخت کاربر',
+                notAvailable: 'در دسترس نیست',
+                invalidDateFormat: 'فرمت تاریخ نامعتبر', 
+                daysUnit: 'روز',
+                unknown: 'نامشخص',
+                bytes: 'بایت',
+                kb: 'کیلوبایت',
+                mb: 'مگابایت',
+                gb: 'گیگابایت',
+                tb: 'ترابایت',
+                footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
+                themeToggleTitle: 'تغییر تم',
+                supportButtonTitle: 'پشتیبانی',
+                closeButtonTitle: 'بستن',
+                loginUsernameLabel: 'نام کاربری ادمین:',
+                loginPasswordLabel: 'رمز عبور ادمین:',
+                loginButton: 'ورود',
+                loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
+                adminStatsHeader: 'آمار کلی پنل ادمین',
+                totalPanelVolume: 'حجم کلی پنل',
+                consumedPanelVolume: 'حجم مصرفی پنل',
+                remainingPanelVolume: 'حجم باقیمانده پنل',
+                estimatedPanelExpiry: 'پیش\u200cبینی اتمام پنل',
+                topUsersHeader: 'کاربران پرمصرف', 
+                leastUsersHeader: 'کاربران کم\u200cمصرف', 
+                noUsersFound: 'کاربری یافت نشد.',
+                predictionHeader: 'پیش\u200cبینی اتمام حجم', 
+                predictionMessageNoData: 'اطلاعات کافی نیست.', 
+                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
+                predictionMessageDepleted: 'حجم به اتمام رسیده.',
+                userSearchErrorMessage: 'کاربر یافت نشد یا خطایی رخ داد.'
+            },
+            en: {
+                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
+                mainHeader: 'Your Usage Details Panel', 
+                usernameLabel: 'Enter your username to view usage details:',
+                fetchDataButton: 'Get Details',
+                errorMessage: 'Error fetching data. Please try again.',
+                invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
+                fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
+                totalVolume: 'Total User Volume',
+                remainingVolume: 'Remaining User Volume',
+                consumed: 'Consumed User Traffic',
+                creationDate: 'User Creation Date',
+                daysPassed: 'User Days Passed',
+                notAvailable: 'Not Available',
+                invalidDateFormat: 'Invalid Date Format',
+                daysUnit: 'days',
+                unknown: 'Unknown',
+                bytes: 'Bytes',
+                kb: 'KB',
+                mb: 'MB',
+                gb: 'GB',
+                tb: 'TB',
+                footerText: 'All rights reserved for Mr. Marzban.', 
+                themeToggleTitle: 'Toggle Theme',
+                supportButtonTitle: 'Support',
+                closeButtonTitle: 'Close',
+                loginUsernameLabel: 'Admin Username:',
+                loginPasswordLabel: 'Admin Password:',
+                loginButton: 'Login',
+                loginErrorMessage: 'Incorrect username or password.',
+                adminStatsHeader: 'Admin Panel Overview',
+                totalPanelVolume: 'Total Panel Volume',
+                consumedPanelVolume: 'Consumed Panel Volume',
+                remainingPanelVolume: 'Remaining Panel Volume',
+                estimatedPanelExpiry: 'Estimated Panel Expiry',
+                topUsersHeader: 'Top Consuming Users',
+                leastUsersHeader: 'Least Consuming Users',
+                noUsersFound: 'No users found.',
+                predictionHeader: 'Data Depletion Prediction', 
+                predictionMessageNoData: 'Insufficient data.', 
+                predictionMessageNoConsumption: 'No consumption recorded.', 
+                predictionMessageDepleted: 'Data depleted.',
+                userSearchErrorMessage: 'User not found or an error occurred.'
+            }
+        };
+
+        // --- Helper Functions ---
+
+        /**
+         * Converts bytes to a more readable format (GB, MB).
+         * @param {number} bytes - The number of bytes.
+         * @returns {string} Formatted string.
+         */
+        function formatBytes(bytes) {
+            if (bytes === 0 || bytes === null || isNaN(bytes)) return `0 ${translations[currentLanguage].bytes}`;
+            const k = 1024;
+            const sizes = [translations[currentLanguage].bytes, translations[currentLanguage].kb, translations[currentLanguage].mb, translations[currentLanguage].gb, translations[currentLanguage].tb];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-      } catch (error) {
-        console.error("Login error:", error);
-        loginResult.textContent = "خطا در برقراری ارتباط با سرور.";
-        loginResult.classList.remove('text-info', 'text-success');
-        loginResult.classList.add('text-danger');
-      }
-    }
 
-    async function loadDashboardData() {
-        if (!adminToken) {
-            loginResult.textContent = "توکن احراز هویت نامعتبر است. لطفا دوباره وارد شوید.";
-            loginResult.classList.remove('text-info', 'text-success');
-            loginResult.classList.add('text-danger');
-            loginSection.classList.remove('d-none');
-            dashboardSection.classList.add('d-none');
-            return;
+        /**
+         * Converts Bytes to GB (raw number).
+         * @param {number} bytes - The value in Bytes.
+         * @returns {number} Value in GB.
+         */
+        function bytesToGb(bytes) {
+            return bytes / (1024 * 1024 * 1024);
         }
 
-        summaryError.textContent = "در حال دریافت آمار...";
-        summaryError.classList.remove('text-danger');
-        summaryError.classList.add('text-info');
-
-        try {
-            const res = await fetch(`${WORKER_URL}dashboard-init`, {
-                headers: { Authorization: "Bearer " + adminToken },
-            });
-            const data = await res.json();
-
-            if (res.ok) {
-                // Update Metric Cards
-                totalTrafficElem.textContent = formatBytes(data.total_traffic_bytes || 0);
-                usedTrafficElem.textContent = formatBytes(data.used_traffic_bytes || 0);
-                remainingTrafficElem.textContent = formatBytes(data.remaining_traffic_bytes || 0);
-
-                // Estimated expiry (simplified)
-                if (data.used_traffic_bytes > 0 && data.remaining_traffic_bytes > 0 && data.elapsed_days > 0) {
-                    const dailyUsageBytes = data.used_traffic_bytes / data.elapsed_days;
-                    if (dailyUsageBytes > 0) {
-                        const remainingDays = data.remaining_traffic_bytes / dailyUsageBytes;
-                        estimatedExpiryElem.textContent = `${Math.round(remainingDays)} روز دیگر`;
+        /**
+         * Applies translations to all elements with data-key attribute.
+         * @param {string} lang - The language code ('fa' or 'en').
+         */
+        function applyTranslations(lang) {
+            const currentTrans = translations[lang];
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (currentTrans[key]) {
+                    // Special handling for button titles (tooltips)
+                    if (element.tagName === 'BUTTON' && (element.id === 'themeToggle' || element.id === 'supportButton' || element.id === 'closeSupportModalButton')) {
+                        element.title = currentTrans[key];
                     } else {
-                        estimatedExpiryElem.textContent = 'نامحدود';
+                        element.textContent = currentTrans[key];
                     }
-                } else {
-                    estimatedExpiryElem.textContent = 'نامشخص';
                 }
+            });
+            // Update placeholders
+            if (usernameInput) { 
+                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            }
+            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
+            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
+            
+            // Update HTML lang and dir attributes
+            htmlElement.setAttribute('lang', lang);
+            htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+            bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-                // Update Top/Least Users
-                const top = (data.top_users || []).map(u => `${u.username} (${formatBytes(u.used_traffic_bytes)})`).join("\n");
-                const least = (data.least_users || []).map(u => `${u.username} (${formatBytes(u.used_traffic_bytes)})`).join("\n");
-                
-                topUsersList.textContent = top || 'کاربری یافت نشد.';
-                leastUsersList.textContent = least || 'کاربری یافت نشد.';
-
-                summaryError.textContent = ""; // Clear error message
-                summaryError.classList.remove('text-info', 'text-danger');
-
-            } else {
-                summaryError.textContent = data.message || data.error || "خطا در دریافت آمار داشبورد";
-                summaryError.classList.remove('text-info');
-                summaryError.classList.add('text-danger');
-                if (res.status === 401 || res.status === 403) {
-                    adminToken = ""; // Clear invalid token
-                    localStorage.removeItem('adminToken');
-                    loginResult.textContent = data.message || "نشست شما منقضی شده است. لطفا دوباره وارد شوید.";
-                    loginResult.classList.remove('text-info', 'text-success');
-                    loginResult.classList.add('text-danger');
-                    loginSection.classList.remove('d-none');
-                    dashboardSection.classList.add('d-none');
+            // Re-render data that depends on language (e.g., formatted numbers, dates)
+            if (dashboardContent && !dashboardContent.classList.contains('hidden')) {
+                if (accessToken) {
+                    fetchAdminDashboardData(); // Re-fetch admin data to update numbers/dates
+                    fetchUserLists(); // Re-fetch user lists to update formatted usage
+                }
+                if (currentIndividualUserData) {
+                    updateIndividualUserUI(currentIndividualUserData); // Re-render individual user data
                 }
             }
-        } catch (error) {
-            console.error("Load dashboard data error:", error);
-            summaryError.textContent = "خطا در برقراری ارتباط برای دریافت اطلاعات داشبورد.";
-            summaryError.classList.remove('text-info');
-            summaryError.classList.add('text-danger');
         }
-    }
 
-    async function fetchUser() {
-      const username = searchUser.value.trim();
-      userInfo.textContent = "در حال دریافت...";
-      userInfo.classList.remove('text-danger');
-      userInfo.classList.add('text-info');
-      userSearchError.textContent = "";
-
-      if (!username) {
-        userSearchError.textContent = "لطفا نام کاربری را وارد کنید.";
-        userSearchError.classList.remove('d-none');
-        userInfo.textContent = "";
-        return;
-      }
-      userSearchError.classList.add('d-none');
-
-      try {
-        // Note: The /?name=... endpoint does not require Authorization header
-        const res = await fetch(`${WORKER_URL}?name=${username}&step=info`); 
-        const data = await res.json();
-
-        if (res.ok && data.username) { // Assuming data.username exists for success
-          userInfo.innerHTML = `
-            <b>کاربر:</b> ${data.username}<br>
-            <b>مصرف:</b> ${formatBytes(data.used_traffic_bytes || 0)}<br>
-            <b>باقی مانده:</b> ${formatBytes(data.remaining_traffic_bytes || 0)}<br>
-            <b>وضعیت:</b> ${data.status || 'نامشخص'}<br>
-          `;
-          userInfo.classList.remove('text-info', 'text-danger');
-          userInfo.classList.add('text-success');
-        } else {
-          userInfo.textContent = data.message || data.error || "خطا در دریافت اطلاعات یا کاربر یافت نشد.";
-          userInfo.classList.remove('text-info', 'text-success');
-          userInfo.classList.add('text-danger');
+        /**
+         * Sets the theme (dark/light) and updates the theme icon.
+         * @param {string} theme - The theme name ('dark' or 'light').
+         */
+        function setTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-mode');
+                themeIcon.innerHTML = `<svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
+            } else {
+                bodyElement.classList.remove('light-mode');
+                themeIcon.innerHTML = `<svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
+            }
+            localStorage.setItem('theme', theme);
+            currentTheme = theme;
         }
-      } catch (error) {
-        console.error("Fetch user error:", error);
-        userInfo.textContent = "خطا در برقراری ارتباط برای دریافت اطلاعات کاربر.";
-        userInfo.classList.remove('text-info', 'text-success');
-        userInfo.classList.add('text-danger');
-      }
-    }
 
-    // Initial check on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      if (adminToken) {
-        loginSection.classList.add('d-none'); // Hide login section
-        dashboardSection.classList.remove('d-none'); // Show dashboard
-        loadDashboardData(); // Load data if already logged in
-      }
-    });
+        /**
+         * Updates the UI with admin dashboard data.
+         * @param {object} data - The data object from worker's /dashboard-init.
+         */
+        function updateAdminDashboardUI(data) {
+            console.log("Updating Admin Dashboard UI with data:", data);
+            const currentTrans = translations[currentLanguage];
 
-  </script>
+            adminTotalTraffic.textContent = formatBytes(data.total_traffic_bytes || 0);
+            adminUsedTraffic.textContent = formatBytes(data.used_traffic_bytes || 0);
+            adminRemainingTraffic.textContent = formatBytes(data.remaining_traffic_bytes || 0);
+
+            // Estimated expiry for admin panel (based on total/used traffic of all users)
+            if (data.used_traffic_bytes > 0 && data.remaining_traffic_bytes > 0 && data.elapsed_days > 0) {
+                const dailyUsageBytes = data.used_traffic_bytes / data.elapsed_days;
+                if (dailyUsageBytes > 0) {
+                    const remainingDays = data.remaining_traffic_bytes / dailyUsageBytes;
+                    adminEstimatedExpiry.textContent = `${Math.round(remainingDays)} ${currentTrans.daysUnit}`;
+                } else {
+                    adminEstimatedExpiry.textContent = currentTrans.predictionMessageNoConsumption;
+                }
+            } else {
+                adminEstimatedExpiry.textContent = currentTrans.predictionMessageNoData;
+            }
+        }
+
+        /**
+         * Updates the UI with individual user data.
+         * @param {object} data - The data object from worker's /?name=...&step=info.
+         */
+        function updateIndividualUserUI(data) {
+            console.log("Updating Individual User UI with data:", data);
+            const currentTrans = translations[currentLanguage];
+
+            userTotalTraffic.textContent = formatBytes(data.total_traffic_bytes || 0);
+            userUsedTraffic.textContent = formatBytes(data.used_traffic_bytes || 0);
+            userRemainingTraffic.textContent = formatBytes(data.remaining_traffic_bytes || 0);
+            
+            if (data.creation_date_aphp) {
+                let displayDate = data.creation_date_aphp;
+                try {
+                    const dateObj = new Date(displayDate); 
+                    if (isNaN(dateObj.getTime())) {
+                        throw new Error("Invalid date string after cleaning or unparsable format.");
+                    }
+                    const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+                    const dateOptions = { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: false 
+                    };
+                    displayDate = new Intl.DateTimeFormat(dateLocale, dateOptions).format(dateObj);
+                } catch (e) {
+                    console.error("Error parsing date_aphp:", e);
+                    displayDate = currentTrans.notAvailable;
+                }
+                userCreationDate.textContent = displayDate;
+            } else {
+                userCreationDate.textContent = currentTrans.unknown;
+            }
+
+            userDaysPassed.textContent = data.elapsed_days_aphp ? `${data.elapsed_days_aphp} ${currentTrans.daysUnit}` : currentTrans.unknown;
+
+            // Prediction Logic for individual user
+            const totalVolumeBytes = data.total_traffic_bytes || 0;
+            const usedVolumeBytes = data.used_traffic_bytes || 0;
+            const daysPassed = parseFloat(data.elapsed_days_aphp); 
+
+            if (daysPassed > 0 && usedVolumeBytes > 0 && totalVolumeBytes > 0) {
+                const dailyAverageBytes = usedVolumeBytes / daysPassed;
+                const remainingVolumeBytes = totalVolumeBytes - usedVolumeBytes;
+
+                if (dailyAverageBytes > 0 && remainingVolumeBytes > 0) {
+                    const daysRemaining = Math.round(remainingVolumeBytes / dailyAverageBytes);
+                    userPredictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
+                    userPredictionMessage.style.color = 'var(--prediction-color)'; 
+                } else if (remainingVolumeBytes <= 0) {
+                    userPredictionMessage.textContent = currentTrans.predictionMessageDepleted;
+                    userPredictionMessage.style.color = 'var(--error-red)';
+                } else {
+                    userPredictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
+                    userPredictionMessage.style.color = 'var(--text-secondary)';
+                }
+            } else {
+                userPredictionMessage.textContent = currentTrans.predictionMessageNoData;
+                userPredictionMessage.style.color = 'var(--text-secondary)';
+            }
+            individualUserDataCards.classList.remove('hidden'); // Show individual user data cards
+        }
+
+
+        // --- Event Listeners ---
+
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        // Language Toggle
+        languageSelector.addEventListener('change', (event) => {
+            currentLanguage = event.target.value;
+            localStorage.setItem('language', currentLanguage);
+            applyTranslations(currentLanguage);
+        });
+
+        // Support Modal
+        supportButton.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+            supportModal.classList.add('show');
+            // Ensure iframe src is set when modal opens
+            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
+        });
+
+        closeSupportModalButton.addEventListener('click', () => {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            // Clear iframe src when modal closes to stop audio/video if any
+            goftinoIframe.src = ''; 
+        });
+
+        supportModal.addEventListener('click', (event) => {
+            if (event.target === supportModal) {
+                supportModal.classList.remove('show');
+                supportModal.classList.add('hidden');
+                goftinoIframe.src = '';
+            }
+        });
+
+        // --- Login Logic ---
+        loginButton.addEventListener('click', async () => {
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+
+            if (!username || !password) {
+                loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                loginErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginErrorMessage.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden'); 
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || translations[currentLanguage].loginErrorMessage); // Use 'message' from worker
+                }
+
+                const data = await response.json();
+                accessToken = data.access_token;
+                localStorage.setItem('marzban_access_token', accessToken);
+
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                
+                fetchAdminDashboardData(); // Fetch admin overall stats
+                fetchUserLists(); // Fetch top/least consuming users
+
+            } catch (error) {
+                console.error('Login error:', error);
+                loginErrorMessage.textContent = error.message;
+                loginErrorMessage.classList.remove('hidden');
+            } finally {
+                loginButton.disabled = false;
+                loadingIndicator.classList.add('hidden'); 
+            }
+        });
+
+        // --- Fetch Admin Overall Dashboard Data ---
+        async function fetchAdminDashboardData() {
+            if (!accessToken) {
+                console.warn("No access token available for admin dashboard. Redirecting to login.");
+                loginErrorMessage.textContent = translations[currentLanguage].session_expired;
+                loginErrorMessage.classList.remove('hidden');
+                loginForm.classList.remove('hidden');
+                dashboardContent.classList.add('hidden');
+                return;
+            }
+
+            errorMessage.classList.add('hidden'); // Hide general error message
+            loadingIndicator.classList.remove('hidden'); // Show loading for admin stats
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginErrorMessage.textContent = translations[currentLanguage].session_expired;
+                        loginErrorMessage.classList.remove('hidden');
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        return;
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Failed to fetch admin dashboard data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("Admin Dashboard Init data:", data);
+                updateAdminDashboardUI(data); // Update admin stats cards
+
+            } catch (error) {
+                console.error('Error fetching admin dashboard data:', error);
+                errorMessage.textContent = translations[currentLanguage].errorMessage.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // --- Fetch Top/Least Consuming Users ---
+        async function fetchUserLists() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch user lists.");
+                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                userUsageLists.classList.remove('hidden'); // Ensure container is visible even if empty
+                return;
+            }
+
+            topUsersList.innerHTML = ''; // Clear previous lists
+            leastUsersList.innerHTML = '';
+            userUsageLists.classList.add('hidden'); // Hide container during fetch
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init`, { // Re-using dashboard-init for user lists
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        loginErrorMessage.textContent = translations[currentLanguage].session_expired; 
+                        loginErrorMessage.classList.remove('hidden');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Failed to fetch user lists: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("User lists data:", data);
+
+                // Populate Top Users List
+                if (data.top_users && data.top_users.length > 0) {
+                    data.top_users.slice(0, 10).forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item top-user-item'; 
+                        div.setAttribute('data-username', user.username); 
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon text-green-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${formatBytes(user.used_traffic_bytes)}</span>
+                        `;
+                        topUsersList.appendChild(div);
+                    });
+                } else {
+                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                }
+
+                // Populate Least Users List
+                if (data.least_users && data.least_users.length > 0) {
+                    data.least_users.slice(0, 10).forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item least-user-item'; 
+                        div.setAttribute('data-username', user.username); 
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon text-yellow-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${formatBytes(user.used_traffic_bytes)}</span>
+                        `;
+                        leastUsersList.appendChild(div);
+                    });
+                } else {
+                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                }
+
+                userUsageLists.classList.remove('hidden'); // Show container after populating
+
+            } catch (error) {
+                console.error('Error fetching user lists:', error);
+                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                userUsageLists.classList.remove('hidden'); 
+            }
+        }
+
+        // Function to fetch and display individual user data
+        fetchDataButton.addEventListener('click', async () => {
+            const username = usernameInput.value.trim();
+            userSearchErrorMessage.classList.add('hidden'); // Hide previous error
+            individualUserDataCards.classList.add('hidden'); // Hide previous results
+
+            if (!username) {
+                userSearchErrorMessage.textContent = translations[currentLanguage].user_search_empty;
+                userSearchErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            loadingIndicator.classList.remove('hidden'); // Show loading spinner
+
+            try {
+                // Note: The /?name=... endpoint does not strictly require Authorization header,
+                // but passing it is harmless if your worker handles it.
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?name=${username}&step=info`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}` 
+                    }
+                });
+                const data = await response.json();
+                console.log("Individual User Search API response:", data);
+
+                if (response.ok && data && data.username) {
+                    currentIndividualUserData = data; // Store for language changes
+                    updateIndividualUserUI(data);
+                    individualUserDataCards.classList.remove('hidden'); // Show the cards
+                } else {
+                    userSearchErrorMessage.textContent = data.message || translations[currentLanguage].user_search_not_found;
+                    userSearchErrorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Error fetching individual user data:", error);
+                userSearchErrorMessage.textContent = translations[currentLanguage].network_error;
+                userSearchErrorMessage.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden'); // Hide loading spinner
+            }
+        });
+
+        // --- Initial Load Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply saved theme and language preferences
+            setTheme(currentTheme);
+            languageSelector.value = currentLanguage; // Set dropdown value
+            applyTranslations(currentLanguage); // Apply initial translations
+
+            // Check for existing admin token and load dashboard if available
+            if (accessToken) {
+                loginForm.classList.add('hidden'); // Hide login
+                dashboardContent.classList.remove('hidden'); // Show dashboard
+                fetchAdminDashboardData(); // Load admin overall stats
+                fetchUserLists(); // Load top/least users
+            } else {
+                loginForm.classList.remove('hidden'); // Show login
+                dashboardContent.classList.add('hidden'); // Hide dashboard
+            }
+        });
+    </script>
 </body>
 </html>

@@ -4,36 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Modern & Refined Color Palette */
         :root {
-            --bg-primary: #0F172A; /* Darker blue-gray, deep and sophisticated */
-            --bg-card: #1E293B; /* Slightly lighter than primary, for contrast */
-            --text-primary: #E2E8F0; /* Off-white, soft on dark background */
-            --text-secondary: #94A3B8; /* Muted gray for secondary info */
-            --input-bg: #334155; /* Darker input fields */
-            --input-border: #475569; /* Subtle input border */
-            --button-bg-general: #3B424E; /* General button base color */
-            --button-hover-bg-general: #4A5568; /* Hover for general buttons */
-            --accent-blue: #3B82F6; /* Vibrant blue for main actions */
-            --accent-blue-hover: #2563EB; /* Darker blue on hover */
-            --accent-green: #22C55E; /* Fresh green for success/positive values */
-            --accent-yellow: #FACC15; /* Warm yellow for warnings/remaining */
-            --error-red: #EF4444; /* Bold red for errors */
-            --shadow-color-dark: rgba(0, 0, 0, 0.4); /* Deeper, more diffused shadows */
-            --shadow-color-light: rgba(0, 0, 0, 0.2); /* Lighter part of shadow */
-            --border-color: #334155; /* Subtle border for separation */
-            --footer-text-color: #64748B; /* Darker gray for footer */
-            --modal-overlay-bg: rgba(0, 0, 0, 0.8); /* More opaque overlay */
-            --modal-bg: #1E293B; /* Modal background same as card */
-            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
+            --bg-primary: #0F172A;
+            --bg-card: #1E293B;
+            --text-primary: #E2E8F0;
+            --text-secondary: #94A3B8;
+            --input-bg: #334155;
+            --input-border: #475569;
+            --button-bg-general: #3B424E;
+            --button-hover-bg-general: #4A5568;
+            --accent-blue: #3B82F6;
+            --accent-blue-hover: #2563EB;
+            --accent-green: #22C55E;
+            --accent-yellow: #FACC15;
+            --error-red: #EF4444;
+            --shadow-color-dark: rgba(0, 0, 0, 0.4);
+            --shadow-color-light: rgba(0, 0, 0, 0.2);
+            --border-color: #334155;
+            --footer-text-color: #64748B;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.8);
+            --modal-bg: #1E293B;
+            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07);
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: #dc2626; /* Red for deactivation */
+            --deactivate-button-bg: #dc2626;
             --deactivate-button-hover-bg: #b91c1c;
-            --prediction-color: #8B5CF6; /* A new accent color for prediction */
+            --prediction-color: #8B5CF6;
         }
 
         body.light-mode {
@@ -64,95 +63,90 @@
             --prediction-color: #7C3AED; 
         }
 
-        /* General Body & Typography */
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
-            padding-bottom: 3rem; /* More space at bottom */
-            line-height: 1.6; /* Improved readability */
+            padding-bottom: 3rem;
+            line-height: 1.6;
         }
         h1, h2, h3 {
-            font-weight: 700; /* Bolder headings */
+            font-weight: 700;
             line-height: 1.2;
         }
 
-        /* Card Styles */
         .card {
             background-color: var(--bg-card);
-            border-radius: 1.25rem; /* Slightly more rounded */
-            padding: 2rem; /* Increased padding */
-            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light); /* Softer, deeper shadow */
-            transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
-            border: 1px solid var(--border-color); /* Subtle border */
+            border-radius: 1.25rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
         .card:hover {
-            transform: translateY(-2px); /* Slight lift on hover */
+            transform: translateY(-2px);
             box-shadow: 0 15px 35px -10px var(--shadow-color-dark), 0 8px 15px -5px var(--shadow-color-light);
         }
         .card p:first-child {
             color: var(--text-secondary);
             font-weight: 500;
-            font-size: 0.95rem; /* Slightly larger labels */
-            margin-bottom: 0.75rem; /* More space below label */
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
         }
         .card p:last-child {
-            font-weight: 700; /* Bolder values */
-            font-size: 2.5rem; /* Larger primary values */
-            line-height: 1.1; /* Tighter line height */
+            font-weight: 700;
+            font-size: 2.5rem;
+            line-height: 1.1;
             margin-top: 0;
         }
 
-        /* Loading Spinner */
         .loading-spinner {
             border-left-color: var(--accent-blue);
-            width: 3.5rem; /* Slightly larger */
+            width: 3.5rem;
             height: 3.5rem;
-            border-width: 5px; /* Thicker border */
+            border-width: 5px;
             animation: spin 1s linear infinite;
-            margin: 3rem auto; /* More vertical space */
+            margin: 3rem auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Input Fields */
         input[type="text"], input[type="password"] {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
-            padding: 0.9rem 1.2rem; /* More padding */
-            border-radius: 0.65rem; /* Slightly more rounded */
-            font-size: 1rem; /* Clearer font size */
+            padding: 0.9rem 1.2rem;
+            border-radius: 0.65rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
         input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* More prominent focus ring */
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
 
-        /* Main Button */
         .main-button {
             background-color: var(--accent-blue);
             color: white;
-            padding: 1rem 2rem; /* More padding */
-            border-radius: 0.65rem; /* Consistent rounding */
+            padding: 1rem 2rem;
+            border-radius: 0.65rem;
             font-weight: 600;
-            font-size: 1.1rem; /* Slightly larger text */
+            font-size: 1.1rem;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* Stronger initial shadow */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
         }
         .main-button:hover {
             background-color: var(--accent-blue-hover);
-            transform: translateY(-2px); /* More noticeable lift */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }
         .main-button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reset shadow on click */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .main-button:disabled {
             background-color: var(--button-bg-general);
@@ -161,26 +155,24 @@
             transform: none;
         }
 
-        /* Select Dropdown */
         select {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
-            padding: 0.75rem 1.2rem; /* Adjusted padding */
+            padding: 0.75rem 1.2rem;
             border-radius: 0.65rem;
             font-size: 1rem;
             cursor: pointer;
             appearance: none;
-            /* Moved background-image to the left for better visual balance in RTL */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1_0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: left 1rem center; /* Moved arrow to left */
-            background-size: 1.1em 1.1em; /* Smaller arrow */
+            background-position: left 1rem center;
+            background-size: 1.1em 1.1em;
             transition: all 0.3s ease;
-            text-align: center; /* Attempt to center text */
-            text-align-last: center; /* Attempt to center selected option text in some browsers */
-            padding-right: 1.2rem; /* Ensure enough space for text */
-            padding-left: 2.25em; /* Make space for the arrow on the left */
+            text-align: center;
+            text-align-last: center;
+            padding-right: 1.2rem;
+            padding-left: 2.25em;
         }
         select:focus {
             outline: none;
@@ -188,19 +180,18 @@
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
 
-        /* Icon Buttons (Theme/Support) */
         .icon-button {
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             cursor: pointer;
-            font-size: 1.4rem; /* Larger icon size */
-            width: 3rem; /* Larger button size */
+            font-size: 1.4rem;
+            width: 3rem;
             height: 3rem;
-            border-radius: 0.75rem; /* More rounded */
-            display: flex; /* Ensure flex for centering icon */
-            align-items: center; /* Center icon vertically */
-            justify-content: center; /* Center icon horizontally */
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s ease;
         }
         .icon-button:hover {
@@ -210,7 +201,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Data Card Values */
         #total2, #usage { 
             color: var(--accent-green);
         }
@@ -218,33 +208,31 @@
             color: var(--accent-yellow);
         }
         #date3 { 
-            font-size: 1.4rem; /* Larger date text */
+            font-size: 1.4rem;
             line-height: 1.3;
             margin-top: 0.75rem;
         }
         #predictionMessage {
-            color: var(--prediction-color); /* Specific color for prediction */
+            color: var(--prediction-color);
             font-weight: 700;
             font-size: 2.5rem;
         }
 
-        /* Error Messages */
         #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
-            padding: 0.8rem 1.5rem; /* More padding */
-            border-radius: 0.75rem; /* Consistent rounding */
-            background-color: rgba(239, 68, 68, 0.15); /* Slightly darker background */
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.75rem;
+            background-color: rgba(239, 68, 68, 0.15);
             border: 1px solid var(--error-red);
-            font-size: 1rem; /* Clearer font size */
-            margin-top: 1.5rem; /* More space */
+            font-size: 1rem;
+            margin-top: 1.5rem;
         }
 
-        /* User Lists (Top/Least Consuming) */
         #userUsageLists h2 {
-            font-size: 1.6rem; /* Larger heading */
-            color: var(--accent-blue); /* Consistent accent color */
-            margin-bottom: 1.5rem; /* More space */
+            font-size: 1.6rem;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: flex-end; 
@@ -256,33 +244,31 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0.75rem; /* More padding */
-            border-bottom: 1px solid var(--border-color); /* Consistent border */
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 0; 
-            font-size: 1rem; /* Slightly larger text */
+            font-size: 1rem;
             transition: background-color 0.2s ease;
             cursor: pointer;
-            border-radius: 0.5rem; /* Slight rounding for hover effect */
+            border-radius: 0.5rem;
         }
         .user-list-item:hover {
             background-color: var(--user-list-item-hover-bg); 
         }
         .user-list-icon {
-            width: 1.25rem; /* Larger icon */
+            width: 1.25rem;
             height: 1.25rem;
             margin-left: 0.75rem; 
         }
 
-        /* Footer */
         .app-footer {
-            margin-top: 3.5rem; /* More space from content */
+            margin-top: 3.5rem;
             text-align: center;
             color: var(--footer-text-color);
-            font-size: 0.9rem; /* Slightly larger */
+            font-size: 0.9rem;
             font-weight: 400;
         }
 
-        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -291,9 +277,9 @@
             bottom: 0;
             background-color: var(--modal-overlay-bg);
             display: flex;
-            justify-content: center; /* Centers horizontally */
-            align-items: center; /* Centers vertically */
-            z-index: 1000; /* Ensure it's on top */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -302,35 +288,34 @@
             opacity: 1;
             visibility: visible;
         }
-        /* Adjusted modal content (for support modal) */
-        .modal-content { /* Used for support modal */
+        .modal-content {
             background-color: var(--modal-bg);
-            border-radius: 1.5rem; /* More rounded modals */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border-color);
-            position: relative; /* Ensure position for absolute close button */
-            transform: scale(0.9); /* Initial smaller scale for animation */
-            opacity: 0; /* Initial hidden state for animation */
-            transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
+            position: relative;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             
-            width: 95vw; /* Almost full viewport width */
-            max-width: 1200px; /* An even larger max-width for very wide screens */
-            height: 95vh; /* Almost full viewport height */
-            max-height: 95vh; /* Ensure it doesn't exceed viewport */
-            overflow-y: auto; /* Allow scrolling if content truly overflows */
+            width: 95vw;
+            max-width: 1200px;
+            height: 95vh;
+            max-height: 95vh;
+            overflow-y: auto;
             display: flex;
-            flex-direction: column; /* Stack content */
-            padding: 0; /* Remove padding if iframe is to fill entirely */
+            flex-direction: column;
+            padding: 0;
         }
         .modal-overlay.show .modal-content {
-            transform: scale(1); /* Scale up on show */
-            opacity: 1; /* Fade in on show */
+            transform: scale(1);
+            opacity: 1;
         }
 
         .modal-close-button {
             position: absolute;
-            top: 1.5rem; /* Slightly further from corner */
-            left: 1.5rem; /* Slightly further from corner for RTL top-left */
+            top: 1.5rem;
+            left: 1.5rem;
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -342,7 +327,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1001; /* Ensure button is above iframe */
+            z-index: 1001;
             transition: all 0.2s ease;
         }
         .modal-close-button:hover {
@@ -350,16 +335,13 @@
             color: var(--accent-blue);
         }
 
-        /* Ensure iframe fills the modal content */
         .modal-iframe {
             width: 100%;
-            height: 100%; /* Iframe should fill the modal content */
+            height: 100%;
             border: none;
-            display: block; /* Ensures it takes up full space */
+            display: block;
         }
 
-
-        /* Responsive Adjustments */
         @media (max-width: 640px) {
             body {
                 padding: 1rem;
@@ -369,7 +351,7 @@
                 border-radius: 1rem;
             }
             .card p:last-child {
-                font-size: 2rem; /* Slightly smaller for mobile */
+                font-size: 2rem;
             }
             #date3, #predictionMessage {
                 font-size: 1.1rem;
@@ -390,20 +372,19 @@
                 border-radius: 0.6rem;
             }
             h1 {
-                font-size: 2.5rem; /* Adjusted main header */
+                font-size: 2.5rem;
             }
             .text-xl {
-                font-size: 1.2rem; /* Adjusted subheadings */
+                font-size: 1.2rem;
             }
             .app-footer {
                 margin-top: 2.5rem;
                 font-size: 0.8rem;
             }
-            /* Support modal content on small screens */
-            .modal-content { /* Applies to support modal now */
-                padding: 0; /* No padding on mobile for full iframe space */
-                max-width: 98vw; /* Wider on very small screens */
-                height: 98vh; /* Taller on very small screens */
+            .modal-content {
+                padding: 0;
+                max-width: 98vw;
+                height: 98vh;
                 border-radius: 1rem;
             }
             .modal-close-button {
@@ -417,12 +398,10 @@
                 padding: 0.8rem 0.6rem;
                 font-size: 0.9rem;
             }
-            /* Adjust icon alignment on small screens: center them */
             .top-bar-icons { 
-                justify-content: center; /* Center items on small screens */
-                gap: 0.75rem; /* Slightly larger gap */
+                justify-content: center;
+                gap: 0.75rem;
             }
-            /* For RTL, move language selector visual order to be on the right (first item) */
             .top-bar-icons .relative {
                 order: -1; 
             }
@@ -435,7 +414,7 @@
             <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
-                </svg>
+                    </svg>
             </button>
 
             <div class="relative">
@@ -467,28 +446,8 @@
 
         <div id="dashboardContent" class="hidden">
             
-            <div id="loadingIndicator" class="loading-spinner hidden rounded-full border-solid border-4 border-t-transparent"></div>
+            <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
-
-            <h2 class="text-2xl font-bold text-center mb-6" data-key="adminStatsHeader">آمار کلی پنل ادمین</h2>
-            <div id="adminDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10 mx-auto">
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="totalPanelVolume">حجم کلی پنل</p>
-                    <p id="adminTotalTraffic" class="text-3xl text-green-400">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="consumedPanelVolume">حجم مصرفی پنل</p>
-                    <p id="adminUsedTraffic" class="text-3xl text-yellow-400">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="remainingPanelVolume">حجم باقیمانده پنل</p>
-                    <p id="adminRemainingTraffic" class="text-3xl text-red-400">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="estimatedPanelExpiry">پیش\u200cبینی اتمام پنل</p>
-                    <p id="adminEstimatedExpiry" class="text-3xl text-purple-400">...</p>
-                </div>
-            </div>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
@@ -496,36 +455,33 @@
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
             </div>
 
-            <div id="individualUserDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto hidden">
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto">
                 <div class="card">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
-                    <p id="userTotalTraffic" class="text-3xl text-green-400">...</p>
+                    <p id="total2" class="text-3xl">...</p>
                 </div>
                 <div class="card">
                     <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
-                    <p id="userRemainingTraffic" class="text-3xl text-yellow-400">...</p>
+                    <p id="baghi" class="text-3xl">...</p>
                 </div>
                 <div class="card">
                     <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
-                    <p id="userUsedTraffic" class="text-3xl text-red-400">...</p>
+                    <p id="usage" class="text-3xl">...</p>
                 </div>
                 <div class="card">
                     <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت کاربر</p>
-                    <p id="userCreationDate" class="text-lg">...</p>
-                </div>
+                    <p id="date3" class="text-lg">...</p> </div>
                 <div class="card col-span-full lg:col-span-1">
                     <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
-                    <p id="userDaysPassed" class="text-3xl">...</p>
+                    <p id="date2" class="text-3xl">...</p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="predictionHeader">پیش\u200cبینی اتمام حجم</p>
-                    <p id="userPredictionMessage" class="text-3xl text-purple-400">...</p>
+                    <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
+                    <p id="predictionMessage" class="text-3xl">...</p>
                 </div>
             </div>
-            <p id="userSearchErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="userSearchErrorMessage">کاربر یافت نشد یا خطایی رخ داد.</p>
 
-
-            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto hidden">
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
                 <div class="card">
                     <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
                         <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -541,7 +497,7 @@
                         <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
                         </svg>
-                        <span data-key="leastUsersHeader">کاربران کم\u200cمصرف</span>
+                        <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
                     </h2>
                     <div id="leastUsersList" class="space-y-0">
                         </div>
@@ -555,7 +511,7 @@
         تمامی حقوق برای آقای مرزبان محفوظ است.
     </footer>
 
-    <div id="supportModal" class="modal-overlay">
+    <div id="supportModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
@@ -563,7 +519,6 @@
     </div>
 
     <script>
-        // DOM Elements
         const htmlElement = document.documentElement;
         const bodyElement = document.body;
         const themeToggle = document.getElementById('themeToggle');
@@ -581,45 +536,27 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
-        // Admin Stats Elements
-        const adminDataCards = document.getElementById('adminDataCards');
-        const adminTotalTraffic = document.getElementById('adminTotalTraffic');
-        const adminUsedTraffic = document.getElementById('adminUsedTraffic');
-        const adminRemainingTraffic = document.getElementById('adminRemainingTraffic');
-        const adminEstimatedExpiry = document.getElementById('adminEstimatedExpiry');
-
-        // Individual User Search Elements
-        const individualUserLookup = document.getElementById('individualUserLookup'); 
-        const usernameInput = document.getElementById('usernameInput'); // Input for searching individual user
+        const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
-        const individualUserDataCards = document.getElementById('individualUserDataCards'); // Container for individual user data
-        const userTotalTraffic = document.getElementById('userTotalTraffic');
-        const userUsedTraffic = document.getElementById('userUsedTraffic');
-        const userRemainingTraffic = document.getElementById('userRemainingTraffic');
-        const userCreationDate = document.getElementById('userCreationDate');
-        const userDaysPassed = document.getElementById('userDaysPassed');
-        const userPredictionMessage = document.getElementById('userPredictionMessage');
-        const userSearchErrorMessage = document.getElementById('userSearchErrorMessage');
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
 
-        // General Error/Loading
         const loadingIndicator = document.getElementById('loadingIndicator');
-        const errorMessage = document.getElementById('errorMessage'); // General dashboard error message
-
-        // User Lists Elements
+        const errorMessage = document.getElementById('errorMessage');
+        const dataCards = document.getElementById('dataCards');
         const userUsageLists = document.getElementById('userUsageLists'); 
-        const topUsersList = document.getElementById('topUsersList');     
+        const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
-        // State variables
+        const predictionMessage = document.getElementById('predictionMessage'); 
+
+        let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        let currentIndividualUserData = null; // To store data of the currently searched individual user
+        
 
-        // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
-        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
+        const API_ENDPOINT = 'api.php';
 
-        // --- Localization Data ---
         const translations = {
             fa: {
                 pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
@@ -639,7 +576,6 @@
                 daysUnit: 'روز',
                 unknown: 'نامشخص',
                 bytes: 'بایت',
-                kb: 'کیلوبایت',
                 mb: 'مگابایت',
                 gb: 'گیگابایت',
                 tb: 'ترابایت',
@@ -651,19 +587,13 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                adminStatsHeader: 'آمار کلی پنل ادمین',
-                totalPanelVolume: 'حجم کلی پنل',
-                consumedPanelVolume: 'حجم مصرفی پنل',
-                remainingPanelVolume: 'حجم باقیمانده پنل',
-                estimatedPanelExpiry: 'پیش\u200cبینی اتمام پنل',
                 topUsersHeader: 'کاربران پرمصرف', 
-                leastUsersHeader: 'کاربران کم\u200cمصرف', 
+                leastUsersHeader: 'کاربران کم‌مصرف', 
                 noUsersFound: 'کاربری یافت نشد.',
-                predictionHeader: 'پیش\u200cبینی اتمام حجم', 
+                predictionHeader: 'پیش‌بینی اتمام حجم', 
                 predictionMessageNoData: 'اطلاعات کافی نیست.', 
                 predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
-                predictionMessageDepleted: 'حجم به اتمام رسیده.',
-                userSearchErrorMessage: 'کاربر یافت نشد یا خطایی رخ داد.'
+                predictionMessageDepleted: 'حجم به اتمام رسیده.' 
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -683,7 +613,6 @@
                 daysUnit: 'days',
                 unknown: 'Unknown',
                 bytes: 'Bytes',
-                kb: 'KB',
                 mb: 'MB',
                 gb: 'GB',
                 tb: 'TB',
@@ -695,19 +624,13 @@
                 loginPasswordLabel: 'Admin Password:',
                 loginButton: 'Login',
                 loginErrorMessage: 'Incorrect username or password.',
-                adminStatsHeader: 'Admin Panel Overview',
-                totalPanelVolume: 'Total Panel Volume',
-                consumedPanelVolume: 'Consumed Panel Volume',
-                remainingPanelVolume: 'Remaining Panel Volume',
-                estimatedPanelExpiry: 'Estimated Panel Expiry',
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
                 noUsersFound: 'No users found.',
                 predictionHeader: 'Data Depletion Prediction', 
                 predictionMessageNoData: 'Insufficient data.', 
                 predictionMessageNoConsumption: 'No consumption recorded.', 
-                predictionMessageDepleted: 'Data depleted.',
-                userSearchErrorMessage: 'User not found or an error occurred.'
+                predictionMessageDepleted: 'Data depleted.' 
             }
         };
 
@@ -781,18 +704,18 @@
 
             // Trigger re-fetch for user lists if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                fetchAdminDashboardData(); // Re-fetch admin data for overall stats and user lists
+                fetchUserLists(); 
             }
             // Re-update prediction if data is loaded
-            if (individualUserDataCards && !individualUserDataCards.classList.contains('hidden') && currentIndividualUserData) {
-                updateIndividualUserUI(currentIndividualUserData);
+            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
+                updateUI(currentTrafficData);
             }
         }
 
         function setTheme(theme) {
             if (theme === 'light') {
                 bodyElement.classList.add('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
             } else {
                 bodyElement.classList.remove('light-mode');
                 themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
@@ -809,8 +732,7 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                fetchAdminDashboardData(); // Fetch admin data on load if token exists
-                fetchUserLists(); // Fetch user lists on load if token exists
+                fetchUserLists(); 
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -842,19 +764,16 @@
 
         supportModal.addEventListener('click', (event) => {
             if (event.target === supportModal) {
-                hideSupportModal(); // Call a dedicated function for consistency
+                hideSupportModal();
             }
         });
 
-        // Helper to hide support modal
         function hideSupportModal() {
             supportModal.classList.remove('show');
             supportModal.classList.add('hidden');
             goftinoIframe.src = '';
         }
 
-
-        // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -870,7 +789,7 @@
             loadingIndicator.classList.remove('hidden'); 
 
             try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
+                const response = await fetch(`${API_ENDPOINT}?action=login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -880,7 +799,7 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || translations[currentLanguage].loginErrorMessage);
+                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
                 }
 
                 const data = await response.json();
@@ -890,8 +809,7 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                fetchAdminDashboardData(); // Fetch admin overall stats
-                fetchUserLists(); // Fetch top/least consuming users
+                fetchUserLists(); 
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -903,102 +821,52 @@
             }
         });
 
-        // --- Fetch Admin Overall Dashboard Data ---
-        async function fetchAdminDashboardData() {
-            if (!accessToken) {
-                console.warn("No access token available for admin dashboard. Redirecting to login.");
-                loginErrorMessage.textContent = translations[currentLanguage].session_expired;
-                loginErrorMessage.classList.remove('hidden');
-                loginForm.classList.remove('hidden');
-                dashboardContent.classList.add('hidden');
-                return;
-            }
-
-            errorMessage.classList.add('hidden'); // Hide general error message
-            loadingIndicator.classList.remove('hidden'); // Show loading for admin stats
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginErrorMessage.textContent = translations[currentLanguage].session_expired;
-                        loginErrorMessage.classList.remove('hidden');
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        return;
-                    }
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `Failed to fetch admin dashboard data: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log("Admin Dashboard Init data:", data);
-                updateAdminDashboardUI(data); // Update admin stats cards
-
-            } catch (error) {
-                console.error('Error fetching admin dashboard data:', error);
-                errorMessage.textContent = translations[currentLanguage].errorMessage.replace('{error}', error.message);
-                errorMessage.classList.remove('hidden');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        }
-
-        // --- Fetch Top/Least Consuming Users ---
         async function fetchUserLists() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch user lists.");
                 topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                userUsageLists.classList.remove('hidden'); // Ensure container is visible even if empty
+                userUsageLists.classList.remove('hidden'); 
                 return;
             }
 
-            topUsersList.innerHTML = ''; // Clear previous lists
+            topUsersList.innerHTML = ''; 
             leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden'); // Hide container during fetch
+            userUsageLists.classList.add('hidden'); 
 
             try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init`, { // Re-using dashboard-init for user lists
+                const response = await fetch(`${API_ENDPOINT}?action=users_summary`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 });
 
                 if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
+                    if (response.status === 401) {
                         console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].session_expired; 
+                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
                         loginErrorMessage.classList.remove('hidden');
                     }
                     const errorData = await response.json();
-                    throw new Error(errorData.message || `Failed to fetch user lists: ${response.statusText}`);
+                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                console.log("User lists data:", data);
+                console.log("User summary data:", data);
 
-                // Populate Top Users List
                 if (data.top_users && data.top_users.length > 0) {
                     data.top_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
                         div.setAttribute('data-username', user.username); 
                         div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon text-green-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
-                            <span>${formatBytes(user.used_traffic_bytes)}</span>
+                            <span>${user.used_traffic_formatted}</span>
                         `;
                         topUsersList.appendChild(div);
                     });
@@ -1006,16 +874,15 @@
                     topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 }
 
-                // Populate Least Users List
                 if (data.least_users && data.least_users.length > 0) {
                     data.least_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 
                         div.setAttribute('data-username', user.username); 
                         div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon text-yellow-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>
-                            <span>${formatBytes(user.used_traffic_bytes)}</span>
+                            <span>${user.used_traffic_formatted}</span>
                         `;
                         leastUsersList.appendChild(div);
                     });
@@ -1023,7 +890,7 @@
                     leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 }
 
-                userUsageLists.classList.remove('hidden'); // Show container after populating
+                userUsageLists.classList.remove('hidden');
 
             } catch (error) {
                 console.error('Error fetching user lists:', error);
@@ -1033,66 +900,166 @@
             }
         }
 
-        // Function to fetch and display individual user data
-        fetchDataButton.addEventListener('click', async () => {
-            const username = usernameInput.value.trim();
-            userSearchErrorMessage.classList.add('hidden'); // Hide previous error
-            individualUserDataCards.classList.add('hidden'); // Hide previous results
+        async function fetchUserData(username) {
+            if (!username) return;
 
-            if (!username) {
-                userSearchErrorMessage.textContent = translations[currentLanguage].user_search_empty;
-                userSearchErrorMessage.classList.remove('hidden');
-                return;
-            }
-
-            loadingIndicator.classList.remove('hidden'); // Show loading spinner
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            dataCards.classList.add('hidden');
 
             try {
-                // Note: The /?name=... endpoint does not strictly require Authorization header,
-                // but passing it is harmless if your worker handles it.
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?name=${username}&step=info`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}` 
-                    }
-                });
-                const data = await response.json();
-                console.log("Individual User Search API response:", data);
+                const fetchUrl = `${API_ENDPOINT}?action=fetch_user_data&username=${username}`;
+                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
 
-                if (response.ok && data && data.username) {
-                    currentIndividualUserData = data; // Store for language changes
-                    updateIndividualUserUI(data);
-                    individualUserDataCards.classList.remove('hidden'); // Show the cards
-                } else {
-                    userSearchErrorMessage.textContent = data.message || translations[currentLanguage].user_search_not_found;
-                    userSearchErrorMessage.classList.remove('hidden');
+                const response = await fetch(fetchUrl);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
                 }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
+                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
+                    } else if (data.auth_error) { 
+                        errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                    }
+                    else {
+                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
+                    }
+                    errorMessage.classList.remove('hidden');
+                    dataCards.classList.add('hidden');
+                    return;
+                }
+
+                currentTrafficData = data; 
+                updateUI(data); 
+                
+                dataCards.classList.remove('hidden');
+
             } catch (error) {
-                console.error("Error fetching individual user data:", error);
-                userSearchErrorMessage.textContent = translations[currentLanguage].network_error;
-                userSearchErrorMessage.classList.remove('hidden');
+                console.error('Error fetching individual user data:', error);
+                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
+                dataCards.classList.add('hidden');
             } finally {
-                loadingIndicator.classList.add('hidden'); // Hide loading spinner
+                loadingIndicator.classList.add('hidden');
             }
+        }
+
+        fetchDataButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            fetchUserData(username);
         });
 
-        // --- Initial Load Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Apply saved theme and language preferences
-            setTheme(currentTheme);
-            languageSelector.value = currentLanguage; // Set dropdown value
-            applyTranslations(currentLanguage); // Apply initial translations
+        function convertTrafficToMB(trafficString) {
+            const currentTrans = translations[currentLanguage];
+            if (!trafficString || trafficString === currentTrans.unknown) return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
 
-            // Check for existing admin token and load dashboard if available
-            if (accessToken) {
-                loginForm.classList.add('hidden'); // Hide login
-                dashboardContent.classList.remove('hidden'); // Show dashboard
-                fetchAdminDashboardData(); // Load admin overall stats
-                fetchUserLists(); // Load top/least users
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            const KB_TO_MB = 1 / 1024;
+            const GB_TO_MB = 1024;
+            const TB_TO_MB = 1024 * 1024;
+
+            const persianUnitMap = {
+                'بایت': 'bytes',
+                'کیلوبایت': 'kb',
+                'مگابایت': 'mb',
+                'گیگابایت': 'gb',
+                'ترابایت': 'tb'
+            };
+            const normalizedUnit = persianUnitMap[unit] || unit;
+
+            switch (normalizedUnit) {
+                case 'bytes':
+                    return value / (1024 * 1024);
+                case 'kb':
+                    return value * KB_TO_MB;
+                case 'mb':
+                    return value;
+                case 'gb':
+                    return value * GB_TO_MB;
+                case 'tb':
+                    return value * TB_TO_MB;
+                default:
+                    return 0;
+            }
+        }
+
+        function updateUI(data) {
+            const currentTrans = translations[currentLanguage];
+
+            document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
+            document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
+            document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
+            
+            if (data.date3) {
+                let displayDate = data.date3;
+                try {
+                    const dateObj = new Date(displayDate);
+                    if (isNaN(dateObj.getTime())) {
+                        throw new Error("Invalid date string after cleaning or unparsable format.");
+                    }
+                    const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+                    const persianDateOptions = { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: false 
+                    };
+                    displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
+                } catch (e) {
+                    console.error("Error parsing date3:", e);
+                    displayDate = currentTrans.notAvailable;
+                }
+                document.getElementById('date3').textContent = displayDate;
             } else {
-                loginForm.classList.remove('hidden'); // Show login
-                dashboardContent.classList.add('hidden'); // Hide dashboard
+                document.getElementById('date3').textContent = currentTrans.unknown;
             }
-        });
+
+            document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
+
+            const totalVolumeMB = convertTrafficToMB(data.total2);
+            const usedVolumeMB = convertTrafficToMB(data.usage);
+            const daysPassed = parseFloat(data.date2);
+
+            if (daysPassed > 0 && usedVolumeMB > 0) {
+                const dailyAverageMB = usedVolumeMB / daysPassed;
+                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
+
+                if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
+                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
+                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
+                    predictionMessage.style.color = 'var(--prediction-color)'; 
+                } else if (remainingVolumeMB <= 0) {
+                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
+                    predictionMessage.style.color = 'var(--error-red)';
+                } else {
+                    predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
+                    predictionMessage.style.color = 'var(--text-secondary)';
+                }
+            } else {
+                predictionMessage.textContent = currentTrans.predictionMessageNoData;
+                predictionMessage.style.color = 'var(--text-secondary)';
+            }
+        }
+
+        window.onload = function() {
+            initializePreferences();
+        };
     </script>
 </body>
 </html>

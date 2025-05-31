@@ -1,453 +1,129 @@
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
 
-async function handleRequest(request) {
-  const url = new URL(request.url);
-  const path = url.pathname;
-
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*', // Adjust this to your frontend origin in production (e.g., 'https://my-traffic-panel.pages.dev')
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', // Added PUT for deactivate user
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-  };
-
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
-  }
-
-  // Admin authentication path
-  if (path === '/login' && request.method === 'POST') {
-    return handleLogin(request, corsHeaders);
-  }
-
-  // Dashboard initialization path (for admin stats and user lists)
-  if (path === '/dashboard-init' && request.method === 'GET') {
-    return handleDashboardInit(request, corsHeaders);
-  }
-
-  // Endpoint to deactivate a user
-  // HTML frontend must send a POST request with {username: "user_to_deactivate"}
-  if (path === '/deactivate-user' && request.method === 'POST') { // Changed to POST method for action
-      return handleDeactivateUser(request, corsHeaders);
-  }
-
-  // Endpoint to fetch node statistics (if you add a Node Stats section in HTML later)
-  if (path === '/node-stats' && request.method === 'GET') {
-    return handleNodeStats(request, corsHeaders);
-  }
-
-  // User search path (for individual user data from a.php)
-  // This path will handle requests like /?name=username&step=info
-  if (path === '/' && url.searchParams.has('name') && url.searchParams.has('step')) {
-    return handleUserSearch(request, url, corsHeaders);
-  }
-
-  // If no matching path
-  return new Response('Not Found', { status: 404, headers: corsHeaders });
-}
-
-// IMPORTANT: Replace this with the actual base URL of your Marzban panel API.
-// Example: 'https://your-marzban-domain.com:port'
-const MARZBAN_BASE_URL = 'https://a-l.fl-sub.site:2096'; 
-
-// Handles admin login to Marzban API
-async function handleLogin(request, corsHeaders) {
-  try {
-    const { username, password } = await request.json();
-
-    if (!username || !password) {
-      return new Response(JSON.stringify({ message: 'نام کاربری و رمز عبور لازم است.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
-      });
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marzban Admin Panel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" />
+  <style>
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Vazirmatn', sans-serif;
     }
+    .card {
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 10px;
+    }
+    .header {
+      background: linear-gradient(90deg, #7f5af0, #2cb67d);
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 10px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="header text-center mb-4">
+      <h2>داشبورد مدیریت مرزبان</h2>
+      <p>مشاهده وضعیت کاربران و سرورها</p>
+    </div>
 
-    const authUrl = `${MARZBAN_BASE_URL}/api/admin/token`;
-    const authResponse = await fetch(authUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        username: username,
-        password: password,
-        grant_type: 'password'
-      })
-    });
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5>ورود مدیر</h5>
+          <input type="text" id="adminUser" class="form-control mb-2" placeholder="نام کاربری">
+          <input type="password" id="adminPass" class="form-control mb-2" placeholder="رمز عبور">
+          <button class="btn btn-primary w-100" onclick="login()">ورود</button>
+          <div id="loginResult" class="mt-2 text-danger small"></div>
+        </div>
+      </div>
 
-    if (!authResponse.ok) {
-      const errorText = await authResponse.text();
-      console.error(`Marzban Auth API responded with error ${authResponse.status}: ${errorText}`);
-      let errorMessage = 'نام کاربری یا رمز عبور اشتباه است.';
-      try {
-          const errorJson = JSON.parse(errorText);
-          if (errorJson && errorJson.detail) {
-              errorMessage = errorJson.detail; // Use Marzban's specific error message if available
-          }
-      } catch (e) {
-          // not a JSON error, use default message
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5>اطلاعات کاربر</h5>
+          <input type="text" id="searchUser" class="form-control mb-2" placeholder="نام کاربر">
+          <button class="btn btn-secondary w-100" onclick="fetchUser()">جستجو</button>
+          <div id="userInfo" class="mt-3 small"></div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card p-3">
+          <h5>کاربران پر مصرف / کم مصرف</h5>
+          <pre id="summary" class="small text-muted">در حال دریافت...</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let token = "";
+
+    async function login() {
+      const username = document.getElementById("adminUser").value;
+      const password = document.getElementById("adminPass").value;
+      const result = document.getElementById("loginResult");
+      result.textContent = "در حال ورود...";
+
+      const res = await fetch("https://home-vor.amiruserbot7.workers.dev/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        token = data.access_token;
+        result.textContent = "ورود موفق!";
+        loadSummary();
+      } else {
+        result.textContent = data.message || data.error || "خطا در ورود";
       }
-      
-      return new Response(JSON.stringify({ message: errorMessage }), {
-        status: authResponse.status,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    }
+
+    async function fetchUser() {
+      const username = document.getElementById("searchUser").value;
+      const out = document.getElementById("userInfo");
+      out.textContent = "در حال دریافت...";
+
+      const res = await fetch("https://home-vor.amiruserbot7.workers.dev/?username=" + username);
+      const data = await res.json();
+
+      if (res.ok) {
+        out.innerHTML = `
+          <b>کاربر:</b> ${data.user_name}<br>
+          <b>مصرف:</b> ${data.usage}<br>
+          <b>باقی مانده:</b> ${data.baghi}<br>
+          <b>تاریخ ساخت:</b> ${data.date3}<br>
+          <b>روزهای گذشته:</b> ${data.date2}<br>
+        `;
+      } else {
+        out.textContent = data.message || data.error || "خطا در دریافت اطلاعات";
+      }
+    }
+
+    async function loadSummary() {
+      const res = await fetch("https://home-vor.amiruserbot7.workers.dev/users-summary", {
+        headers: { Authorization: "Bearer " + token },
       });
+      const data = await res.json();
+      const out = document.getElementById("summary");
+
+      if (res.ok) {
+        const top = data.top_users.map(u => `${u.username} (${u.used_traffic_formatted})`).join("\n");
+        const least = data.least_users.map(u => `${u.username} (${u.used_traffic_formatted})`).join("\n");
+        out.textContent = `🔺 کاربران پر مصرف:
+${top}
+
+🔻 کاربران کم مصرف:
+${least}`;
+      } else {
+        out.textContent = data.message || data.error || "خطا در دریافت";
+      }
     }
-
-    const authData = await authResponse.json();
-    return new Response(JSON.stringify(authData), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-
-  } catch (error) {
-    console.error('Login Worker error:', error);
-    return new Response(JSON.stringify({ message: `خطای داخلی سرور در ورود: ${error.message}` }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-  }
-}
-
-// Helper to parse volume strings like "1.34 TB" or "464.74 GB" into bytes
-const parseVolumeToBytes = (volumeString) => {
-    if (!volumeString || typeof volumeString !== 'string') return 0; // Return 0 for invalid inputs
-
-    const parts = volumeString.trim().split(' ');
-    if (parts.length !== 2) return 0;
-
-    const value = parseFloat(parts[0]);
-    if (isNaN(value)) return 0;
-
-    const unit = parts[1].toLowerCase();
-
-    const KILOBYTE = 1024;
-    const MEGABYTE = KILOBYTE * 1024;
-    const GIGABYTE = MEGABYTE * 1024;
-    const TERABYTE = GIGABYTE * 1024;
-
-    switch (unit) {
-        case 'b': return value;
-        case 'kb': return value * KILOBYTE;
-        case 'mb': return value * MEGABYTE;
-        case 'gb': return value * GIGABYTE;
-        case 'tb': return value * TERABYTE;
-        default: return 0;
-    }
-};
-
-// Handles deactivating a single user
-async function handleDeactivateUser(request, corsHeaders) {
-    const accessToken = request.headers.get('Authorization')?.split(' ')[1];
-    if (!accessToken) {
-        return new Response(JSON.stringify({ message: 'توکن احراز هویت لازم است.' }), {
-            status: 401,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-    }
-
-    try {
-        const { username } = await request.json();
-        if (!username) {
-            return new Response(JSON.stringify({ message: 'نام کاربری لازم است.' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json', ...corsHeaders }
-            });
-        }
-
-        // Marzban API endpoint for modifying user status
-        // Using PUT /api/user/{username} with {"status": "disabled"} payload
-        const marzbanApiUrl = `${MARZBAN_BASE_URL}/api/user/${username}`; 
-        const response = await fetch(marzbanApiUrl, {
-            method: 'PUT', 
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({ status: 'disabled' }) 
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Marzban Deactivate User API responded with error ${response.status}: ${errorText}`);
-            if (response.status === 401 || response.status === 403) {
-                return new Response(JSON.stringify({ message: 'توکن احراز هویت منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید.' }), {
-                    status: 401,
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders }
-                });
-            }
-            return new Response(JSON.stringify({ message: `خطا در غیرفعال کردن کاربر: ${response.statusText}. جزئیات: ${errorText}` }), {
-                status: response.status,
-                headers: { 'Content-Type': 'application/json', ...corsHeaders }
-            });
-        }
-
-        const result = await response.json(); 
-        return new Response(JSON.stringify({ message: `کاربر ${username} با موفقیت غیرفعال شد.`, result: result }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-
-    } catch (error) {
-        console.error('Deactivate User Worker error:', error);
-        return new Response(JSON.stringify({ message: `خطای داخلی سرور در غیرفعال کردن کاربر: ${error.message}` }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-    }
-}
-
-async function handleNodeStats(request, corsHeaders) {
-    const accessToken = request.headers.get('Authorization')?.split(' ')[1];
-    if (!accessToken) {
-        return new Response(JSON.stringify({ message: 'توکن احراز هویت لازم است.' }), {
-            status: 401,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-    }
-
-    try {
-        // Fetch Node Statuses from /api/nodes
-        const nodesResponse = await fetch(`${MARZBAN_BASE_URL}/api/nodes`, {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-
-        if (!nodesResponse.ok) {
-            const errorText = await nodesResponse.text();
-            console.error(`Marzban /api/nodes responded with error ${nodesResponse.status}: ${errorText}`);
-            if (nodesResponse.status === 401 || nodesResponse.status === 403) {
-                return new Response(JSON.stringify({ message: 'توکن احراز هویت منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید.' }), {
-                    status: 401,
-                    headers: { 'Content-Type': 'application/json', ...corsHeaders }
-                });
-            }
-            throw new Error(`خطا در دریافت لیست نودها: ${nodesResponse.statusText}. جزئیات: ${errorText}`);
-        }
-        const nodesData = await nodesResponse.json();
-        // The /api/nodes endpoint returns an array directly, not { nodes: [] }
-        const nodesList = Array.isArray(nodesData) ? nodesData : nodesData.nodes; // Assuming it returns array directly as per OpenAPI
-
-        if (!nodesList || !Array.isArray(nodesList)) {
-            console.warn("API /api/nodes did not return an array of nodes. Cannot process node stats.");
-            throw new Error("ساختار داده لیست نودها نامعتبر است.");
-        }
-
-        // Fetch Node Usage from /api/nodes/usage
-        const usageResponse = await fetch(`${MARZBAN_BASE_URL}/api/nodes/usage`, {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-
-        if (!usageResponse.ok) {
-            const errorText = await usageResponse.text();
-            console.error(`Marzban /api/nodes/usage responded with error ${usageResponse.status}: ${errorText}`);
-            console.warn(`Could not fetch node usage: ${usageResponse.statusText}. Details: ${errorText}. Returning nodes with N/A usage.`);
-        }
-        const usageData = usageResponse.ok ? await usageResponse.json() : { usages: [] };
-        const nodeUsages = Array.isArray(usageData.usages) ? usageData.usages : [];
-
-
-        let combinedNodesInfo = [];
-
-        nodesList.forEach(node => {
-            const usage = nodeUsages.find(u => u.node_name === node.name);
-            const trafficInBytes = usage ? usage.uplink || 0 : 0; // Ensure default 0
-            const trafficOutBytes = usage ? usage.downlink || 0 : 0; // Ensure default 0
-
-            combinedNodesInfo.push({
-                name: node.name || 'Unknown Node',
-                status: node.status || 'offline', // 'connected', 'connecting', 'error', 'disabled'
-                cpu_usage: 'N/A', // Not available in OpenAPI for per-node
-                ram_usage_percent: 'N/A', // Not available in OpenAPI for per-node
-                traffic_in_formatted: formatBytes(trafficInBytes),
-                traffic_out_formatted: formatBytes(trafficOutBytes)
-            });
-        });
-
-        // Fallback for no nodes found
-        if (combinedNodesInfo.length === 0) {
-            console.warn("No nodes found from Marzban API. Returning dummy data for node stats.");
-            const GIGABYTE = 1024 * 1024 * 1024;
-            combinedNodesInfo = [
-                { name: "سرور ایران 1 (نمونه)", status: "connected", cpu_usage: (Math.random() * 50 + 10).toFixed(1) + '%', ram_usage_percent: (Math.random() * 30 + 20).toFixed(1) + '%', traffic_in_formatted: formatBytes(Math.random() * 100 * GIGABYTE), traffic_out_formatted: formatBytes(Math.random() * 200 * GIGABYTE) },
-                { name: "سرور آلمان 2 (نمونه)", status: "error", cpu_usage: (Math.random() * 30 + 60).toFixed(1) + '%', ram_usage_percent: (Math.random() * 10 + 85).toFixed(1) + '%', traffic_in_formatted: formatBytes(Math.random() * 50 * GIGABYTE), traffic_out_formatted: formatBytes(Math.random() * 150 * GIGABYTE) }
-            ];
-        }
-
-        return new Response(JSON.stringify({ nodes: combinedNodesInfo }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-
-    } catch (error) {
-        console.error('Node Stats Worker error:', error);
-        const dummyNodes = [
-            { name: "سرور (خطا در Worker)", status: "offline", cpu_usage: "N/A", ram_usage_percent: "N/A", traffic_in_formatted: "N/A", traffic_out_formatted: "N/A" }
-        ];
-        return new Response(JSON.stringify({ message: `خطای داخلی Worker در دریافت وضعیت نودها: ${error.message}`, nodes: dummyNodes }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-    }
-}
-
-
-// Main dashboard data handler (combines admin stats and user lists)
-async function handleDashboardInit(request, corsHeaders) {
-  const accessToken = request.headers.get('Authorization')?.split(' ')[1];
-
-  if (!accessToken) {
-    return new Response(JSON.stringify({ message: 'توکن احراز هویت لازم است.' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-  }
-
-  const USERS_API_URL = `${MARZBAN_BASE_URL}/api/users`; // Endpoint for all users
-
-  let dashboardData = {
-    total_traffic_bytes: 0, // Will be calculated from sum of user data_limits
-    used_traffic_bytes: 0,  // Will be calculated from sum of user used_traffic
-    remaining_traffic_bytes: 0,
-    creation_date: null,    // Not available from Marzban API for admin panel - will be null
-    elapsed_days: 0,        // Not available from Marzban API for admin panel - will be 0
-    top_users: [],
-    least_users: []
-  };
-
-  try {
-    // 1. Fetch Users List to calculate overall traffic and get top/least consumers
-    const usersResponse = await fetch(USERS_API_URL, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
-
-    if (!usersResponse.ok) {
-        const errorText = await usersResponse.text();
-        console.error(`Marzban Users API responded with error ${usersResponse.status}: ${errorText}`);
-        if (usersResponse.status === 401 || usersResponse.status === 403) {
-            return new Response(JSON.stringify({ message: 'توکن احراز هویت منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید.' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json', ...corsHeaders }
-            });
-        }
-        console.warn('Failed to fetch users data for dashboard init. Returning partial data.');
-    } else {
-        const usersData = await usersResponse.json();
-        console.log("Raw user data from Marzban API (for dashboard init):", usersData);
-
-        if (usersData.users && Array.isArray(usersData.users)) {
-            let totalUsedTraffic = 0;
-            let totalDataLimit = 0; // Sum of data_limit for limited users
-
-            const activeUsers = usersData.users.filter(user => user.status === 'active');
-
-            activeUsers.forEach(user => {
-                totalUsedTraffic += (user.used_traffic || 0); // used_traffic is already in bytes
-                if (user.data_limit && user.data_limit > 0) { // Only sum if data_limit is set and not unlimited (0)
-                    totalDataLimit += user.data_limit;
-                }
-            });
-
-            dashboardData.used_traffic_bytes = totalUsedTraffic;
-            dashboardData.total_traffic_bytes = totalDataLimit;
-            dashboardData.remaining_traffic_bytes = totalDataLimit - totalUsedTraffic;
-            if (dashboardData.remaining_traffic_bytes < 0) dashboardData.remaining_traffic_bytes = 0; // Ensure it's not negative
-
-            const sortedUsersByTraffic = [...activeUsers].sort((a, b) => b.used_traffic - a.used_traffic);
-
-            dashboardData.top_users = sortedUsersByTraffic.slice(0, 5).map(user => ({
-                username: user.username,
-                used_traffic_bytes: user.used_traffic // Ensure this is bytes
-            }));
-
-            const sortedUsersByTrafficAsc = [...activeUsers].sort((a, b) => a.used_traffic - b.used_traffic);
-            dashboardData.least_users = sortedUsersByTrafficAsc.slice(0, 5).map(user => ({
-                username: user.username,
-                used_traffic_bytes: user.used_traffic // Ensure this is bytes
-            }));
-        } else {
-            console.warn('Marzban Users API returned an invalid data structure for users.');
-        }
-    }
-
-    // creation_date and elapsed_days for the admin panel are not available from Marzban API based on openapi.json
-    // They will remain null/0 as initialized.
-
-    return new Response(JSON.stringify(dashboardData), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-
-  } catch (error) {
-    console.error('Dashboard Init Worker error:', error);
-    return new Response(JSON.stringify({ message: `خطای داخلی سرور در دریافت اطلاعات داشبورد: ${error.message}` }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-  }
-}
-
-// Handles individual user search from a.php
-async function handleUserSearch(request, url, corsHeaders) {
-  const usernameFromQuery = url.searchParams.get('name'); // 'name' for a.php
-  const stepFromQuery = url.searchParams.get('step');     // 'step' for a.php
-
-  if (!usernameFromQuery || stepFromQuery !== 'info') {
-    return new Response(JSON.stringify({ message: 'نام کاربری و مرحله اطلاعات لازم است.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-  }
-
-  const API_ENDPOINT_A_PHP = `https://webs.speedmizban.net/a.php?name=${usernameFromQuery}&step=${stepFromQuery}`;
-
-  try {
-    const apiResponseAphp = await fetch(API_ENDPOINT_A_PHP);
-    if (!apiResponseAphp.ok) {
-      const errorText = await apiResponseAphp.text();
-      console.error(`a.php API responded with error ${apiResponseAphp.status}: ${errorText}`);
-      return new Response(JSON.stringify({ message: `خطا از API اصلی (a.php): ${apiResponseAphp.statusText}. جزئیات: ${errorText}` }), {
-        status: apiResponseAphp.status,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
-      });
-    }
-
-    const apiDataAphp = await apiResponseAphp.json();
-    console.log("Raw data from a.php:", apiDataAphp);
-
-    // Extracting and converting data from a.php response
-    const totalTrafficBytes = parseVolumeToBytes(apiDataAphp.total2);
-    const usedTrafficBytes = parseVolumeToBytes(apiDataAphp.usage);
-    const remainingTrafficBytes = parseVolumeToBytes(apiDataAphp.baghi);
-    
-    // Attempt to parse date from 'date3', which might contain '|' character
-    let createdAt = apiDataAphp.date3 || null;
-    if (typeof createdAt === 'string' && createdAt.includes('│')) { // Using '│' based on previous conversation
-        createdAt = createdAt.replace(/^\|\s*/, ''); // Remove leading '| '
-    }
-
-    const daysPassed = apiDataAphp.date2 || null; 
-
-    const userPayload = {
-      username: apiDataAphp.user || usernameFromQuery, // Use apiDataAphp.user if available, else fallback
-      total_traffic_bytes: totalTrafficBytes,
-      used_traffic_bytes: usedTrafficBytes,
-      remaining_traffic_bytes: remainingTrafficBytes,
-      status: apiDataAphp.status || 'نامشخص', // Assuming 'status' field exists
-      creation_date_aphp: createdAt, // Sending raw parsed date string for frontend to format
-      elapsed_days_aphp: daysPassed, // Sending raw days passed string
-    };
-
-    return new Response(JSON.stringify(userPayload), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-
-  } catch (error) {
-    console.error('Error in handleUserSearch (a.php):', error);
-    return new Response(JSON.stringify({ message: `خطا در جستجوی کاربر: ${error.message}` }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-  }
-}
+  </script>
+</body>
+</html>

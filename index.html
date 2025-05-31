@@ -4,126 +4,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marzban Admin Panel</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" />
+  <title>پنل مدیریت مرزبان</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #f5f7fa;
       font-family: 'Vazirmatn', sans-serif;
+      background-color: #f8f9fc;
+    }
+    .sidebar {
+      height: 100vh;
+      background-color: #343a40;
+      color: white;
+      padding: 1rem;
+    }
+    .sidebar h5 {
+      color: #61dafb;
+    }
+    .sidebar a {
+      color: #adb5bd;
+      text-decoration: none;
+      display: block;
+      padding: 0.5rem 0;
+    }
+    .sidebar a:hover {
+      color: white;
+    }
+    .content {
+      margin-right: 250px;
+      padding: 2rem;
     }
     .card {
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      border-radius: 10px;
-    }
-    .header {
-      background: linear-gradient(90deg, #7f5af0, #2cb67d);
-      color: white;
-      padding: 20px;
-      border-radius: 0 0 10px 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container py-4">
-    <div class="header text-center mb-4">
-      <h2>داشبورد مدیریت مرزبان</h2>
-      <p>مشاهده وضعیت کاربران و سرورها</p>
-    </div>
 
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card p-3">
-          <h5>ورود مدیر</h5>
-          <input type="text" id="adminUser" class="form-control mb-2" placeholder="نام کاربری">
-          <input type="password" id="adminPass" class="form-control mb-2" placeholder="رمز عبور">
-          <button class="btn btn-primary w-100" onclick="login()">ورود</button>
-          <div id="loginResult" class="mt-2 text-danger small"></div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="card p-3">
-          <h5>اطلاعات کاربر</h5>
-          <input type="text" id="searchUser" class="form-control mb-2" placeholder="نام کاربر">
-          <button class="btn btn-secondary w-100" onclick="fetchUser()">جستجو</button>
-          <div id="userInfo" class="mt-3 small"></div>
-        </div>
-      </div>
-
-      <div class="col-12">
-        <div class="card p-3">
-          <h5>کاربران پر مصرف / کم مصرف</h5>
-          <pre id="summary" class="small text-muted">در حال دریافت...</pre>
-        </div>
-      </div>
-    </div>
+<div class="d-flex">
+  <div class="sidebar position-fixed">
+    <h5>🛡️ مرزبان</h5>
+    <a href="#login">ورود</a>
+    <a href="#user-info">اطلاعات کاربر</a>
+    <a href="#dashboard">داشبورد کاربران</a>
   </div>
 
-  <script>
-    let token = "";
+  <div class="content w-100">
+    <h2 class="mb-4">داشبورد مدیریت</h2>
 
-    async function login() {
-      const username = document.getElementById("adminUser").value;
-      const password = document.getElementById("adminPass").value;
-      const result = document.getElementById("loginResult");
-      result.textContent = "در حال ورود...";
+    <section id="login" class="mb-5">
+      <div class="card p-4">
+        <h5>ورود ادمین</h5>
+        <input type="text" id="adminUser" class="form-control mb-2" placeholder="نام کاربری">
+        <input type="password" id="adminPass" class="form-control mb-2" placeholder="رمز عبور">
+        <button class="btn btn-primary w-100" onclick="login()">ورود</button>
+        <div id="loginResult" class="text-danger mt-2 small"></div>
+      </div>
+    </section>
 
-      const res = await fetch("https://home-vor.amiruserbot7.workers.dev/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+    <section id="user-info" class="mb-5">
+      <div class="card p-4">
+        <h5>جستجوی کاربر</h5>
+        <input type="text" id="searchUser" class="form-control mb-2" placeholder="نام کاربر">
+        <button class="btn btn-secondary w-100" onclick="fetchUser()">دریافت اطلاعات</button>
+        <div id="userInfo" class="mt-3 small"></div>
+      </div>
+    </section>
 
-      const data = await res.json();
-      if (res.ok) {
-        token = data.access_token;
-        result.textContent = "ورود موفق!";
-        loadSummary();
-      } else {
-        result.textContent = data.message || data.error || "خطا در ورود";
-      }
-    }
+    <section id="dashboard">
+      <div class="card p-4">
+        <h5>کاربران پرمصرف / کم‌مصرف</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <h6>🔺 پرمصرف‌ترین‌ها</h6>
+            <ul id="topUsers" class="list-group small"></ul>
+          </div>
+          <div class="col-md-6">
+            <h6>🔻 کم‌مصرف‌ترین‌ها</h6>
+            <ul id="leastUsers" class="list-group small"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 
-    async function fetchUser() {
-      const username = document.getElementById("searchUser").value;
-      const out = document.getElementById("userInfo");
-      out.textContent = "در حال دریافت...";
+<script>
+let token = "";
 
-      const res = await fetch("https://home-vor.amiruserbot7.workers.dev/?username=" + username);
-      const data = await res.json();
+async function login() {
+  const username = document.getElementById("adminUser").value;
+  const password = document.getElementById("adminPass").value;
+  const result = document.getElementById("loginResult");
+  result.textContent = "در حال ورود...";
 
-      if (res.ok) {
-        out.innerHTML = `
-          <b>کاربر:</b> ${data.user_name}<br>
-          <b>مصرف:</b> ${data.usage}<br>
-          <b>باقی مانده:</b> ${data.baghi}<br>
-          <b>تاریخ ساخت:</b> ${data.date3}<br>
-          <b>روزهای گذشته:</b> ${data.date2}<br>
-        `;
-      } else {
-        out.textContent = data.message || data.error || "خطا در دریافت اطلاعات";
-      }
-    }
+  const res = await fetch("https://home-vor.amiruserbot7.workers.dev/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
 
-    async function loadSummary() {
-      const res = await fetch("https://home-vor.amiruserbot7.workers.dev/users-summary", {
-        headers: { Authorization: "Bearer " + token },
-      });
-      const data = await res.json();
-      const out = document.getElementById("summary");
+  const data = await res.json();
+  if (res.ok) {
+    token = data.access_token;
+    result.textContent = "ورود موفق!";
+    loadSummary();
+  } else {
+    result.textContent = data.message || data.error || "خطا در ورود";
+  }
+}
 
-      if (res.ok) {
-        const top = data.top_users.map(u => `${u.username} (${u.used_traffic_formatted})`).join("\n");
-        const least = data.least_users.map(u => `${u.username} (${u.used_traffic_formatted})`).join("\n");
-        out.textContent = `🔺 کاربران پر مصرف:
-${top}
+async function fetchUser() {
+  const username = document.getElementById("searchUser").value;
+  const out = document.getElementById("userInfo");
+  out.textContent = "در حال دریافت...";
 
-🔻 کاربران کم مصرف:
-${least}`;
-      } else {
-        out.textContent = data.message || data.error || "خطا در دریافت";
-      }
-    }
-  </script>
+  const res = await fetch("https://home-vor.amiruserbot7.workers.dev/?username=" + username);
+  const data = await res.json();
+
+  if (res.ok) {
+    out.innerHTML = `
+      <b>کاربر:</b> ${data.user_name}<br>
+      <b>مصرف:</b> ${data.usage}<br>
+      <b>باقی‌مانده:</b> ${data.baghi}<br>
+      <b>تاریخ ساخت:</b> ${data.date3}<br>
+      <b>روزهای گذشته:</b> ${data.date2}<br>
+    `;
+  } else {
+    out.textContent = data.message || data.error || "خطا در دریافت اطلاعات";
+  }
+}
+
+async function loadSummary() {
+  const res = await fetch("https://home-vor.amiruserbot7.workers.dev/users-summary", {
+    headers: { Authorization: "Bearer " + token },
+  });
+  const data = await res.json();
+  const topList = document.getElementById("topUsers");
+  const leastList = document.getElementById("leastUsers");
+
+  topList.innerHTML = "";
+  leastList.innerHTML = "";
+
+  if (res.ok) {
+    data.top_users.forEach(user => {
+      const li = document.createElement("li");
+      li.className = "list-group-item";
+      li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
+      topList.appendChild(li);
+    });
+
+    data.least_users.forEach(user => {
+      const li = document.createElement("li");
+      li.className = "list-group-item";
+      li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
+      leastList.appendChild(li);
+    });
+  } else {
+    topList.innerHTML = "<li class='text-danger'>خطا در دریافت</li>";
+    leastList.innerHTML = "<li class='text-danger'>خطا در دریافت</li>";
+  }
+}
+</script>
+
 </body>
 </html>

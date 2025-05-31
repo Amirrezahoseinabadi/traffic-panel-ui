@@ -1,170 +1,328 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>پنل مدیریت مرزبان</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <title>داشبورد مدیریت مرزبان</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" />
   <style>
     body {
-      font-family: 'Vazirmatn', sans-serif;
-      background-color: #f8f9fc;
-    }
-    .sidebar {
-      height: 100vh;
-      background-color: #343a40;
-      color: white;
-      padding: 1rem;
-    }
-    .sidebar h5 {
-      color: #61dafb;
-    }
-    .sidebar a {
-      color: #adb5bd;
-      text-decoration: none;
-      display: block;
-      padding: 0.5rem 0;
-    }
-    .sidebar a:hover {
-      color: white;
-    }
-    .content {
-      margin-right: 250px;
-      padding: 2rem;
+      background-color: #f5f7fa;
+      font-family: 'Vazirmatn', sans-serif; /* فرض می\u200cکنیم فونت وزین متغیر موجود است، در غیر این صورت از فونت\u200cهای سیستمی استفاده می\u200cشود */
     }
     .card {
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 10px;
+    }
+    .header {
+      background: linear-gradient(90deg, #7f5af0, #2cb67d);
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 10px 10px;
+    }
+    .metric-card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .metric-card .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #7f5af0; /* Purple for values */
+    }
+    .metric-card .label {
+      font-size: 0.9rem;
+      color: #6c757d;
     }
   </style>
 </head>
 <body>
+  <div class="container py-4">
+    <div class="header text-center mb-4">
+      <h2>داشبورد مدیریت مرزبان</h2>
+      <p>مشاهده وضعیت کاربران و سرورها</p>
+    </div>
 
-<div class="d-flex">
-  <div class="sidebar position-fixed">
-    <h5>🛡️ مرزبان</h5>
-    <a href="#login">ورود</a>
-    <a href="#user-info">اطلاعات کاربر</a>
-    <a href="#dashboard">داشبورد کاربران</a>
-  </div>
-
-  <div class="content w-100">
-    <h2 class="mb-4">داشبورد مدیریت</h2>
-
-    <section id="login" class="mb-5">
-      <div class="card p-4">
-        <h5>ورود ادمین</h5>
-        <input type="text" id="adminUser" class="form-control mb-2" placeholder="نام کاربری">
-        <input type="password" id="adminPass" class="form-control mb-2" placeholder="رمز عبور">
-        <button class="btn btn-primary w-100" onclick="login()">ورود</button>
-        <div id="loginResult" class="text-danger mt-2 small"></div>
-      </div>
-    </section>
-
-    <section id="user-info" class="mb-5">
-      <div class="card p-4">
-        <h5>جستجوی کاربر</h5>
-        <input type="text" id="searchUser" class="form-control mb-2" placeholder="نام کاربر">
-        <button class="btn btn-secondary w-100" onclick="fetchUser()">دریافت اطلاعات</button>
-        <div id="userInfo" class="mt-3 small"></div>
-      </div>
-    </section>
-
-    <section id="dashboard">
-      <div class="card p-4">
-        <h5>کاربران پرمصرف / کم‌مصرف</h5>
-        <div class="row">
-          <div class="col-md-6">
-            <h6>🔺 پرمصرف‌ترین‌ها</h6>
-            <ul id="topUsers" class="list-group small"></ul>
-          </div>
-          <div class="col-md-6">
-            <h6>🔻 کم‌مصرف‌ترین‌ها</h6>
-            <ul id="leastUsers" class="list-group small"></ul>
+    <div id="login-section">
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+          <div class="card p-4">
+            <h5 class="card-title text-center mb-3">ورود مدیر</h5>
+            <input type="text" id="adminUser" class="form-control mb-2" placeholder="نام کاربری">
+            <input type="password" id="adminPass" class="form-control mb-3" placeholder="رمز عبور">
+            <button class="btn btn-primary w-100" onclick="login()">ورود</button>
+            <div id="loginResult" class="mt-3 text-danger small text-center"></div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+
+    <div id="dashboard-section" class="d-none">
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="label">حجم کلی پنل</div>
+            <div id="total-traffic" class="value">0 GB</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="label">حجم مصرفی</div>
+            <div id="used-traffic" class="value">0 GB</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="label">حجم باقیمانده</div>
+            <div id="remaining-traffic" class="value">0 GB</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="label">پیش\u200cبینی اتمام حجم</div>
+            <div id="estimated-expiry" class="value">نامشخص</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h5 class="card-title">اطلاعات کاربر</h5>
+            <input type="text" id="searchUser" class="form-control mb-2" placeholder="نام کاربر">
+            <button class="btn btn-secondary w-100" onclick="fetchUser()">جستجو</button>
+            <div id="userInfo" class="mt-3 small"></div>
+            <div id="userSearchError" class="mt-2 text-danger small"></div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h5 class="card-title">کاربران پر مصرف / کم مصرف</h5>
+            <div class="row">
+                <div class="col-6">
+                    <h6>🔺 پر مصرف:</h6>
+                    <pre id="top-users-list" class="small text-muted"></pre>
+                </div>
+                <div class="col-6">
+                    <h6>🔻 کم مصرف:</h6>
+                    <pre id="least-users-list" class="small text-muted"></pre>
+                </div>
+            </div>
+            <div id="summaryError" class="mt-2 text-danger small"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-let token = "";
+  <script>
+    // Worker URL (replace with your actual worker URL)
+    const WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
 
-async function login() {
-  const username = document.getElementById("adminUser").value;
-  const password = document.getElementById("adminPass").value;
-  const result = document.getElementById("loginResult");
-  result.textContent = "در حال ورود...";
+    let adminToken = localStorage.getItem('adminToken') || ""; // Load token from local storage
 
-  const res = await fetch("https://home-vor.amiruserbot7.workers.dev/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+    // DOM Elements
+    const loginSection = document.getElementById('login-section');
+    const dashboardSection = document.getElementById('dashboard-section');
+    const adminUser = document.getElementById('adminUser');
+    const adminPass = document.getElementById('adminPass');
+    const loginResult = document.getElementById('loginResult');
+    const searchUser = document.getElementById('searchUser');
+    const userInfo = document.getElementById('userInfo');
+    const userSearchError = document.getElementById('userSearchError');
+    const topUsersList = document.getElementById('top-users-list');
+    const leastUsersList = document.getElementById('least-users-list');
+    const summaryError = document.getElementById('summaryError');
 
-  const data = await res.json();
-  if (res.ok) {
-    token = data.access_token;
-    result.textContent = "ورود موفق!";
-    loadSummary();
-  } else {
-    result.textContent = data.message || data.error || "خطا در ورود";
-  }
-}
+    const totalTrafficElem = document.getElementById('total-traffic');
+    const usedTrafficElem = document.getElementById('used-traffic');
+    const remainingTrafficElem = document.getElementById('remaining-traffic');
+    const estimatedExpiryElem = document.getElementById('estimated-expiry');
+    // Note: Panel creation date and elapsed days are not directly available from Marzban API
+    // They will be displayed as '--' as per current API analysis
 
-async function fetchUser() {
-  const username = document.getElementById("searchUser").value;
-  const out = document.getElementById("userInfo");
-  out.textContent = "در حال دریافت...";
+    // Helper to format bytes
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function bytesToGb(bytes) {
+        return bytes / (1024 * 1024 * 1024);
+    }
 
-  const res = await fetch("https://home-vor.amiruserbot7.workers.dev/?username=" + username);
-  const data = await res.json();
+    async function login() {
+      const username = adminUser.value.trim();
+      const password = adminPass.value.trim();
+      loginResult.textContent = "در حال ورود...";
+      loginResult.classList.remove('text-success', 'text-danger');
+      loginResult.classList.add('text-info');
 
-  if (res.ok) {
-    out.innerHTML = `
-      <b>کاربر:</b> ${data.user_name}<br>
-      <b>مصرف:</b> ${data.usage}<br>
-      <b>باقی‌مانده:</b> ${data.baghi}<br>
-      <b>تاریخ ساخت:</b> ${data.date3}<br>
-      <b>روزهای گذشته:</b> ${data.date2}<br>
-    `;
-  } else {
-    out.textContent = data.message || data.error || "خطا در دریافت اطلاعات";
-  }
-}
+      if (!username || !password) {
+        loginResult.textContent = "نام کاربری و رمز عبور لازم است.";
+        loginResult.classList.remove('text-info');
+        loginResult.classList.add('text-danger');
+        return;
+      }
 
-async function loadSummary() {
-  const res = await fetch("https://home-vor.amiruserbot7.workers.dev/users-summary", {
-    headers: { Authorization: "Bearer " + token },
-  });
-  const data = await res.json();
-  const topList = document.getElementById("topUsers");
-  const leastList = document.getElementById("leastUsers");
+      try {
+        const res = await fetch(`${WORKER_URL}login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
 
-  topList.innerHTML = "";
-  leastList.innerHTML = "";
+        const data = await res.json();
+        if (res.ok) {
+          adminToken = data.access_token;
+          localStorage.setItem('adminToken', adminToken); // Save token
+          loginResult.textContent = "ورود موفق!";
+          loginResult.classList.remove('text-info', 'text-danger');
+          loginResult.classList.add('text-success');
+          loadDashboardData(); // Load all dashboard data
+          loginSection.classList.add('d-none'); // Hide login section
+          dashboardSection.classList.remove('d-none'); // Show dashboard
+        } else {
+          loginResult.textContent = data.message || data.error || "خطا در ورود";
+          loginResult.classList.remove('text-info', 'text-success');
+          loginResult.classList.add('text-danger');
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        loginResult.textContent = "خطا در برقراری ارتباط با سرور.";
+        loginResult.classList.remove('text-info', 'text-success');
+        loginResult.classList.add('text-danger');
+      }
+    }
 
-  if (res.ok) {
-    data.top_users.forEach(user => {
-      const li = document.createElement("li");
-      li.className = "list-group-item";
-      li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
-      topList.appendChild(li);
+    async function loadDashboardData() {
+        if (!adminToken) {
+            loginResult.textContent = "توکن احراز هویت نامعتبر است. لطفا دوباره وارد شوید.";
+            loginResult.classList.remove('text-info', 'text-success');
+            loginResult.classList.add('text-danger');
+            loginSection.classList.remove('d-none');
+            dashboardSection.classList.add('d-none');
+            return;
+        }
+
+        summaryError.textContent = "در حال دریافت آمار...";
+        summaryError.classList.remove('text-danger');
+        summaryError.classList.add('text-info');
+
+        try {
+            const res = await fetch(`${WORKER_URL}dashboard-init`, {
+                headers: { Authorization: "Bearer " + adminToken },
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                // Update Metric Cards
+                totalTrafficElem.textContent = formatBytes(data.total_traffic_bytes || 0);
+                usedTrafficElem.textContent = formatBytes(data.used_traffic_bytes || 0);
+                remainingTrafficElem.textContent = formatBytes(data.remaining_traffic_bytes || 0);
+
+                // Estimated expiry (simplified)
+                if (data.used_traffic_bytes > 0 && data.remaining_traffic_bytes > 0 && data.elapsed_days > 0) {
+                    const dailyUsageBytes = data.used_traffic_bytes / data.elapsed_days;
+                    if (dailyUsageBytes > 0) {
+                        const remainingDays = data.remaining_traffic_bytes / dailyUsageBytes;
+                        estimatedExpiryElem.textContent = `${Math.round(remainingDays)} روز دیگر`;
+                    } else {
+                        estimatedExpiryElem.textContent = 'نامحدود';
+                    }
+                } else {
+                    estimatedExpiryElem.textContent = 'نامشخص';
+                }
+
+                // Update Top/Least Users
+                const top = (data.top_users || []).map(u => `${u.username} (${formatBytes(u.used_traffic_bytes)})`).join("\n");
+                const least = (data.least_users || []).map(u => `${u.username} (${formatBytes(u.used_traffic_bytes)})`).join("\n");
+                
+                topUsersList.textContent = top || 'کاربری یافت نشد.';
+                leastUsersList.textContent = least || 'کاربری یافت نشد.';
+
+                summaryError.textContent = ""; // Clear error message
+                summaryError.classList.remove('text-info', 'text-danger');
+
+            } else {
+                summaryError.textContent = data.message || data.error || "خطا در دریافت آمار داشبورد";
+                summaryError.classList.remove('text-info');
+                summaryError.classList.add('text-danger');
+                if (res.status === 401 || res.status === 403) {
+                    adminToken = ""; // Clear invalid token
+                    localStorage.removeItem('adminToken');
+                    loginResult.textContent = data.message || "نشست شما منقضی شده است. لطفا دوباره وارد شوید.";
+                    loginResult.classList.remove('text-info', 'text-success');
+                    loginResult.classList.add('text-danger');
+                    loginSection.classList.remove('d-none');
+                    dashboardSection.classList.add('d-none');
+                }
+            }
+        } catch (error) {
+            console.error("Load dashboard data error:", error);
+            summaryError.textContent = "خطا در برقراری ارتباط برای دریافت اطلاعات داشبورد.";
+            summaryError.classList.remove('text-info');
+            summaryError.classList.add('text-danger');
+        }
+    }
+
+    async function fetchUser() {
+      const username = searchUser.value.trim();
+      userInfo.textContent = "در حال دریافت...";
+      userInfo.classList.remove('text-danger');
+      userInfo.classList.add('text-info');
+      userSearchError.textContent = "";
+
+      if (!username) {
+        userSearchError.textContent = "لطفا نام کاربری را وارد کنید.";
+        userSearchError.classList.remove('d-none');
+        userInfo.textContent = "";
+        return;
+      }
+      userSearchError.classList.add('d-none');
+
+      try {
+        // Note: The /?name=... endpoint does not require Authorization header
+        const res = await fetch(`${WORKER_URL}?name=${username}&step=info`); 
+        const data = await res.json();
+
+        if (res.ok && data.username) { // Assuming data.username exists for success
+          userInfo.innerHTML = `
+            <b>کاربر:</b> ${data.username}<br>
+            <b>مصرف:</b> ${formatBytes(data.used_traffic_bytes || 0)}<br>
+            <b>باقی مانده:</b> ${formatBytes(data.remaining_traffic_bytes || 0)}<br>
+            <b>وضعیت:</b> ${data.status || 'نامشخص'}<br>
+          `;
+          userInfo.classList.remove('text-info', 'text-danger');
+          userInfo.classList.add('text-success');
+        } else {
+          userInfo.textContent = data.message || data.error || "خطا در دریافت اطلاعات یا کاربر یافت نشد.";
+          userInfo.classList.remove('text-info', 'text-success');
+          userInfo.classList.add('text-danger');
+        }
+      } catch (error) {
+        console.error("Fetch user error:", error);
+        userInfo.textContent = "خطا در برقراری ارتباط برای دریافت اطلاعات کاربر.";
+        userInfo.classList.remove('text-info', 'text-success');
+        userInfo.classList.add('text-danger');
+      }
+    }
+
+    // Initial check on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (adminToken) {
+        loginSection.classList.add('d-none'); // Hide login section
+        dashboardSection.classList.remove('d-none'); // Show dashboard
+        loadDashboardData(); // Load data if already logged in
+      }
     });
 
-    data.least_users.forEach(user => {
-      const li = document.createElement("li");
-      li.className = "list-group-item";
-      li.textContent = `${user.username}: ${user.used_traffic_formatted}`;
-      leastList.appendChild(li);
-    });
-  } else {
-    topList.innerHTML = "<li class='text-danger'>خطا در دریافت</li>";
-    leastList.innerHTML = "<li class='text-danger'>خطا در دریافت</li>";
-  }
-}
-</script>
-
+  </script>
 </body>
 </html>

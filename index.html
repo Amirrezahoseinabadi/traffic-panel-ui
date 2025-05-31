@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Modern & Refined Color Palette */
@@ -172,7 +172,7 @@
             cursor: pointer;
             appearance: none;
             /* Moved background-image to the left for better visual balance in RTL */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1_0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: left 1rem center; /* Moved arrow to left */
             background-size: 1.1em 1.1em; /* Smaller arrow */
@@ -431,10 +431,11 @@
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons">
+            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
-                    </svg>
+                </svg>
             </button>
 
             <div class="relative">
@@ -466,8 +467,28 @@
 
         <div id="dashboardContent" class="hidden">
             
-            <div id="loadingIndicator" class="loading-spinner hidden"></div>
+            <div id="loadingIndicator" class="loading-spinner hidden rounded-full border-solid border-4 border-t-transparent"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+
+            <h2 class="text-2xl font-bold text-center mb-6" data-key="adminStatsHeader">آمار کلی پنل ادمین</h2>
+            <div id="adminDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10 mx-auto">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalPanelVolume">حجم کلی پنل</p>
+                    <p id="adminTotalTraffic" class="text-3xl text-green-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumedPanelVolume">حجم مصرفی پنل</p>
+                    <p id="adminUsedTraffic" class="text-3xl text-yellow-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingPanelVolume">حجم باقیمانده پنل</p>
+                    <p id="adminRemainingTraffic" class="text-3xl text-red-400">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="estimatedPanelExpiry">پیش\u200cبینی اتمام پنل</p>
+                    <p id="adminEstimatedExpiry" class="text-3xl text-purple-400">...</p>
+                </div>
+            </div>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
@@ -475,33 +496,36 @@
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
             </div>
 
-            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto">
+            <div id="individualUserDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto hidden">
                 <div class="card">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
-                    <p id="total2" class="text-3xl">...</p>
+                    <p id="userTotalTraffic" class="text-3xl text-green-400">...</p>
                 </div>
                 <div class="card">
                     <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
-                    <p id="baghi" class="text-3xl">...</p>
+                    <p id="userRemainingTraffic" class="text-3xl text-yellow-400">...</p>
                 </div>
                 <div class="card">
                     <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
-                    <p id="usage" class="text-3xl">...</p>
+                    <p id="userUsedTraffic" class="text-3xl text-red-400">...</p>
                 </div>
                 <div class="card">
                     <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت کاربر</p>
-                    <p id="date3" class="text-lg">...</p> </div>
+                    <p id="userCreationDate" class="text-lg">...</p>
+                </div>
                 <div class="card col-span-full lg:col-span-1">
                     <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
-                    <p id="date2" class="text-3xl">...</p>
+                    <p id="userDaysPassed" class="text-3xl">...</p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
-                    <p id="predictionMessage" class="text-3xl">...</p>
+                    <p class="text-sm mb-2" data-key="predictionHeader">پیش\u200cبینی اتمام حجم</p>
+                    <p id="userPredictionMessage" class="text-3xl text-purple-400">...</p>
                 </div>
             </div>
+            <p id="userSearchErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="userSearchErrorMessage">کاربر یافت نشد یا خطایی رخ داد.</p>
 
-            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
+
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto hidden">
                 <div class="card">
                     <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
                         <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -517,7 +541,7 @@
                         <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
                         </svg>
-                        <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
+                        <span data-key="leastUsersHeader">کاربران کم\u200cمصرف</span>
                     </h2>
                     <div id="leastUsersList" class="space-y-0">
                         </div>
@@ -531,13 +555,15 @@
         تمامی حقوق برای آقای مرزبان محفوظ است.
     </footer>
 
-    <div id="supportModal" class="modal-overlay hidden">
-        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+    <div id="supportModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
         </div>
     </div>
 
     <script>
+        // DOM Elements
         const htmlElement = document.documentElement;
         const bodyElement = document.body;
         const themeToggle = document.getElementById('themeToggle');
@@ -555,29 +581,45 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
-        const usernameInput = document.getElementById('usernameInput');
-        const fetchDataButton = document.getElementById('fetchDataButton');
-        const individualUserLookup = document.getElementById('individualUserLookup'); 
+        // Admin Stats Elements
+        const adminDataCards = document.getElementById('adminDataCards');
+        const adminTotalTraffic = document.getElementById('adminTotalTraffic');
+        const adminUsedTraffic = document.getElementById('adminUsedTraffic');
+        const adminRemainingTraffic = document.getElementById('adminRemainingTraffic');
+        const adminEstimatedExpiry = document.getElementById('adminEstimatedExpiry');
 
+        // Individual User Search Elements
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
+        const usernameInput = document.getElementById('usernameInput'); // Input for searching individual user
+        const fetchDataButton = document.getElementById('fetchDataButton');
+        const individualUserDataCards = document.getElementById('individualUserDataCards'); // Container for individual user data
+        const userTotalTraffic = document.getElementById('userTotalTraffic');
+        const userUsedTraffic = document.getElementById('userUsedTraffic');
+        const userRemainingTraffic = document.getElementById('userRemainingTraffic');
+        const userCreationDate = document.getElementById('userCreationDate');
+        const userDaysPassed = document.getElementById('userDaysPassed');
+        const userPredictionMessage = document.getElementById('userPredictionMessage');
+        const userSearchErrorMessage = document.getElementById('userSearchErrorMessage');
+
+        // General Error/Loading
         const loadingIndicator = document.getElementById('loadingIndicator');
-        const errorMessage = document.getElementById('errorMessage');
-        const dataCards = document.getElementById('dataCards');
+        const errorMessage = document.getElementById('errorMessage'); // General dashboard error message
+
+        // User Lists Elements
         const userUsageLists = document.getElementById('userUsageLists'); 
-        const topUsersList = document.getElementById('topUsersList');     
+        const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
-        // Prediction elements
-        const predictionMessage = document.getElementById('predictionMessage'); 
-
-        let currentTrafficData = {}; 
+        // State variables
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        
+        let currentIndividualUserData = null; // To store data of the currently searched individual user
 
         // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
+        // --- Localization Data ---
         const translations = {
             fa: {
                 pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
@@ -597,6 +639,7 @@
                 daysUnit: 'روز',
                 unknown: 'نامشخص',
                 bytes: 'بایت',
+                kb: 'کیلوبایت',
                 mb: 'مگابایت',
                 gb: 'گیگابایت',
                 tb: 'ترابایت',
@@ -608,13 +651,19 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
+                adminStatsHeader: 'آمار کلی پنل ادمین',
+                totalPanelVolume: 'حجم کلی پنل',
+                consumedPanelVolume: 'حجم مصرفی پنل',
+                remainingPanelVolume: 'حجم باقیمانده پنل',
+                estimatedPanelExpiry: 'پیش\u200cبینی اتمام پنل',
                 topUsersHeader: 'کاربران پرمصرف', 
-                leastUsersHeader: 'کاربران کم‌مصرف', 
+                leastUsersHeader: 'کاربران کم\u200cمصرف', 
                 noUsersFound: 'کاربری یافت نشد.',
-                predictionHeader: 'پیش‌بینی اتمام حجم', 
+                predictionHeader: 'پیش\u200cبینی اتمام حجم', 
                 predictionMessageNoData: 'اطلاعات کافی نیست.', 
                 predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
-                predictionMessageDepleted: 'حجم به اتمام رسیده.' 
+                predictionMessageDepleted: 'حجم به اتمام رسیده.',
+                userSearchErrorMessage: 'کاربر یافت نشد یا خطایی رخ داد.'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -634,6 +683,7 @@
                 daysUnit: 'days',
                 unknown: 'Unknown',
                 bytes: 'Bytes',
+                kb: 'KB',
                 mb: 'MB',
                 gb: 'GB',
                 tb: 'TB',
@@ -645,13 +695,19 @@
                 loginPasswordLabel: 'Admin Password:',
                 loginButton: 'Login',
                 loginErrorMessage: 'Incorrect username or password.',
+                adminStatsHeader: 'Admin Panel Overview',
+                totalPanelVolume: 'Total Panel Volume',
+                consumedPanelVolume: 'Consumed Panel Volume',
+                remainingPanelVolume: 'Remaining Panel Volume',
+                estimatedPanelExpiry: 'Estimated Panel Expiry',
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
                 noUsersFound: 'No users found.',
                 predictionHeader: 'Data Depletion Prediction', 
                 predictionMessageNoData: 'Insufficient data.', 
                 predictionMessageNoConsumption: 'No consumption recorded.', 
-                predictionMessageDepleted: 'Data depleted.' 
+                predictionMessageDepleted: 'Data depleted.',
+                userSearchErrorMessage: 'User not found or an error occurred.'
             }
         };
 
@@ -725,18 +781,18 @@
 
             // Trigger re-fetch for user lists if language changes while dashboard is visible
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                fetchUserLists(); 
+                fetchAdminDashboardData(); // Re-fetch admin data for overall stats and user lists
             }
             // Re-update prediction if data is loaded
-            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
-                updateUI(currentTrafficData);
+            if (individualUserDataCards && !individualUserDataCards.classList.contains('hidden') && currentIndividualUserData) {
+                updateIndividualUserUI(currentIndividualUserData);
             }
         }
 
         function setTheme(theme) {
             if (theme === 'light') {
                 bodyElement.classList.add('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
+                themeIcon.innerHTML = `<svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
             } else {
                 bodyElement.classList.remove('light-mode');
                 themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
@@ -753,7 +809,8 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                fetchUserLists(); 
+                fetchAdminDashboardData(); // Fetch admin data on load if token exists
+                fetchUserLists(); // Fetch user lists on load if token exists
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -796,8 +853,6 @@
             goftinoIframe.src = '';
         }
 
-        // Removed all User Action Modal Logic
-
 
         // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
@@ -825,7 +880,7 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
+                    throw new Error(errorData.message || translations[currentLanguage].loginErrorMessage);
                 }
 
                 const data = await response.json();
@@ -835,7 +890,8 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                fetchUserLists(); 
+                fetchAdminDashboardData(); // Fetch admin overall stats
+                fetchUserLists(); // Fetch top/least consuming users
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -847,53 +903,102 @@
             }
         });
 
-        // --- Fetch Top/Least Consuming Users ---
-        async function fetchUserLists() {
+        // --- Fetch Admin Overall Dashboard Data ---
+        async function fetchAdminDashboardData() {
             if (!accessToken) {
-                console.warn("No access token available. Cannot fetch user lists.");
-                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                userUsageLists.classList.remove('hidden'); 
+                console.warn("No access token available for admin dashboard. Redirecting to login.");
+                loginErrorMessage.textContent = translations[currentLanguage].session_expired;
+                loginErrorMessage.classList.remove('hidden');
+                loginForm.classList.remove('hidden');
+                dashboardContent.classList.add('hidden');
                 return;
             }
 
-            topUsersList.innerHTML = ''; 
-            leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden'); 
+            errorMessage.classList.add('hidden'); // Hide general error message
+            loadingIndicator.classList.remove('hidden'); // Show loading for admin stats
 
             try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 });
 
                 if (!response.ok) {
-                    if (response.status === 401) {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginErrorMessage.textContent = translations[currentLanguage].session_expired;
+                        loginErrorMessage.classList.remove('hidden');
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        return;
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Failed to fetch admin dashboard data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("Admin Dashboard Init data:", data);
+                updateAdminDashboardUI(data); // Update admin stats cards
+
+            } catch (error) {
+                console.error('Error fetching admin dashboard data:', error);
+                errorMessage.textContent = translations[currentLanguage].errorMessage.replace('{error}', error.message);
+                errorMessage.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // --- Fetch Top/Least Consuming Users ---
+        async function fetchUserLists() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch user lists.");
+                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                userUsageLists.classList.remove('hidden'); // Ensure container is visible even if empty
+                return;
+            }
+
+            topUsersList.innerHTML = ''; // Clear previous lists
+            leastUsersList.innerHTML = '';
+            userUsageLists.classList.add('hidden'); // Hide container during fetch
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}dashboard-init`, { // Re-using dashboard-init for user lists
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
                         console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
-                        loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
+                        loginErrorMessage.textContent = translations[currentLanguage].session_expired; 
                         loginErrorMessage.classList.remove('hidden');
                     }
                     const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
+                    throw new Error(errorData.message || `Failed to fetch user lists: ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                console.log("User summary data:", data);
+                console.log("User lists data:", data);
 
+                // Populate Top Users List
                 if (data.top_users && data.top_users.length > 0) {
                     data.top_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item top-user-item'; 
                         div.setAttribute('data-username', user.username); 
                         div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
+                            <svg class="w-5 h-5 user-list-icon text-green-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
                             <span>${user.username}</span>
-                            <span>${user.used_traffic_formatted}</span>
+                            <span>${formatBytes(user.used_traffic_bytes)}</span>
                         `;
                         topUsersList.appendChild(div);
                     });
@@ -901,15 +1006,16 @@
                     topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 }
 
+                // Populate Least Users List
                 if (data.least_users && data.least_users.length > 0) {
                     data.least_users.slice(0, 10).forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'user-list-item least-user-item'; 
                         div.setAttribute('data-username', user.username); 
                         div.innerHTML = `
-                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
+                            <svg class="w-5 h-5 user-list-icon text-yellow-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
                             <span>${user.username}</span>
-                            <span>${user.used_traffic_formatted}</span>
+                            <span>${formatBytes(user.used_traffic_bytes)}</span>
                         `;
                         leastUsersList.appendChild(div);
                     });
@@ -917,7 +1023,7 @@
                     leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
                 }
 
-                userUsageLists.classList.remove('hidden');
+                userUsageLists.classList.remove('hidden'); // Show container after populating
 
             } catch (error) {
                 console.error('Error fetching user lists:', error);
@@ -927,173 +1033,66 @@
             }
         }
 
-        // Function to fetch and display user data
-        async function fetchUserData(username) {
-            if (!username) return;
+        // Function to fetch and display individual user data
+        fetchDataButton.addEventListener('click', async () => {
+            const username = usernameInput.value.trim();
+            userSearchErrorMessage.classList.add('hidden'); // Hide previous error
+            individualUserDataCards.classList.add('hidden'); // Hide previous results
 
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
+            if (!username) {
+                userSearchErrorMessage.textContent = translations[currentLanguage].user_search_empty;
+                userSearchErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            loadingIndicator.classList.remove('hidden'); // Show loading spinner
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
-                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
-
-                const response = await fetch(fetchUrl);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
-                }
-
+                // Note: The /?name=... endpoint does not strictly require Authorization header,
+                // but passing it is harmless if your worker handles it.
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?name=${username}&step=info`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}` 
+                    }
+                });
                 const data = await response.json();
+                console.log("Individual User Search API response:", data);
 
-                if (data.error) {
-                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
-                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
-                    } else if (data.auth_error) { 
-                        errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                    }
-                    else {
-                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
-                    }
-                    errorMessage.classList.remove('hidden');
-                    dataCards.classList.add('hidden');
-                    return;
+                if (response.ok && data && data.username) {
+                    currentIndividualUserData = data; // Store for language changes
+                    updateIndividualUserUI(data);
+                    individualUserDataCards.classList.remove('hidden'); // Show the cards
+                } else {
+                    userSearchErrorMessage.textContent = data.message || translations[currentLanguage].user_search_not_found;
+                    userSearchErrorMessage.classList.remove('hidden');
                 }
-
-                currentTrafficData = data; 
-                updateUI(data); 
-                
-                dataCards.classList.remove('hidden');
-
             } catch (error) {
-                console.error('Error fetching individual user data:', error);
-                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
-                errorMessage.classList.remove('hidden');
-                dataCards.classList.add('hidden');
+                console.error("Error fetching individual user data:", error);
+                userSearchErrorMessage.textContent = translations[currentLanguage].network_error;
+                userSearchErrorMessage.classList.remove('hidden');
             } finally {
-                loadingIndicator.classList.add('hidden');
+                loadingIndicator.classList.add('hidden'); // Hide loading spinner
             }
-        }
-
-        // Event listener for the main fetch data button
-        fetchDataButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            fetchUserData(username);
         });
 
-        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
-        function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage]; // Get current translations
-            if (!trafficString || trafficString === currentTrans.unknown) return 0;
-            const parts = trafficString.trim().split(' ');
-            if (parts.length !== 2) return 0;
+        // --- Initial Load Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply saved theme and language preferences
+            setTheme(currentTheme);
+            languageSelector.value = currentLanguage; // Set dropdown value
+            applyTranslations(currentLanguage); // Apply initial translations
 
-            const value = parseFloat(parts[0]);
-            const unit = parts[1].toLowerCase();
-
-            const KB_TO_MB = 1 / 1024;
-            const GB_TO_MB = 1024;
-            const TB_TO_MB = 1024 * 1024;
-
-            // Map Persian units to English for internal consistency in switch
-            const persianUnitMap = {
-                'بایت': 'bytes',
-                'کیلوبایت': 'kb',
-                'مگابایت': 'mb',
-                'گیگابایت': 'gb',
-                'ترابایت': 'tb'
-            };
-            const normalizedUnit = persianUnitMap[unit] || unit;
-
-            switch (normalizedUnit) {
-                case 'bytes':
-                    return value / (1024 * 1024);
-                case 'kb':
-                    return value * KB_TO_MB;
-                case 'mb':
-                    return value;
-                case 'gb':
-                    return value * GB_TO_MB;
-                case 'tb':
-                    return value * TB_TO_MB;
-                default:
-                    return 0;
-            }
-        }
-
-        // Function to update UI elements (including prediction)
-        function updateUI(data) {
-            const currentTrans = translations[currentLanguage];
-
-            document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
-            document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
-            document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
-            
-            if (data.date3) {
-                let displayDate = data.date3;
-                try {
-                    const dateObj = new Date(displayDate); 
-                    if (isNaN(dateObj.getTime())) {
-                        throw new Error("Invalid date string after cleaning or unparsable format.");
-                    }
-                    const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-                    const persianDateOptions = { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        second: '2-digit',
-                        hour12: false 
-                    };
-                    displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
-                } catch (e) {
-                    console.error("Error parsing date3:", e);
-                    displayDate = currentTrans.notAvailable;
-                }
-                document.getElementById('date3').textContent = displayDate;
+            // Check for existing admin token and load dashboard if available
+            if (accessToken) {
+                loginForm.classList.add('hidden'); // Hide login
+                dashboardContent.classList.remove('hidden'); // Show dashboard
+                fetchAdminDashboardData(); // Load admin overall stats
+                fetchUserLists(); // Load top/least users
             } else {
-                document.getElementById('date3').textContent = currentTrans.unknown;
+                loginForm.classList.remove('hidden'); // Show login
+                dashboardContent.classList.add('hidden'); // Hide dashboard
             }
-
-            document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
-
-            // Prediction Logic
-            const totalVolumeMB = convertTrafficToMB(data.total2);
-            const usedVolumeMB = convertTrafficToMB(data.usage);
-            const daysPassed = parseFloat(data.date2); // data.date2 contains the number of days passed
-
-            if (daysPassed > 0 && usedVolumeMB > 0) {
-                const dailyAverageMB = usedVolumeMB / daysPassed;
-                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
-
-                if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
-                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
-                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
-                    predictionMessage.style.color = 'var(--prediction-color)'; 
-                } else if (remainingVolumeMB <= 0) {
-                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
-                    predictionMessage.style.color = 'var(--error-red)';
-                } else {
-                    predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
-                    predictionMessage.style.color = 'var(--text-secondary)';
-                }
-            } else {
-                // No sufficient data for prediction (e.g., first day, or no usage yet)
-                predictionMessage.textContent = currentTrans.predictionMessageNoData;
-                predictionMessage.style.color = 'var(--text-secondary)';
-            }
-        }
-
-        window.onload = function() {
-            initializePreferences();
-        };
+        });
     </script>
 </body>
 </html>

@@ -1,844 +1,453 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-lang-key="page_title">پنل مدیریت ترافیک - آقای مرزبان</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Base styles for dark theme (PlainAdmin inspired) */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1a1b26; /* Darker background, inspired by PlainAdmin */
-            color: #e2e8f0; /* Light text */
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        /* Dark mode specific styles */
-        .dark body {
-            background-color: #1a1b26;
-            color: #e2e8f0;
-        }
-        .dark .card {
-            background-color: #2a2b3c; /* Slightly lighter than body for depth */
-        }
-        .dark .input-field {
-            background-color: #3b3c52; /* Darker input background */
-            border-color: #3b3c52;
-            color: #e2e8f0;
-        }
-        .dark ::-webkit-scrollbar-track {
-            background: #2a2b3c;
-        }
-        .dark .header-button {
-            background-color: #3b3c52;
-        }
-        .dark .header-button:hover {
-            background-color: #4a4b62;
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
+
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*', // Adjust this to your frontend origin in production (e.g., 'https://my-traffic-panel.pages.dev')
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', // Added PUT for deactivate user
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  };
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  // Admin authentication path
+  if (path === '/login' && request.method === 'POST') {
+    return handleLogin(request, corsHeaders);
+  }
+
+  // Dashboard initialization path (for admin stats and user lists)
+  if (path === '/dashboard-init' && request.method === 'GET') {
+    return handleDashboardInit(request, corsHeaders);
+  }
+
+  // Endpoint to deactivate a user
+  // HTML frontend must send a POST request with {username: "user_to_deactivate"}
+  if (path === '/deactivate-user' && request.method === 'POST') { // Changed to POST method for action
+      return handleDeactivateUser(request, corsHeaders);
+  }
+
+  // Endpoint to fetch node statistics (if you add a Node Stats section in HTML later)
+  if (path === '/node-stats' && request.method === 'GET') {
+    return handleNodeStats(request, corsHeaders);
+  }
+
+  // User search path (for individual user data from a.php)
+  // This path will handle requests like /?name=username&step=info
+  if (path === '/' && url.searchParams.has('name') && url.searchParams.has('step')) {
+    return handleUserSearch(request, url, corsHeaders);
+  }
+
+  // If no matching path
+  return new Response('Not Found', { status: 404, headers: corsHeaders });
+}
+
+// IMPORTANT: Replace this with the actual base URL of your Marzban panel API.
+// Example: 'https://your-marzban-domain.com:port'
+const MARZBAN_BASE_URL = 'https://a-l.fl-sub.site:2096'; 
+
+// Handles admin login to Marzban API
+async function handleLogin(request, corsHeaders) {
+  try {
+    const { username, password } = await request.json();
+
+    if (!username || !password) {
+      return new Response(JSON.stringify({ message: 'نام کاربری و رمز عبور لازم است.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      });
+    }
+
+    const authUrl = `${MARZBAN_BASE_URL}/api/admin/token`;
+    const authResponse = await fetch(authUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        username: username,
+        password: password,
+        grant_type: 'password'
+      })
+    });
+
+    if (!authResponse.ok) {
+      const errorText = await authResponse.text();
+      console.error(`Marzban Auth API responded with error ${authResponse.status}: ${errorText}`);
+      let errorMessage = 'نام کاربری یا رمز عبور اشتباه است.';
+      try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson && errorJson.detail) {
+              errorMessage = errorJson.detail; // Use Marzban's specific error message if available
+          }
+      } catch (e) {
+          // not a JSON error, use default message
+      }
+      
+      return new Response(JSON.stringify({ message: errorMessage }), {
+        status: authResponse.status,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      });
+    }
+
+    const authData = await authResponse.json();
+    return new Response(JSON.stringify(authData), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+
+  } catch (error) {
+    console.error('Login Worker error:', error);
+    return new Response(JSON.stringify({ message: `خطای داخلی سرور در ورود: ${error.message}` }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}
+
+// Helper to parse volume strings like "1.34 TB" or "464.74 GB" into bytes
+const parseVolumeToBytes = (volumeString) => {
+    if (!volumeString || typeof volumeString !== 'string') return 0; // Return 0 for invalid inputs
+
+    const parts = volumeString.trim().split(' ');
+    if (parts.length !== 2) return 0;
+
+    const value = parseFloat(parts[0]);
+    if (isNaN(value)) return 0;
+
+    const unit = parts[1].toLowerCase();
+
+    const KILOBYTE = 1024;
+    const MEGABYTE = KILOBYTE * 1024;
+    const GIGABYTE = MEGABYTE * 1024;
+    const TERABYTE = GIGABYTE * 1024;
+
+    switch (unit) {
+        case 'b': return value;
+        case 'kb': return value * KILOBYTE;
+        case 'mb': return value * MEGABYTE;
+        case 'gb': return value * GIGABYTE;
+        case 'tb': return value * TERABYTE;
+        default: return 0;
+    }
+};
+
+// Handles deactivating a single user
+async function handleDeactivateUser(request, corsHeaders) {
+    const accessToken = request.headers.get('Authorization')?.split(' ')[1];
+    if (!accessToken) {
+        return new Response(JSON.stringify({ message: 'توکن احراز هویت لازم است.' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+    }
+
+    try {
+        const { username } = await request.json();
+        if (!username) {
+            return new Response(JSON.stringify({ message: 'نام کاربری لازم است.' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
         }
 
-        /* Light mode specific styles */
-        .light body {
-            background-color: #f0f2f5; /* Light grey background */
-            color: #2d3748;
-        }
-        .light .card {
-            background-color: #ffffff;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        }
-        .light .input-field {
-            background-color: #edf2f7; /* Lighter background for light theme inputs */
-            border-color: #cbd5e0; /* Softer border for light theme inputs */
-            color: #2d3748;
-        }
-        .light ::-webkit-scrollbar-track {
-            background: #edf2f7;
-        }
-        .light .header-button {
-            background-color: #e2e8f0;
-        }
-        .light .header-button:hover {
-            background-color: #cbd5e0;
-        }
-
-        /* Common styles for cards, inputs, buttons */
-        .card {
-            border-radius: 0.75rem; /* Rounded corners */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .input-field {
-            border: 1px solid;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
-        .button-primary {
-            background-color: #6366f1; /* Indigo from PlainAdmin */
-            color: white;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .button-primary:hover {
-            background-color: #4f46e5; /* Darker indigo */
-            transform: translateY(-1px);
-        }
-        .button-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .button-secondary {
-            background-color: #4a5568; /* Gray */
-            color: white;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .button-secondary:hover {
-            background-color: #3b4252; /* Darker gray */
-            transform: translateY(-1px);
-        }
-        .chart-bar {
-            background-color: #6366f1; /* Indigo for chart bars */
-            border-radius: 0.25rem;
-            transition: height 0.5s ease;
-        }
-        .chart-bar.current {
-            background-color: #818cf8; /* Lighter indigo for current */
-        }
-        .modal {
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            visibility: hidden; /* Hidden by default */
-            opacity: 0;
-        }
-        .modal.show {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-content {
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            transform: scale(0.95);
-        }
-        .modal.show .modal-content {
-            transform: scale(1);
-        }
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #6366f1; /* Indigo thumb */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4f46e5; /* Darker indigo on hover */
-        }
-    </style>
-</head>
-<body class="dark">
-    <div id="login-section" class="min-h-screen flex items-center justify-center p-4">
-        <div class="card p-8 rounded-lg w-full max-w-md text-center">
-            <h2 class="text-3xl font-bold mb-6 text-white" data-lang-key="login_title">ورود به پنل</h2>
-            <div id="login-error-message" class="text-red-400 mb-4 hidden"></div>
-            <input type="text" id="username-input" placeholder="نام کاربری" class="input-field w-full mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <input type="password" id="password-input" placeholder="رمز عبور" class="input-field w-full mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button id="login-button" class="button-primary w-full flex items-center justify-center gap-2">
-                <span id="login-button-text" data-lang-key="login_button">ورود</span>
-                <svg id="login-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-
-    <div id="dashboard-section" class="min-h-screen p-4 md:p-8 hidden">
-        <header class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-            <h1 class="text-4xl font-extrabold text-white" data-lang-key="dashboard_title">داشبورد ترافیک</h1>
-            <div class="flex items-center gap-4">
-                <button id="theme-toggle" class="header-button p-3 rounded-full hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <svg id="sun-icon" class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.325 6.757l-.707.707M6.343 6.343l-.707-.707m12.728 0l-.707-.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                    <svg id="moon-icon" class="h-6 w-6 text-gray-400 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
-
-                <button id="language-toggle" class="header-button p-3 rounded-full hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <svg class="h-6 w-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.5 10a18.022 18.022 0 01-3.5 4.5M10 14v1m0-4h.01M9 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </button>
-
-                <button id="support-button" class="button-primary p-3 rounded-full flex items-center justify-center gap-2 hover:scale-105 transition-transform duration-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 4v-4z"></path>
-                    </svg>
-                </button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="card p-6 flex flex-col items-start">
-                <div class="flex items-center justify-between w-full mb-2">
-                    <span class="text-sm text-gray-400" data-lang-key="total_panel_volume">حجم کلی پنل</span>
-                    <svg class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M18 14v4m0 0l-4-4m4 4l4-4"></path></svg>
-                </div>
-                <span id="total-traffic" class="text-3xl font-bold text-white">0 GB</span>
-                <span class="text-xs text-gray-400 mt-1">+2.00% (30 days)</span> </div>
-            <div class="card p-6 flex flex-col items-start">
-                <div class="flex items-center justify-between w-full mb-2">
-                    <span class="text-sm text-gray-400" data-lang-key="consumed_volume">حجم مصرفی</span>
-                    <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                </div>
-                <span id="used-traffic" class="text-3xl font-bold text-white">0 GB</span>
-                <span class="text-xs text-gray-400 mt-1">+5.45% Increased</span> </div>
-            <div class="card p-6 flex flex-col items-start">
-                <div class="flex items-center justify-between w-full mb-2">
-                    <span class="text-sm text-gray-400" data-lang-key="remaining_volume">حجم باقیمانده</span>
-                    <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
-                </div>
-                <span id="remaining-traffic" class="text-3xl font-bold text-white">0 GB</span>
-                <span class="text-xs text-gray-400 mt-1">-2.00% Expense</span> </div>
-            <div class="card p-6 flex flex-col items-start">
-                <div class="flex items-center justify-between w-full mb-2">
-                    <span class="text-sm text-gray-400" data-lang-key="estimated_expiry">پیش\u200cبینی اتمام حجم</span>
-                    <svg class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <span id="estimated-expiry" class="text-3xl font-bold text-white">نامشخص</span>
-                <span class="text-xs text-gray-400 mt-1">+25.00% Earning</span> </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div class="card p-6 lg:col-span-1 flex flex-col justify-between">
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-white" data-lang-key="panel_info_title">اطلاعات پنل</h3>
-                    <div class="mb-3">
-                        <span class="text-gray-400 text-sm" data-lang-key="panel_creation_date">تاریخ ساخت پنل:</span>
-                        <p id="panel-creation-date" class="text-lg font-medium text-white">--</p>
-                    </div>
-                    <div>
-                        <span class="text-gray-400 text-sm" data-lang-key="elapsed_days">مدت زمان گذشته (روز):</span>
-                        <p id="panel-elapsed-days" class="text-lg font-medium text-white">--</p>
-                    </div>
-                </div>
-                <div class="mt-6 flex flex-col gap-3">
-                    <button class="button-secondary w-full" disabled data-lang-key="backup_button">دریافت بکاپ از لیست کاربران (به زودی)</button>
-                    <button class="button-secondary w-full" disabled data-lang-key="test_panel_button">ساخت پنل تستی نامحدود (به زودی)</button>
-                </div>
-            </div>
-
-            <div class="card p-6 lg:col-span-2">
-                <h3 class="text-xl font-semibold mb-4 text-white" data-lang-key="traffic_chart_title">نمودار مصرف ترافیک (24 ساعت گذشته)</h3>
-                <div class="h-64 flex items-end justify-around gap-2">
-                    <div id="traffic-chart" class="flex flex-1 h-full items-end justify-around gap-2">
-                        </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card p-6 mb-8">
-            <h3 class="text-xl font-semibold mb-4 text-white" data-lang-key="user_search_title">جستجوی کاربر</h3>
-            <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                <input type="text" id="user-search-input" placeholder="نام کاربری را وارد کنید..." class="input-field flex-grow focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button id="search-user-button" class="button-primary flex-shrink-0 flex items-center justify-center gap-2">
-                    <span id="search-user-button-text" data-lang-key="search_button">جستجو</span>
-                    <svg id="search-user-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="user-search-result" class="mb-6 hidden">
-                <h4 class="text-lg font-medium mb-2 text-white" data-lang-key="user_info_title">اطلاعات کاربر:</h4>
-                <div class="card p-4">
-                    <p><span class="font-semibold text-gray-400" data-lang-key="username_label">نام کاربری:</span> <span id="searched-username"></span></p>
-                    <p><span class="font-semibold text-gray-400" data-lang-key="used_traffic_label">حجم مصرفی:</span> <span id="searched-used-traffic"></span></p>
-                    <p><span class="font-semibold text-gray-400" data-lang-key="remaining_traffic_label">حجم باقیمانده:</span> <span id="searched-remaining-traffic"></span></p>
-                    <p><span class="font-semibold text-gray-400" data-lang-key="status_label">وضعیت:</span> <span id="searched-status"></span></p>
-                </div>
-            </div>
-            <div id="user-search-error" class="text-red-400 mb-6 hidden"></div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card p-6">
-                    <h4 class="text-lg font-semibold mb-4 text-white" data-lang-key="top_users_title">لیست کاربران پرمصرف</h4>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-right text-gray-300">
-                            <thead class="text-xs uppercase bg-gray-700">
-                                <tr>
-                                    <th scope="col" class="px-4 py-3 rounded-tr-lg" data-lang-key="table_username_header">نام کاربری</th>
-                                    <th scope="col" class="px-4 py-3 rounded-tl-lg" data-lang-key="table_usage_header">مصرف (GB)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="top-users-list">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card p-6">
-                    <h4 class="text-lg font-semibold mb-4 text-white" data-lang-key="least_users_title">لیست کاربران کم\u200cمصرف</h4>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-right text-gray-300">
-                            <thead class="text-xs uppercase bg-gray-700">
-                                <tr>
-                                    <th scope="col" class="px-4 py-3 rounded-tr-lg" data-lang-key="table_username_header">نام کاربری</th>
-                                    <th scope="col" class="px-4 py-3 rounded-tl-lg" data-lang-key="table_usage_header">مصرف (GB)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="least-users-list">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="support-modal" class="modal fixed inset-0 flex items-center justify-center z-50">
-        <div class="modal-content p-6 max-w-md w-full relative">
-            <button id="close-support-modal" class="absolute top-3 left-3 text-gray-400 hover:text-white transition-colors duration-200">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-            <h3 class="text-xl font-bold mb-4 text-white" data-lang-key="support_modal_title">ارتباط با پشتیبانی</h3>
-            <p class="text-gray-300 mb-6" data-lang-key="support_modal_description">برای ارتباط مستقیم با پشتیبانی، لطفاً از طریق چت آنلاین زیر اقدام کنید:</p>
-            <iframe src="https://goftino.com/chat/YOUR_GOFTINO_ID" frameborder="0" class="w-full h-64 rounded-md"></iframe>
-        </div>
-    </div>
-
-    <script>
-        // DOM Elements
-        const loginSection = document.getElementById('login-section');
-        const dashboardSection = document.getElementById('dashboard-section');
-        const usernameInput = document.getElementById('username-input');
-        const passwordInput = document.getElementById('password-input');
-        const loginButton = document.getElementById('login-button');
-        const loginButtonText = document.getElementById('login-button-text');
-        const loginSpinner = document.getElementById('login-spinner');
-        const loginErrorMessage = document.getElementById('login-error-message');
-
-        const totalTrafficElem = document.getElementById('total-traffic');
-        const usedTrafficElem = document.getElementById('used-traffic');
-        const remainingTrafficElem = document.getElementById('remaining-traffic');
-        const estimatedExpiryElem = document.getElementById('estimated-expiry');
-        const panelCreationDateElem = document.getElementById('panel-creation-date');
-        const panelElapsedDaysElem = document.getElementById('panel-elapsed-days');
-        const trafficChartElem = document.getElementById('traffic-chart');
-
-        const userSearchInput = document.getElementById('user-search-input');
-        const searchUserButton = document.getElementById('search-user-button');
-        const searchUserButtonText = document.getElementById('search-user-button-text');
-        const searchUserSpinner = document.getElementById('search-user-spinner');
-        const userSearchResult = document.getElementById('user-search-result');
-        const searchedUsernameElem = document.getElementById('searched-username');
-        const searchedUsedTrafficElem = document.getElementById('searched-used-traffic');
-        const searchedRemainingTrafficElem = document.getElementById('searched-remaining-traffic');
-        const searchedStatusElem = document.getElementById('searched-status');
-        const userSearchErrorElem = document.getElementById('user-search-error');
-
-        const topUsersList = document.getElementById('top-users-list');
-        const leastUsersList = document.getElementById('least-users-list');
-
-        const themeToggle = document.getElementById('theme-toggle');
-        const sunIcon = document.getElementById('sun-icon');
-        const moonIcon = document.getElementById('moon-icon');
-        const languageToggle = document.getElementById('language-toggle');
-        const supportButton = document.getElementById('support-button');
-        const supportModal = document.getElementById('support-modal');
-        const closeSupportModalButton = document.getElementById('close-support-modal');
-
-        // Worker URL (replace with your actual worker URL)
-        // This URL should point to your Cloudflare Worker that handles Marzban API requests.
-        const WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
-
-        // --- Localization Data ---
-        const translations = {
-            fa: {
-                page_title: 'پنل مدیریت ترافیک - آقای مرزبان',
-                login_title: 'ورود به پنل',
-                login_button: 'ورود',
-                dashboard_title: 'داشبورد ترافیک',
-                total_panel_volume: 'حجم کلی پنل',
-                consumed_volume: 'حجم مصرفی',
-                remaining_volume: 'حجم باقیمانده',
-                estimated_expiry: 'پیش\u200cبینی اتمام حجم',
-                panel_info_title: 'اطلاعات پنل',
-                panel_creation_date: 'تاریخ ساخت پنل:',
-                elapsed_days: 'مدت زمان گذشته (روز):',
-                backup_button: 'دریافت بکاپ از لیست کاربران (به زودی)',
-                test_panel_button: 'ساخت پنل تستی نامحدود (به زودی)',
-                traffic_chart_title: 'نمودار مصرف ترافیک (24 ساعت گذشته)',
-                user_search_title: 'جستجوی کاربر',
-                search_button: 'جستجو',
-                user_info_title: 'اطلاعات کاربر:',
-                username_label: 'نام کاربری:',
-                used_traffic_label: 'حجم مصرفی:',
-                remaining_traffic_label: 'حجم باقیمانده:',
-                status_label: 'وضعیت:',
-                top_users_title: 'لیست کاربران پرمصرف',
-                least_users_title: 'لیست کاربران کم\u200cمصرف',
-                table_username_header: 'نام کاربری',
-                table_usage_header: 'مصرف (GB)',
-                no_chart_data: 'داده\u200cای برای نمودار موجود نیست.',
-                no_user_found: 'کاربری یافت نشد.',
-                login_empty_fields: 'نام کاربری و رمز عبور نمی\u200cتوانند خالی باشند.',
-                login_failed: 'ورود ناموفق بود. لطفاً نام کاربری و رمز عبور را بررسی کنید.',
-                network_error: 'خطا در برقراری ارتباط با سرور. لطفاً از اتصال اینترنت خود اطمینان حاصل کنید.',
-                session_expired: 'نشست شما منقضی شده است. لطفاً دوباره وارد شوید.',
-                dashboard_fetch_error: 'خطا در دریافت اطلاعات داشبورد: ',
-                user_search_empty: 'لطفاً نام کاربری را برای جستجو وارد کنید.',
-                user_search_not_found: 'کاربر یافت نشد یا خطایی در دریافت اطلاعات رخ داد.',
-                support_modal_title: 'ارتباط با پشتیبانی',
-                support_modal_description: 'برای ارتباط مستقیم با پشتیبانی، لطفاً از طریق چت آنلاین زیر اقدام کنید:'
+        // Marzban API endpoint for modifying user status
+        // Using PUT /api/user/{username} with {"status": "disabled"} payload
+        const marzbanApiUrl = `${MARZBAN_BASE_URL}/api/user/${username}`; 
+        const response = await fetch(marzbanApiUrl, {
+            method: 'PUT', 
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json' 
             },
-            en: {
-                page_title: 'Traffic Management Panel - Mr. Marzban',
-                login_title: 'Login to Panel',
-                login_button: 'Login',
-                dashboard_title: 'Traffic Dashboard',
-                total_panel_volume: 'Total Panel Volume',
-                consumed_volume: 'Consumed Volume',
-                remaining_volume: 'Remaining Volume',
-                estimated_expiry: 'Estimated Expiry',
-                panel_info_title: 'Panel Information',
-                panel_creation_date: 'Panel Creation Date:',
-                elapsed_days: 'Elapsed Days (Days):',
-                backup_button: 'Get Users Backup (Coming Soon)',
-                test_panel_button: 'Create Unlimited Test Panel (Coming Soon)',
-                traffic_chart_title: 'Traffic Usage Chart (Last 24 Hours)',
-                user_search_title: 'User Search',
-                search_button: 'Search',
-                user_info_title: 'User Information:',
-                username_label: 'Username:',
-                used_traffic_label: 'Used Traffic:',
-                remaining_traffic_label: 'Remaining Traffic:',
-                status_label: 'Status:',
-                top_users_title: 'Top Consuming Users',
-                least_users_title: 'Least Consuming Users',
-                table_username_header: 'Username',
-                table_usage_header: 'Usage (GB)',
-                no_chart_data: 'No data available for chart.',
-                no_user_found: 'No user found.',
-                login_empty_fields: 'Username and password cannot be empty.',
-                login_failed: 'Login failed. Please check username and password.',
-                network_error: 'Error connecting to server. Please check your internet connection.',
-                session_expired: 'Your session has expired. Please log in again.',
-                dashboard_fetch_error: 'Error fetching dashboard data: ',
-                user_search_empty: 'Please enter a username to search.',
-                user_search_not_found: 'User not found or an error occurred fetching data.',
-                support_modal_title: 'Contact Support',
-                support_modal_description: 'For direct support, please use the online chat below:'
+            body: JSON.stringify({ status: 'disabled' }) 
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Marzban Deactivate User API responded with error ${response.status}: ${errorText}`);
+            if (response.status === 401 || response.status === 403) {
+                return new Response(JSON.stringify({ message: 'توکن احراز هویت منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید.' }), {
+                    status: 401,
+                    headers: { 'Content-Type': 'application/json', ...corsHeaders }
+                });
             }
-        };
-
-        let currentLanguage = 'fa'; // Default language
-
-        /**
-         * Applies translations based on the current language.
-         */
-        function applyTranslations() {
-            document.querySelectorAll('[data-lang-key]').forEach(element => {
-                const key = element.getAttribute('data-lang-key');
-                if (translations[currentLanguage] && translations[currentLanguage][key]) {
-                    element.textContent = translations[currentLanguage][key];
-                }
-            });
-            // Update placeholders for inputs
-            document.getElementById('user-search-input').placeholder = currentLanguage === 'fa' ? 'نام کاربری را وارد کنید...' : 'Enter username...';
-            document.getElementById('username-input').placeholder = currentLanguage === 'fa' ? 'نام کاربری' : 'Username';
-            document.getElementById('password-input').placeholder = currentLanguage === 'fa' ? 'رمز عبور' : 'Password';
-        }
-
-        /**
-         * Converts bytes to a more readable format (GB, MB).
-         * @param {number} bytes - The number of bytes.
-         * @returns {string} Formatted string.
-         */
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        /**
-         * Converts Bytes to GB.
-         * @param {number} bytes - The value in Bytes.
-         * @returns {number} Value in GB.
-         */
-        function bytesToGb(bytes) {
-            return bytes / (1024 * 1024 * 1024);
-        }
-
-        /**
-         * Generates mock chart data for the last 24 hours.
-         * This function is used because the Marzban API (a.php) typically doesn't provide historical traffic data.
-         * @returns {number[]} An array of mock traffic usage for 24 intervals (in MB).
-         */
-        function generateMockChartData() {
-            const data = [];
-            for (let i = 0; i < 24; i++) {
-                // Simulate some usage, current hour might be slightly higher
-                const usage = Math.random() * 500 + (i === 23 ? 1000 : 0); // up to 500MB, current hour up to 1.5GB
-                data.push(usage);
-            }
-            return data;
-        }
-
-        /**
-         * Renders the traffic chart based on data.
-         * @param {number[]} chartData - An array of traffic usage values (e.g., MB).
-         */
-        function renderTrafficChart(chartData) {
-            trafficChartElem.innerHTML = ''; // Clear previous bars
-            if (chartData.length === 0) {
-                trafficChartElem.innerHTML = `<p class="text-center text-gray-500 w-full">${translations[currentLanguage].no_chart_data}</p>`;
-                return;
-            }
-
-            const maxVal = Math.max(...chartData);
-
-            chartData.forEach((value, index) => {
-                const barHeight = (value / maxVal) * 100; // Height as percentage of max
-                const bar = document.createElement('div');
-                // Ensure a minimum height for visibility even for small values
-                bar.className = `flex-1 rounded-md chart-bar ${index === chartData.length - 1 ? 'current' : ''}`;
-                bar.style.height = `${Math.max(barHeight, 5)}%`;
-                // Display formatted value on hover
-                bar.title = `${formatBytes(value * 1024 * 1024)}`; // Convert MB to Bytes for formatting
-                trafficChartElem.appendChild(bar);
+            return new Response(JSON.stringify({ message: `خطا در غیرفعال کردن کاربر: ${response.statusText}. جزئیات: ${errorText}` }), {
+                status: response.status,
+                headers: { 'Content-Type': 'application/json', ...corsHeaders }
             });
         }
 
-        /**
-         * Updates the dashboard UI with fetched data.
-         * @param {object} data - The data object from the API.
-         * Expected data structure from worker's /dashboard-init:
-         * {
-         * total_traffic_bytes: number,
-         * used_traffic_bytes: number,
-         * remaining_traffic_bytes: number,
-         * creation_date: string (ISO date), // e.g., "2023-01-15T10:00:00Z"
-         * elapsed_days: number,
-         * top_users: Array<{username: string, used_traffic_bytes: number}>,
-         * least_users: Array<{username: string, used_traffic_bytes: number}>
-         * }
-         */
-        function updateDashboardUI(data) {
-            console.log("Updating UI with data:", data); // Log the data received
+        const result = await response.json(); 
+        return new Response(JSON.stringify({ message: `کاربر ${username} با موفقیت غیرفعال شد.`, result: result }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
 
-            // Update main stats
-            totalTrafficElem.textContent = formatBytes(data.total_traffic_bytes || 0);
-            usedTrafficElem.textContent = formatBytes(data.used_traffic_bytes || 0);
-            remainingTrafficElem.textContent = formatBytes(data.remaining_traffic_bytes || 0);
+    } catch (error) {
+        console.error('Deactivate User Worker error:', error);
+        return new Response(JSON.stringify({ message: `خطای داخلی سرور در غیرفعال کردن کاربر: ${error.message}` }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+    }
+}
 
-            // Estimated expiry calculation
-            if (data.used_traffic_bytes > 0 && data.remaining_traffic_bytes > 0 && data.elapsed_days > 0) {
-                const dailyUsageBytes = data.used_traffic_bytes / data.elapsed_days;
-                if (dailyUsageBytes > 0) {
-                    const remainingDays = data.remaining_traffic_bytes / dailyUsageBytes;
-                    estimatedExpiryElem.textContent = `${Math.round(remainingDays)} ${currentLanguage === 'fa' ? 'روز دیگر' : 'days left'}`;
-                } else {
-                    estimatedExpiryElem.textContent = currentLanguage === 'fa' ? 'نامحدود (مصرف صفر)' : 'Unlimited (zero usage)';
-                }
-            } else {
-                estimatedExpiryElem.textContent = currentLanguage === 'fa' ? 'نامشخص' : 'Unknown';
+async function handleNodeStats(request, corsHeaders) {
+    const accessToken = request.headers.get('Authorization')?.split(' ')[1];
+    if (!accessToken) {
+        return new Response(JSON.stringify({ message: 'توکن احراز هویت لازم است.' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+    }
+
+    try {
+        // Fetch Node Statuses from /api/nodes
+        const nodesResponse = await fetch(`${MARZBAN_BASE_URL}/api/nodes`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (!nodesResponse.ok) {
+            const errorText = await nodesResponse.text();
+            console.error(`Marzban /api/nodes responded with error ${nodesResponse.status}: ${errorText}`);
+            if (nodesResponse.status === 401 || nodesResponse.status === 403) {
+                return new Response(JSON.stringify({ message: 'توکن احراز هویت منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید.' }), {
+                    status: 401,
+                    headers: { 'Content-Type': 'application/json', ...corsHeaders }
+                });
             }
+            throw new Error(`خطا در دریافت لیست نودها: ${nodesResponse.statusText}. جزئیات: ${errorText}`);
+        }
+        const nodesData = await nodesResponse.json();
+        // The /api/nodes endpoint returns an array directly, not { nodes: [] }
+        const nodesList = Array.isArray(nodesData) ? nodesData : nodesData.nodes; // Assuming it returns array directly as per OpenAPI
 
-            // Panel Info
-            if (data.creation_date) {
-                try {
-                    const date = new Date(data.creation_date);
-                    panelCreationDateElem.textContent = date.toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US');
-                } catch (e) {
-                    console.error("Invalid creation_date format:", data.creation_date, e);
-                    panelCreationDateElem.textContent = '--';
-                }
-            } else {
-                panelCreationDateElem.textContent = '--';
-            }
-            panelElapsedDaysElem.textContent = data.elapsed_days !== undefined ? data.elapsed_days.toLocaleString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US') : '--';
-
-            // Chart (using mock data for now, as API doesn't provide historical)
-            renderTrafficChart(generateMockChartData());
-
-            // User Lists
-            updateUserLists(data.top_users || [], data.least_users || []);
+        if (!nodesList || !Array.isArray(nodesList)) {
+            console.warn("API /api/nodes did not return an array of nodes. Cannot process node stats.");
+            throw new Error("ساختار داده لیست نودها نامعتبر است.");
         }
 
-        /**
-         * Updates the top and least consuming user lists.
-         * @param {Array} topUsers - Array of top consuming users.
-         * @param {Array} leastUsers - Array of least consuming users.
-         */
-        function updateUserLists(topUsers, leastUsers) {
-            topUsersList.innerHTML = '';
-            leastUsersList.innerHTML = '';
+        // Fetch Node Usage from /api/nodes/usage
+        const usageResponse = await fetch(`${MARZBAN_BASE_URL}/api/nodes/usage`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
 
-            if (topUsers.length === 0) {
-                topUsersList.innerHTML = `<tr><td colspan="2" class="py-4 text-center text-gray-500">${translations[currentLanguage].no_user_found}</td></tr>`;
-            } else {
-                topUsers.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-gray-700 last:border-b-0';
-                    row.innerHTML = `
-                        <td class="px-4 py-3">${user.username}</td>
-                        <td class="px-4 py-3">${bytesToGb(user.used_traffic_bytes || 0).toFixed(2)}</td>
-                    `;
-                    topUsersList.appendChild(row);
-                });
-            }
+        if (!usageResponse.ok) {
+            const errorText = await usageResponse.text();
+            console.error(`Marzban /api/nodes/usage responded with error ${usageResponse.status}: ${errorText}`);
+            console.warn(`Could not fetch node usage: ${usageResponse.statusText}. Details: ${errorText}. Returning nodes with N/A usage.`);
+        }
+        const usageData = usageResponse.ok ? await usageResponse.json() : { usages: [] };
+        const nodeUsages = Array.isArray(usageData.usages) ? usageData.usages : [];
 
-            if (leastUsers.length === 0) {
-                leastUsersList.innerHTML = `<tr><td colspan="2" class="py-4 text-center text-gray-500">${translations[currentLanguage].no_user_found}</td></tr>`;
-            } else {
-                leastUsers.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-gray-700 last:border-b-0';
-                    row.innerHTML = `
-                        <td class="px-4 py-3">${user.username}</td>
-                        <td class="px-4 py-3">${bytesToGb(user.used_traffic_bytes || 0).toFixed(2)}</td>
-                    `;
-                    leastUsersList.appendChild(row);
-                });
-            }
+
+        let combinedNodesInfo = [];
+
+        nodesList.forEach(node => {
+            const usage = nodeUsages.find(u => u.node_name === node.name);
+            const trafficInBytes = usage ? usage.uplink || 0 : 0; // Ensure default 0
+            const trafficOutBytes = usage ? usage.downlink || 0 : 0; // Ensure default 0
+
+            combinedNodesInfo.push({
+                name: node.name || 'Unknown Node',
+                status: node.status || 'offline', // 'connected', 'connecting', 'error', 'disabled'
+                cpu_usage: 'N/A', // Not available in OpenAPI for per-node
+                ram_usage_percent: 'N/A', // Not available in OpenAPI for per-node
+                traffic_in_formatted: formatBytes(trafficInBytes),
+                traffic_out_formatted: formatBytes(trafficOutBytes)
+            });
+        });
+
+        // Fallback for no nodes found
+        if (combinedNodesInfo.length === 0) {
+            console.warn("No nodes found from Marzban API. Returning dummy data for node stats.");
+            const GIGABYTE = 1024 * 1024 * 1024;
+            combinedNodesInfo = [
+                { name: "سرور ایران 1 (نمونه)", status: "connected", cpu_usage: (Math.random() * 50 + 10).toFixed(1) + '%', ram_usage_percent: (Math.random() * 30 + 20).toFixed(1) + '%', traffic_in_formatted: formatBytes(Math.random() * 100 * GIGABYTE), traffic_out_formatted: formatBytes(Math.random() * 200 * GIGABYTE) },
+                { name: "سرور آلمان 2 (نمونه)", status: "error", cpu_usage: (Math.random() * 30 + 60).toFixed(1) + '%', ram_usage_percent: (Math.random() * 10 + 85).toFixed(1) + '%', traffic_in_formatted: formatBytes(Math.random() * 50 * GIGABYTE), traffic_out_formatted: formatBytes(Math.random() * 150 * GIGABYTE) }
+            ];
         }
 
-        // --- Event Listeners ---
-
-        // Login Button Click Handler
-        loginButton.addEventListener('click', async () => {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
-
-            if (!username || !password) {
-                loginErrorMessage.textContent = translations[currentLanguage].login_empty_fields;
-                loginErrorMessage.classList.remove('hidden');
-                return;
-            }
-
-            // Show loading spinner and disable button
-            loginButtonText.classList.add('hidden');
-            loginSpinner.classList.remove('hidden');
-            loginButton.disabled = true;
-            loginErrorMessage.classList.add('hidden'); // Clear previous error
-
-            try {
-                // Send login request to the worker
-                const response = await fetch(`${WORKER_URL}login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-                console.log("Login API response:", data); // Log login response
-
-                if (response.ok) {
-                    // Store token and fetch dashboard data
-                    localStorage.setItem('adminToken', data.access_token);
-                    await fetchDashboardData();
-                    loginSection.classList.add('hidden');
-                    dashboardSection.classList.remove('hidden');
-                } else {
-                    // Display error message from worker or a generic one
-                    loginErrorMessage.textContent = data.message || translations[currentLanguage].login_failed;
-                    loginErrorMessage.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                loginErrorMessage.textContent = translations[currentLanguage].network_error;
-                loginErrorMessage.classList.remove('hidden');
-            } finally {
-                // Hide spinner and re-enable button
-                loginButtonText.classList.remove('hidden');
-                loginSpinner.classList.add('hidden');
-                loginButton.disabled = false;
-            }
+        return new Response(JSON.stringify({ nodes: combinedNodesInfo }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
         });
 
-        // Fetch Dashboard Data (after login or on page load if token exists)
-        async function fetchDashboardData() {
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                // If no token, ensure login section is visible
-                loginSection.classList.remove('hidden');
-                dashboardSection.classList.add('hidden');
-                return;
-            }
+    } catch (error) {
+        console.error('Node Stats Worker error:', error);
+        const dummyNodes = [
+            { name: "سرور (خطا در Worker)", status: "offline", cpu_usage: "N/A", ram_usage_percent: "N/A", traffic_in_formatted: "N/A", traffic_out_formatted: "N/A" }
+        ];
+        return new Response(JSON.stringify({ message: `خطای داخلی Worker در دریافت وضعیت نودها: ${error.message}`, nodes: dummyNodes }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+    }
+}
 
-            try {
-                // Fetch dashboard initialization data from worker
-                const response = await fetch(`${WORKER_URL}dashboard-init`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
 
-                const data = await response.json();
-                console.log("Dashboard Init API response:", data); // Log dashboard init response
+// Main dashboard data handler (combines admin stats and user lists)
+async function handleDashboardInit(request, corsHeaders) {
+  const accessToken = request.headers.get('Authorization')?.split(' ')[1];
 
-                if (response.ok) {
-                    updateDashboardUI(data); // Update UI with fetched data
-                } else {
-                    // Handle token expiration or invalid token
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('adminToken'); // Clear invalid token
-                        loginErrorMessage.textContent = translations[currentLanguage].session_expired;
-                        loginErrorMessage.classList.remove('hidden');
-                        loginSection.classList.remove('hidden');
-                        dashboardSection.classList.add('hidden');
-                    } else {
-                        console.error('Failed to fetch dashboard data:', data.message);
-                        // Display a general error on dashboard if data fetching fails
-                        // Using a simple alert for now, consider a custom modal for better UX
-                        alert(translations[currentLanguage].dashboard_fetch_error + (data.message || translations[currentLanguage].network_error));
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching dashboard data:', error);
-                alert(translations[currentLanguage].network_error);
-            }
+  if (!accessToken) {
+    return new Response(JSON.stringify({ message: 'توکن احراز هویت لازم است.' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+
+  const USERS_API_URL = `${MARZBAN_BASE_URL}/api/users`; // Endpoint for all users
+
+  let dashboardData = {
+    total_traffic_bytes: 0, // Will be calculated from sum of user data_limits
+    used_traffic_bytes: 0,  // Will be calculated from sum of user used_traffic
+    remaining_traffic_bytes: 0,
+    creation_date: null,    // Not available from Marzban API for admin panel - will be null
+    elapsed_days: 0,        // Not available from Marzban API for admin panel - will be 0
+    top_users: [],
+    least_users: []
+  };
+
+  try {
+    // 1. Fetch Users List to calculate overall traffic and get top/least consumers
+    const usersResponse = await fetch(USERS_API_URL, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+
+    if (!usersResponse.ok) {
+        const errorText = await usersResponse.text();
+        console.error(`Marzban Users API responded with error ${usersResponse.status}: ${errorText}`);
+        if (usersResponse.status === 401 || usersResponse.status === 403) {
+            return new Response(JSON.stringify({ message: 'توکن احراز هویت منقضی شده یا نامعتبر است. لطفاً دوباره وارد شوید.' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
         }
+        console.warn('Failed to fetch users data for dashboard init. Returning partial data.');
+    } else {
+        const usersData = await usersResponse.json();
+        console.log("Raw user data from Marzban API (for dashboard init):", usersData);
 
-        // Search User Button Click Handler
-        searchUserButton.addEventListener('click', async () => {
-            const username = userSearchInput.value.trim();
-            if (!username) {
-                userSearchErrorElem.textContent = translations[currentLanguage].user_search_empty;
-                userSearchErrorElem.classList.remove('hidden');
-                userSearchResult.classList.add('hidden');
-                return;
-            }
+        if (usersData.users && Array.isArray(usersData.users)) {
+            let totalUsedTraffic = 0;
+            let totalDataLimit = 0; // Sum of data_limit for limited users
 
-            // Show loading spinner and disable button
-            searchUserButtonText.classList.add('hidden');
-            searchUserSpinner.classList.remove('hidden');
-            searchUserButton.disabled = true;
-            userSearchErrorElem.classList.add('hidden'); // Clear previous error
-            userSearchResult.classList.add('hidden'); // Hide previous result
+            const activeUsers = usersData.users.filter(user => user.status === 'active');
 
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                loginErrorMessage.textContent = translations[currentLanguage].session_expired;
-                loginErrorMessage.classList.remove('hidden');
-                loginSection.classList.remove('hidden');
-                dashboardSection.classList.add('hidden');
-                return;
-            }
-
-            try {
-                // Send user search request to the worker
-                // Assuming worker proxies this to a.php?name=...&step=info
-                const response = await fetch(`${WORKER_URL}?name=${username}&step=info`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const data = await response.json();
-                console.log("User Search API response:", data); // Log user search response
-
-                // Check if the response is valid and contains user data
-                // The structure of data from a.php might vary, adjust as needed.
-                if (response.ok && data && data.username) {
-                    searchedUsernameElem.textContent = data.username;
-                    searchedUsedTrafficElem.textContent = formatBytes(data.used_traffic_bytes || 0);
-                    searchedRemainingTrafficElem.textContent = formatBytes(data.remaining_traffic_bytes || 0);
-                    searchedStatusElem.textContent = data.status || (currentLanguage === 'fa' ? 'نامشخص' : 'Unknown');
-                    userSearchResult.classList.remove('hidden');
-                } else {
-                    userSearchErrorElem.textContent = data.message || translations[currentLanguage].user_search_not_found;
-                    userSearchErrorElem.classList.remove('hidden');
+            activeUsers.forEach(user => {
+                totalUsedTraffic += (user.used_traffic || 0); // used_traffic is already in bytes
+                if (user.data_limit && user.data_limit > 0) { // Only sum if data_limit is set and not unlimited (0)
+                    totalDataLimit += user.data_limit;
                 }
-            } catch (error) {
-                console.error('User search error:', error);
-                userSearchErrorElem.textContent = translations[currentLanguage].network_error;
-                userSearchErrorElem.classList.remove('hidden');
-            } finally {
-                // Hide spinner and re-enable button
-                searchUserButtonText.classList.remove('hidden');
-                searchUserSpinner.classList.add('hidden');
-                searchUserButton.disabled = false;
-            }
-        });
+            });
 
-        // Theme Toggle
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            document.body.classList.toggle('light');
-            const isDarkMode = document.body.classList.contains('dark');
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            sunIcon.classList.toggle('hidden', isDarkMode);
-            moonIcon.classList.toggle('hidden', !isDarkMode);
-        });
+            dashboardData.used_traffic_bytes = totalUsedTraffic;
+            dashboardData.total_traffic_bytes = totalDataLimit;
+            dashboardData.remaining_traffic_bytes = totalDataLimit - totalUsedTraffic;
+            if (dashboardData.remaining_traffic_bytes < 0) dashboardData.remaining_traffic_bytes = 0; // Ensure it's not negative
 
-        // Language Toggle
-        languageToggle.addEventListener('click', () => {
-            currentLanguage = (currentLanguage === 'fa') ? 'en' : 'fa';
-            document.documentElement.dir = (currentLanguage === 'fa') ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLanguage;
-            localStorage.setItem('language', currentLanguage);
-            applyTranslations(); // Apply new translations
-            // Re-fetch data to update numbers with correct locale if needed (e.g., date formats)
-            // This also helps re-render chart/lists if any text inside them needs translation
-            fetchDashboardData();
-        });
+            const sortedUsersByTraffic = [...activeUsers].sort((a, b) => b.used_traffic - a.used_traffic);
 
-        // Support Modal Toggle
-        supportButton.addEventListener('click', () => {
-            supportModal.classList.add('show');
-        });
+            dashboardData.top_users = sortedUsersByTraffic.slice(0, 5).map(user => ({
+                username: user.username,
+                used_traffic_bytes: user.used_traffic // Ensure this is bytes
+            }));
 
-        closeSupportModalButton.addEventListener('click', () => {
-            supportModal.classList.remove('show');
-        });
+            const sortedUsersByTrafficAsc = [...activeUsers].sort((a, b) => a.used_traffic - b.used_traffic);
+            dashboardData.least_users = sortedUsersByTrafficAsc.slice(0, 5).map(user => ({
+                username: user.username,
+                used_traffic_bytes: user.used_traffic // Ensure this is bytes
+            }));
+        } else {
+            console.warn('Marzban Users API returned an invalid data structure for users.');
+        }
+    }
 
-        // Close modal when clicking outside
-        supportModal.addEventListener('click', (e) => {
-            if (e.target === supportModal) {
-                supportModal.classList.remove('show');
-            }
-        });
+    // creation_date and elapsed_days for the admin panel are not available from Marzban API based on openapi.json
+    // They will remain null/0 as initialized.
 
-        // --- Initial Load Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Apply saved theme on load
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.body.classList.add(savedTheme);
-            sunIcon.classList.toggle('hidden', savedTheme === 'dark');
-            moonIcon.classList.toggle('hidden', savedTheme === 'light');
+    return new Response(JSON.stringify(dashboardData), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
 
-            // Apply saved language on load
-            const savedLanguage = localStorage.getItem('language') || 'fa';
-            currentLanguage = savedLanguage;
-            document.documentElement.dir = (currentLanguage === 'fa') ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLanguage;
-            applyTranslations();
+  } catch (error) {
+    console.error('Dashboard Init Worker error:', error);
+    return new Response(JSON.stringify({ message: `خطای داخلی سرور در دریافت اطلاعات داشبورد: ${error.message}` }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}
 
-            // Check for existing admin token and try to load dashboard
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                fetchDashboardData();
-            } else {
-                // If no token, show the login section
-                loginSection.classList.remove('hidden');
-                dashboardSection.classList.add('hidden');
-            }
-        });
-    </script>
-</body>
-</html>
+// Handles individual user search from a.php
+async function handleUserSearch(request, url, corsHeaders) {
+  const usernameFromQuery = url.searchParams.get('name'); // 'name' for a.php
+  const stepFromQuery = url.searchParams.get('step');     // 'step' for a.php
+
+  if (!usernameFromQuery || stepFromQuery !== 'info') {
+    return new Response(JSON.stringify({ message: 'نام کاربری و مرحله اطلاعات لازم است.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+
+  const API_ENDPOINT_A_PHP = `https://webs.speedmizban.net/a.php?name=${usernameFromQuery}&step=${stepFromQuery}`;
+
+  try {
+    const apiResponseAphp = await fetch(API_ENDPOINT_A_PHP);
+    if (!apiResponseAphp.ok) {
+      const errorText = await apiResponseAphp.text();
+      console.error(`a.php API responded with error ${apiResponseAphp.status}: ${errorText}`);
+      return new Response(JSON.stringify({ message: `خطا از API اصلی (a.php): ${apiResponseAphp.statusText}. جزئیات: ${errorText}` }), {
+        status: apiResponseAphp.status,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      });
+    }
+
+    const apiDataAphp = await apiResponseAphp.json();
+    console.log("Raw data from a.php:", apiDataAphp);
+
+    // Extracting and converting data from a.php response
+    const totalTrafficBytes = parseVolumeToBytes(apiDataAphp.total2);
+    const usedTrafficBytes = parseVolumeToBytes(apiDataAphp.usage);
+    const remainingTrafficBytes = parseVolumeToBytes(apiDataAphp.baghi);
+    
+    // Attempt to parse date from 'date3', which might contain '|' character
+    let createdAt = apiDataAphp.date3 || null;
+    if (typeof createdAt === 'string' && createdAt.includes('│')) { // Using '│' based on previous conversation
+        createdAt = createdAt.replace(/^\|\s*/, ''); // Remove leading '| '
+    }
+
+    const daysPassed = apiDataAphp.date2 || null; 
+
+    const userPayload = {
+      username: apiDataAphp.user || usernameFromQuery, // Use apiDataAphp.user if available, else fallback
+      total_traffic_bytes: totalTrafficBytes,
+      used_traffic_bytes: usedTrafficBytes,
+      remaining_traffic_bytes: remainingTrafficBytes,
+      status: apiDataAphp.status || 'نامشخص', // Assuming 'status' field exists
+      creation_date_aphp: createdAt, // Sending raw parsed date string for frontend to format
+      elapsed_days_aphp: daysPassed, // Sending raw days passed string
+    };
+
+    return new Response(JSON.stringify(userPayload), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+
+  } catch (error) {
+    console.error('Error in handleUserSearch (a.php):', error);
+    return new Response(JSON.stringify({ message: `خطا در جستجوی کاربر: ${error.message}` }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}

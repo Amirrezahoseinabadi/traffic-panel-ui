@@ -7,32 +7,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Modern & Refined Color Palette */
         :root {
-            --bg-primary: #0F172A;
-            --bg-card: #1E293B;
-            --text-primary: #E2E8F0;
-            --text-secondary: #94A3B8;
-            --input-bg: #334155;
-            --input-border: #475569;
-            --button-bg-general: #3B424E;
-            --button-hover-bg-general: #4A5568;
-            --accent-blue: #3B82F6;
-            --accent-blue-hover: #2563EB;
-            --accent-green: #22C55E;
-            --accent-yellow: #FACC15;
-            --error-red: #EF4444;
-            --shadow-color-dark: rgba(0, 0, 0, 0.4);
-            --shadow-color-light: rgba(0, 0, 0, 0.2);
-            --border-color: #334155;
-            --footer-text-color: #64748B;
-            --modal-overlay-bg: rgba(0, 0, 0, 0.8);
-            --modal-bg: #1E293B;
-            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07);
+            --bg-primary: #0F172A; /* Darker blue-gray, deep and sophisticated */
+            --bg-card: #1E293B; /* Slightly lighter than primary, for contrast */
+            --text-primary: #E2E8F0; /* Off-white, soft on dark background */
+            --text-secondary: #94A3B8; /* Muted gray for secondary info */
+            --input-bg: #334155; /* Darker input fields */
+            --input-border: #475569; /* Subtle input border */
+            --button-bg-general: #3B424E; /* General button base color */
+            --button-hover-bg-general: #4A5568; /* Hover for general buttons */
+            --accent-blue: #3B82F6; /* Vibrant blue for main actions */
+            --accent-blue-hover: #2563EB; /* Darker blue on hover */
+            --accent-green: #22C55E; /* Fresh green for success/positive values */
+            --accent-yellow: #FACC15; /* Warm yellow for warnings/remaining */
+            --error-red: #EF4444; /* Bold red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.4); /* Deeper, more diffused shadows */
+            --shadow-color-light: rgba(0, 0, 0, 0.2); /* Lighter part of shadow */
+            --border-color: #334155; /* Subtle border for separation */
+            --footer-text-color: #64748B; /* Darker gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.8); /* More opaque overlay */
+            --modal-bg: #1E293B; /* Modal background same as card */
+            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
             --top-user-color: var(--accent-green);
             --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: #dc2626;
+            --deactivate-button-bg: #dc2626; /* Red for deactivation */
             --deactivate-button-hover-bg: #b91c1c;
-            --prediction-color: #8B5CF6;
+            --prediction-color: #8B5CF6; /* A new accent color for prediction */
         }
 
         body.light-mode {
@@ -63,90 +64,95 @@
             --prediction-color: #7C3AED; 
         }
 
+        /* General Body & Typography */
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
-            padding-bottom: 3rem;
-            line-height: 1.6;
+            padding-bottom: 3rem; /* More space at bottom */
+            line-height: 1.6; /* Improved readability */
         }
         h1, h2, h3 {
-            font-weight: 700;
+            font-weight: 700; /* Bolder headings */
             line-height: 1.2;
         }
 
+        /* Card Styles */
         .card {
             background-color: var(--bg-card);
-            border-radius: 1.25rem;
-            padding: 2rem;
-            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
+            border-radius: 1.25rem; /* Slightly more rounded */
+            padding: 2rem; /* Increased padding */
+            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light); /* Softer, deeper shadow */
+            transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
+            border: 1px solid var(--border-color); /* Subtle border */
         }
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px); /* Slight lift on hover */
             box-shadow: 0 15px 35px -10px var(--shadow-color-dark), 0 8px 15px -5px var(--shadow-color-light);
         }
         .card p:first-child {
             color: var(--text-secondary);
             font-weight: 500;
-            font-size: 0.95rem;
-            margin-bottom: 0.75rem;
+            font-size: 0.95rem; /* Slightly larger labels */
+            margin-bottom: 0.75rem; /* More space below label */
         }
         .card p:last-child {
-            font-weight: 700;
-            font-size: 2.5rem;
-            line-height: 1.1;
+            font-weight: 700; /* Bolder values */
+            font-size: 2.5rem; /* Larger primary values */
+            line-height: 1.1; /* Tighter line height */
             margin-top: 0;
         }
 
+        /* Loading Spinner */
         .loading-spinner {
             border-left-color: var(--accent-blue);
-            width: 3.5rem;
+            width: 3.5rem; /* Slightly larger */
             height: 3.5rem;
-            border-width: 5px;
+            border-width: 5px; /* Thicker border */
             animation: spin 1s linear infinite;
-            margin: 3rem auto;
+            margin: 3rem auto; /* More vertical space */
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
+        /* Input Fields */
         input[type="text"], input[type="password"] {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
-            padding: 0.9rem 1.2rem;
-            border-radius: 0.65rem;
-            font-size: 1rem;
+            padding: 0.9rem 1.2rem; /* More padding */
+            border-radius: 0.65rem; /* Slightly more rounded */
+            font-size: 1rem; /* Clearer font size */
             transition: all 0.3s ease;
         }
         input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* More prominent focus ring */
         }
 
+        /* Main Button */
         .main-button {
             background-color: var(--accent-blue);
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.65rem;
+            padding: 1rem 2rem; /* More padding */
+            border-radius: 0.65rem; /* Consistent rounding */
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.1rem; /* Slightly larger text */
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* Stronger initial shadow */
         }
         .main-button:hover {
             background-color: var(--accent-blue-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px); /* More noticeable lift */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
         }
         .main-button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reset shadow on click */
         }
         .main-button:disabled {
             background-color: var(--button-bg-general);
@@ -155,24 +161,26 @@
             transform: none;
         }
 
+        /* Select Dropdown */
         select {
             background-color: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--input-border);
-            padding: 0.75rem 1.2rem;
+            padding: 0.75rem 1.2rem; /* Adjusted padding */
             border-radius: 0.65rem;
             font-size: 1rem;
             cursor: pointer;
             appearance: none;
+            /* Moved background-image to the left for better visual balance in RTL */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: left 1rem center;
-            background-size: 1.1em 1.1em;
+            background-position: left 1rem center; /* Moved arrow to left */
+            background-size: 1.1em 1.1em; /* Smaller arrow */
             transition: all 0.3s ease;
-            text-align: center;
-            text-align-last: center;
-            padding-right: 1.2rem;
-            padding-left: 2.25em;
+            text-align: center; /* Attempt to center text */
+            text-align-last: center; /* Attempt to center selected option text in some browsers */
+            padding-right: 1.2rem; /* Ensure enough space for text */
+            padding-left: 2.25em; /* Make space for the arrow on the left */
         }
         select:focus {
             outline: none;
@@ -180,18 +188,19 @@
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
         }
 
+        /* Icon Buttons (Theme/Support) */
         .icon-button {
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
             cursor: pointer;
-            font-size: 1.4rem;
-            width: 3rem;
+            font-size: 1.4rem; /* Larger icon size */
+            width: 3rem; /* Larger button size */
             height: 3rem;
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 0.75rem; /* More rounded */
+            display: flex; /* Ensure flex for centering icon */
+            align-items: center; /* Center icon vertically */
+            justify-content: center; /* Center icon horizontally */
             transition: all 0.2s ease;
         }
         .icon-button:hover {
@@ -201,6 +210,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+        /* Data Card Values */
         #total2, #usage { 
             color: var(--accent-green);
         }
@@ -208,31 +218,33 @@
             color: var(--accent-yellow);
         }
         #date3 { 
-            font-size: 1.4rem;
+            font-size: 1.4rem; /* Larger date text */
             line-height: 1.3;
             margin-top: 0.75rem;
         }
         #predictionMessage {
-            color: var(--prediction-color);
+            color: var(--prediction-color); /* Specific color for prediction */
             font-weight: 700;
             font-size: 2.5rem;
         }
 
+        /* Error Messages */
         #errorMessage, #loginErrorMessage {
             color: var(--error-red);
             font-weight: 600;
-            padding: 0.8rem 1.5rem;
-            border-radius: 0.75rem;
-            background-color: rgba(239, 68, 68, 0.15);
+            padding: 0.8rem 1.5rem; /* More padding */
+            border-radius: 0.75rem; /* Consistent rounding */
+            background-color: rgba(239, 68, 68, 0.15); /* Slightly darker background */
             border: 1px solid var(--error-red);
-            font-size: 1rem;
-            margin-top: 1.5rem;
+            font-size: 1rem; /* Clearer font size */
+            margin-top: 1.5rem; /* More space */
         }
 
+        /* User Lists (Top/Least Consuming) */
         #userUsageLists h2 {
-            font-size: 1.6rem;
-            color: var(--accent-blue);
-            margin-bottom: 1.5rem;
+            font-size: 1.6rem; /* Larger heading */
+            color: var(--accent-blue); /* Consistent accent color */
+            margin-bottom: 1.5rem; /* More space */
             display: flex;
             align-items: center;
             justify-content: flex-end; 
@@ -244,31 +256,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0.75rem; /* More padding */
+            border-bottom: 1px solid var(--border-color); /* Consistent border */
             margin-bottom: 0; 
-            font-size: 1rem;
+            font-size: 1rem; /* Slightly larger text */
             transition: background-color 0.2s ease;
             cursor: pointer;
-            border-radius: 0.5rem;
+            border-radius: 0.5rem; /* Slight rounding for hover effect */
         }
         .user-list-item:hover {
             background-color: var(--user-list-item-hover-bg); 
         }
         .user-list-icon {
-            width: 1.25rem;
+            width: 1.25rem; /* Larger icon */
             height: 1.25rem;
             margin-left: 0.75rem; 
         }
 
+        /* Footer */
         .app-footer {
-            margin-top: 3.5rem;
+            margin-top: 3.5rem; /* More space from content */
             text-align: center;
             color: var(--footer-text-color);
-            font-size: 0.9rem;
+            font-size: 0.9rem; /* Slightly larger */
             font-weight: 400;
         }
 
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -277,9 +291,9 @@
             bottom: 0;
             background-color: var(--modal-overlay-bg);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            justify-content: center; /* Centers horizontally */
+            align-items: center; /* Centers vertically */
+            z-index: 1000; /* Ensure it's on top */
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -288,34 +302,35 @@
             opacity: 1;
             visibility: visible;
         }
-        .modal-content {
+        /* Adjusted modal content (for support modal) */
+        .modal-content { /* Used for support modal */
             background-color: var(--modal-bg);
-            border-radius: 1.5rem;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 1.5rem; /* More rounded modals */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
             border: 1px solid var(--border-color);
-            position: relative;
-            transform: scale(0.9);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: relative; /* Ensure position for absolute close button */
+            transform: scale(0.9); /* Initial smaller scale for animation */
+            opacity: 0; /* Initial hidden state for animation */
+            transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
             
-            width: 95vw;
-            max-width: 1200px;
-            height: 95vh;
-            max-height: 95vh;
-            overflow-y: auto;
+            width: 95vw; /* Almost full viewport width */
+            max-width: 1200px; /* An even larger max-width for very wide screens */
+            height: 95vh; /* Almost full viewport height */
+            max-height: 95vh; /* Ensure it doesn't exceed viewport */
+            overflow-y: auto; /* Allow scrolling if content truly overflows */
             display: flex;
-            flex-direction: column;
-            padding: 0;
+            flex-direction: column; /* Stack content */
+            padding: 0; /* Remove padding if iframe is to fill entirely */
         }
         .modal-overlay.show .modal-content {
-            transform: scale(1);
-            opacity: 1;
+            transform: scale(1); /* Scale up on show */
+            opacity: 1; /* Fade in on show */
         }
 
         .modal-close-button {
             position: absolute;
-            top: 1.5rem;
-            left: 1.5rem;
+            top: 1.5rem; /* Slightly further from corner */
+            left: 1.5rem; /* Slightly further from corner for RTL top-left */
             background: var(--button-bg-general);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
@@ -327,7 +342,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 1001; /* Ensure button is above iframe */
             transition: all 0.2s ease;
         }
         .modal-close-button:hover {
@@ -335,13 +350,16 @@
             color: var(--accent-blue);
         }
 
+        /* Ensure iframe fills the modal content */
         .modal-iframe {
             width: 100%;
-            height: 100%;
+            height: 100%; /* Iframe should fill the modal content */
             border: none;
-            display: block;
+            display: block; /* Ensures it takes up full space */
         }
 
+
+        /* Responsive Adjustments */
         @media (max-width: 640px) {
             body {
                 padding: 1rem;
@@ -351,7 +369,7 @@
                 border-radius: 1rem;
             }
             .card p:last-child {
-                font-size: 2rem;
+                font-size: 2rem; /* Slightly smaller for mobile */
             }
             #date3, #predictionMessage {
                 font-size: 1.1rem;
@@ -372,19 +390,20 @@
                 border-radius: 0.6rem;
             }
             h1 {
-                font-size: 2.5rem;
+                font-size: 2.5rem; /* Adjusted main header */
             }
             .text-xl {
-                font-size: 1.2rem;
+                font-size: 1.2rem; /* Adjusted subheadings */
             }
             .app-footer {
                 margin-top: 2.5rem;
                 font-size: 0.8rem;
             }
-            .modal-content {
-                padding: 0;
-                max-width: 98vw;
-                height: 98vh;
+            /* Support modal content on small screens */
+            .modal-content { /* Applies to support modal now */
+                padding: 0; /* No padding on mobile for full iframe space */
+                max-width: 98vw; /* Wider on very small screens */
+                height: 98vh; /* Taller on very small screens */
                 border-radius: 1rem;
             }
             .modal-close-button {
@@ -398,10 +417,12 @@
                 padding: 0.8rem 0.6rem;
                 font-size: 0.9rem;
             }
+            /* Adjust icon alignment on small screens: center them */
             .top-bar-icons { 
-                justify-content: center;
-                gap: 0.75rem;
+                justify-content: center; /* Center items on small screens */
+                gap: 0.75rem; /* Slightly larger gap */
             }
+            /* For RTL, move language selector visual order to be on the right (first item) */
             .top-bar-icons .relative {
                 order: -1; 
             }
@@ -410,8 +431,7 @@
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons">
-            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
                     </svg>
@@ -512,8 +532,7 @@
     </footer>
 
     <div id="supportModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
         </div>
     </div>
@@ -547,6 +566,7 @@
         const topUsersList = document.getElementById('topUsersList');     
         const leastUsersList = document.getElementById('leastUsersList'); 
 
+        // Prediction elements
         const predictionMessage = document.getElementById('predictionMessage'); 
 
         let currentTrafficData = {}; 
@@ -555,7 +575,8 @@
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
         
 
-        const API_ENDPOINT = 'api.php';
+        // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
         const translations = {
             fa: {
@@ -764,16 +785,21 @@
 
         supportModal.addEventListener('click', (event) => {
             if (event.target === supportModal) {
-                hideSupportModal();
+                hideSupportModal(); // Call a dedicated function for consistency
             }
         });
 
+        // Helper to hide support modal
         function hideSupportModal() {
             supportModal.classList.remove('show');
             supportModal.classList.add('hidden');
             goftinoIframe.src = '';
         }
 
+        // Removed all User Action Modal Logic
+
+
+        // --- Login Logic ---
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -789,7 +815,7 @@
             loadingIndicator.classList.remove('hidden'); 
 
             try {
-                const response = await fetch(`${API_ENDPOINT}?action=login`, {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -821,6 +847,7 @@
             }
         });
 
+        // --- Fetch Top/Least Consuming Users ---
         async function fetchUserLists() {
             if (!accessToken) {
                 console.warn("No access token available. Cannot fetch user lists.");
@@ -835,7 +862,7 @@
             userUsageLists.classList.add('hidden'); 
 
             try {
-                const response = await fetch(`${API_ENDPOINT}?action=users_summary`, {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
@@ -900,6 +927,7 @@
             }
         }
 
+        // Function to fetch and display user data
         async function fetchUserData(username) {
             if (!username) return;
 
@@ -908,7 +936,7 @@
             dataCards.classList.add('hidden');
 
             try {
-                const fetchUrl = `${API_ENDPOINT}?action=fetch_user_data&username=${username}`;
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
                 console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
 
                 const response = await fetch(fetchUrl);
@@ -953,13 +981,15 @@
             }
         }
 
+        // Event listener for the main fetch data button
         fetchDataButton.addEventListener('click', () => {
             const username = usernameInput.value.trim();
             fetchUserData(username);
         });
 
+        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
         function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage];
+            const currentTrans = translations[currentLanguage]; // Get current translations
             if (!trafficString || trafficString === currentTrans.unknown) return 0;
             const parts = trafficString.trim().split(' ');
             if (parts.length !== 2) return 0;
@@ -971,6 +1001,7 @@
             const GB_TO_MB = 1024;
             const TB_TO_MB = 1024 * 1024;
 
+            // Map Persian units to English for internal consistency in switch
             const persianUnitMap = {
                 'بایت': 'bytes',
                 'کیلوبایت': 'kb',
@@ -996,6 +1027,7 @@
             }
         }
 
+        // Function to update UI elements (including prediction)
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
@@ -1006,7 +1038,7 @@
             if (data.date3) {
                 let displayDate = data.date3;
                 try {
-                    const dateObj = new Date(displayDate);
+                    const dateObj = new Date(displayDate); 
                     if (isNaN(dateObj.getTime())) {
                         throw new Error("Invalid date string after cleaning or unparsable format.");
                     }
@@ -1032,9 +1064,10 @@
 
             document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
 
+            // Prediction Logic
             const totalVolumeMB = convertTrafficToMB(data.total2);
             const usedVolumeMB = convertTrafficToMB(data.usage);
-            const daysPassed = parseFloat(data.date2);
+            const daysPassed = parseFloat(data.date2); // data.date2 contains the number of days passed
 
             if (daysPassed > 0 && usedVolumeMB > 0) {
                 const dailyAverageMB = usedVolumeMB / daysPassed;
@@ -1052,6 +1085,7 @@
                     predictionMessage.style.color = 'var(--text-secondary)';
                 }
             } else {
+                // No sufficient data for prediction (e.g., first day, or no usage yet)
                 predictionMessage.textContent = currentTrans.predictionMessageNoData;
                 predictionMessage.style.color = 'var(--text-secondary)';
             }

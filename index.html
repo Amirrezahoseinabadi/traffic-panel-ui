@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title data-key="pageTitle"></title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Modern & Refined Color Palette */
@@ -112,6 +112,13 @@
             border-width: 5px; /* Thicker border */
             animation: spin 1s linear infinite;
             margin: 3rem auto; /* More vertical space */
+        }
+        /* Smaller spinner for analysis */
+        .loading-spinner.small {
+            width: 2rem;
+            height: 2rem;
+            border-width: 3px;
+            margin: 1rem auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -229,7 +236,7 @@
         }
 
         /* Error Messages */
-        #errorMessage, #loginErrorMessage {
+        #errorMessage, #loginErrorMessage, #userSearchErrorMessage, #analysisErrorMessage, #backupMessage {
             color: var(--error-red);
             font-weight: 600;
             padding: 0.8rem 1.5rem; /* More padding */
@@ -431,10 +438,11 @@
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons">
+            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
-                    </svg>
+                </svg>
             </button>
 
             <div class="relative">
@@ -451,63 +459,100 @@
             </button>
         </div>
 
-        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader"></h1>
 
         <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
-            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
-            <input type="text" id="loginUsernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
+            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel"></label>
+            <input type="text" id="loginUsernameInput" placeholder="" class="w-full max-w-md mb-4 text-center">
             
-            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
-            <input type="password" id="loginPasswordInput" placeholder="مثال: d64dgffv4f6s4fv" class="w-full max-w-md mb-6 text-center">
+            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel"></label>
+            <input type="password" id="loginPasswordInput" placeholder="" class="w-full max-w-md mb-6 text-center">
             
-            <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
-            <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
+            <button id="loginButton" class="main-button w-full" data-key="loginButton"></button>
+            <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage"></p>
         </div>
 
         <div id="dashboardContent" class="hidden">
             
-            <div id="loadingIndicator" class="loading-spinner hidden"></div>
-            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+            <div id="loadingIndicator" class="loading-spinner hidden rounded-full border-solid border-4 border-t-transparent"></div>
+            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage"></p>
+
+            <h2 class="text-2xl font-bold text-center mb-6" data-key="adminStatsHeader"></h2>
+            <div id="adminDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10 mx-auto">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalPanelVolume"></p>
+                    <p id="adminTotalTraffic" class="text-3xl text-green-400"></p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumedPanelVolume"></p>
+                    <p id="adminUsedTraffic" class="text-3xl text-yellow-400"></p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingPanelVolume"></p>
+                    <p id="adminRemainingTraffic" class="text-3xl text-red-400"></p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="estimatedPanelExpiry"></p>
+                    <p id="adminEstimatedExpiry" class="text-3xl text-purple-400"></p>
+                </div>
+            </div>
+
+            <div class="card mb-10 w-full max-w-md mx-auto">
+                <button id="downloadBackupButton" class="main-button w-full" data-key="downloadBackupButtonText"></button>
+                <p id="backupMessage" class="text-center mt-2 hidden"></p>
+                <div id="backupLoadingSpinner" class="loading-spinner small hidden rounded-full border-solid border-2 border-t-transparent"></div>
+            </div>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
-                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
-                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-6 text-center">
-                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
+                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel"></label>
+                <input type="text" id="usernameInput" placeholder="" class="w-full max-w-md mb-6 text-center">
+                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton"></button>
             </div>
 
-            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto">
+            <div id="individualUserDataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto hidden">
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
-                    <p id="total2" class="text-3xl">...</p>
+                    <p class="text-sm mb-2" data-key="totalVolume"></p>
+                    <p id="userTotalTraffic" class="text-3xl text-green-400"></p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
-                    <p id="baghi" class="text-3xl">...</p>
+                    <p class="text-sm mb-2" data-key="remainingVolume"></p>
+                    <p id="userRemainingTraffic" class="text-3xl text-yellow-400"></p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
-                    <p id="usage" class="text-3xl">...</p>
+                    <p class="text-sm mb-2" data-key="consumed"></p>
+                    <p id="userUsedTraffic" class="text-3xl text-red-400"></p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت کاربر</p>
-                    <p id="date3" class="text-lg">...</p> </div>
+                    <p class="text-sm mb-2" data-key="creationDate"></p>
+                    <p id="userCreationDate" class="text-lg"></p>
+                </div>
                 <div class="card col-span-full lg:col-span-1">
-                    <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
-                    <p id="date2" class="text-3xl">...</p>
+                    <p class="text-sm mb-2" data-key="daysPassed"></p>
+                    <p id="userDaysPassed" class="text-3xl"></p>
                 </div>
                 <div class="card">
-                    <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
-                    <p id="predictionMessage" class="text-3xl">...</p>
+                    <p class="text-sm mb-2" data-key="predictionHeader"></p>
+                    <p id="userPredictionMessage" class="text-3xl text-purple-400"></p>
+                </div>
+                <div class="card col-span-full">
+                    <p class="text-sm mb-2" data-key="usageAnalysisHeader"></p>
+                    <button id="analyzeUsageButton" class="main-button w-full mb-4" data-key="analyzeUsageButtonText"></button>
+                    <div id="usageAnalysisResult" class="text-base text-left text-gray-300">
+                        </div>
+                    <p id="analysisErrorMessage" class="text-red-500 text-center mt-2 hidden" data-key="analysisErrorMessage"></p>
+                    <div id="analysisLoadingSpinner" class="loading-spinner small hidden rounded-full border-solid border-2 border-t-transparent"></div>
                 </div>
             </div>
+            <p id="userSearchErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="userSearchErrorMessage"></p>
 
-            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
+
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto hidden">
                 <div class="card">
                     <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
                         <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/>
                         </svg>
-                        <span data-key="topUsersHeader">کاربران پرمصرف</span>
+                        <span data-key="topUsersHeader"></span>
                     </h2>
                     <div id="topUsersList" class="space-y-0"> 
                         </div>
@@ -517,7 +562,7 @@
                         <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
                         </svg>
-                        <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
+                        <span data-key="leastUsersHeader"></span>
                     </h2>
                     <div id="leastUsersList" class="space-y-0">
                         </div>
@@ -528,11 +573,11 @@
     </div>
 
     <footer class="app-footer" data-key="footerText">
-        تمامی حقوق برای آقای مرزبان محفوظ است.
     </footer>
 
-    <div id="supportModal" class="modal-overlay hidden">
-        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+    <div id="supportModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
         </div>
     </div>
@@ -555,12 +600,9 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
-        const individualUserLookup = document.getElementById('individualUserLookup'); 
-
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
         const userUsageLists = document.getElementById('userUsageLists'); 
         const topUsersList = document.getElementById('topUsersList');     
@@ -597,6 +639,7 @@
                 daysUnit: 'روز',
                 unknown: 'نامشخص',
                 bytes: 'بایت',
+                kb: 'کیلوبایت',
                 mb: 'مگابایت',
                 gb: 'گیگابایت',
                 tb: 'ترابایت',
@@ -634,6 +677,7 @@
                 daysUnit: 'days',
                 unknown: 'Unknown',
                 bytes: 'Bytes',
+                kb: 'KB',
                 mb: 'MB',
                 gb: 'GB',
                 tb: 'TB',
@@ -927,123 +971,195 @@
             }
         }
 
-        // Function to fetch and display user data
-        async function fetchUserData(username) {
-            if (!username) return;
+        downloadBackupButton.addEventListener('click', async () => {
+            if (!accessToken) {
+                backupMessage.textContent = translations[currentLanguage].session_expired;
+                backupMessage.classList.remove('hidden');
+                backupMessage.style.color = 'var(--error-red)';
+                return;
+            }
 
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
+            backupMessage.textContent = translations[currentLanguage].backupLoading;
+            backupMessage.classList.remove('hidden');
+            backupMessage.style.color = 'var(--text-secondary)';
+            downloadBackupButton.disabled = true;
+            backupLoadingSpinner.classList.remove('hidden');
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
-                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
-
-                const response = await fetch(fetchUrl);
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
-                }
-
-                const data = await response.json();
-
-                if (data.error) {
-                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
-                        errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
-                    } else if (data.auth_error) { 
-                        errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                    if (response.status === 401 || response.status === 403) {
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
+                        loginErrorMessage.textContent = translations[currentLanguage].session_expired;
+                        loginErrorMessage.classList.remove('hidden');
                     }
-                    else {
-                        errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
-                    }
-                    errorMessage.classList.remove('hidden');
-                    dataCards.classList.add('hidden');
-                    return;
+                    const errorText = await response.text();
+                    throw new Error(`(${response.status}): ${response.statusText}. Details: ${errorText}`);
                 }
 
-                currentTrafficData = data; 
-                updateUI(data); 
-                
-                dataCards.classList.remove('hidden');
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'marzban_users_backup.json';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                backupMessage.textContent = translations[currentLanguage].backupDownloadSuccess;
+                backupMessage.style.color = 'var(--accent-green)';
 
             } catch (error) {
-                console.error('Error fetching individual user data:', error);
-                errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
-                errorMessage.classList.remove('hidden');
-                dataCards.classList.add('hidden');
+                console.error('Backup download error:', error);
+                backupMessage.textContent = translations[currentLanguage].backupDownloadError.replace('{error}', error.message);
+                backupMessage.style.color = 'var(--error-red)';
+            } finally {
+                downloadBackupButton.disabled = false;
+                backupLoadingSpinner.classList.add('hidden');
+            }
+        });
+
+        fetchDataButton.addEventListener('click', async () => {
+            const username = usernameInput.value.trim();
+            userSearchErrorMessage.classList.add('hidden');
+            individualUserDataCards.classList.add('hidden');
+            usageAnalysisResult.textContent = '';
+            analysisErrorMessage.classList.add('hidden');
+
+            if (!username) {
+                userSearchErrorMessage.textContent = translations[currentLanguage].user_search_empty;
+                userSearchErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            loadingIndicator.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?name=${username}&step=info`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}` 
+                    }
+                });
+                const data = await response.json();
+                console.log("Individual User Search API response:", data);
+
+                if (response.ok && data && data.username) {
+                    currentIndividualUserData = data;
+                    updateIndividualUserUI(data);
+                    individualUserDataCards.classList.remove('hidden');
+                } else {
+                    userSearchErrorMessage.textContent = data.message || translations[currentLanguage].user_search_not_found;
+                    userSearchErrorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Error fetching individual user data:", error);
+                userSearchErrorMessage.textContent = translations[currentLanguage].network_error;
+                userSearchErrorMessage.classList.remove('hidden');
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
-        }
-
-        // Event listener for the main fetch data button
-        fetchDataButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            fetchUserData(username);
         });
 
-        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
-        function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage]; // Get current translations
-            if (!trafficString || trafficString === currentTrans.unknown) return 0;
-            const parts = trafficString.trim().split(' ');
-            if (parts.length !== 2) return 0;
+        analyzeUsageButton.addEventListener('click', async () => {
+            if (!currentIndividualUserData) {
+                analysisErrorMessage.textContent = translations[currentLanguage].analysisErrorMessage;
+                analysisErrorMessage.classList.remove('hidden');
+                return;
+            }
 
-            const value = parseFloat(parts[0]);
-            const unit = parts[1].toLowerCase();
+            usageAnalysisResult.textContent = translations[currentLanguage].analysisLoading;
+            usageAnalysisResult.classList.remove('text-red-500');
+            usageAnalysisResult.classList.add('text-gray-300');
+            analysisErrorMessage.classList.add('hidden');
+            analyzeUsageButton.disabled = true;
+            analysisLoadingSpinner.classList.remove('hidden');
 
-            const KB_TO_MB = 1 / 1024;
-            const GB_TO_MB = 1024;
-            const TB_TO_MB = 1024 * 1024;
+            try {
+                const totalTraffic = formatBytes(currentIndividualUserData.total_traffic_bytes || 0);
+                const usedTraffic = formatBytes(currentIndividualUserData.used_traffic_bytes || 0);
+                const remainingTraffic = formatBytes(currentIndividualUserData.remaining_traffic_bytes || 0);
+                const daysPassed = currentIndividualUserData.elapsed_days_aphp || 0;
 
-            // Map Persian units to English for internal consistency in switch
-            const persianUnitMap = {
-                'بایت': 'bytes',
-                'کیلوبایت': 'kb',
-                'مگابایت': 'mb',
-                'گیگابایت': 'gb',
-                'ترابایت': 'tb'
-            };
-            const normalizedUnit = persianUnitMap[unit] || unit;
+                const prompt = `Analyze the following traffic data for a user on a VPN panel:
+                Total traffic limit: ${totalTraffic}
+                Used traffic: ${usedTraffic}
+                Remaining traffic: ${remainingTraffic}
+                Days passed since account creation: ${daysPassed} days.
+                Based on this, provide a concise summary of their usage pattern and any notable observations. Focus on clarity and actionable insights. Respond in ${currentLanguage === 'fa' ? 'Persian' : 'English'}.`;
 
-            switch (normalizedUnit) {
-                case 'bytes':
-                    return value / (1024 * 1024);
-                case 'kb':
-                    return value * KB_TO_MB;
-                case 'mb':
-                    return value;
-                case 'gb':
-                    return value * GB_TO_MB;
-                case 'tb':
-                    return value * TB_TO_MB;
-                default:
-                    return 0;
+                const GEMINI_API_KEY = ""; // Replace with your actual Gemini API Key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }] })
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    usageAnalysisResult.textContent = text;
+                } else {
+                    throw new Error("Invalid response from LLM.");
+                }
+
+            } catch (error) {
+                console.error('LLM analysis error:', error);
+                analysisErrorMessage.textContent = translations[currentLanguage].analysisErrorMessage;
+                analysisErrorMessage.classList.remove('hidden');
+                usageAnalysisResult.textContent = '';
+            } finally {
+                analyzeUsageButton.disabled = false;
+                analysisLoadingSpinner.classList.add('hidden');
+            }
+        });
+
+        function updateAdminDashboardUI(data) {
+            const currentTrans = translations[currentLanguage];
+            adminTotalTraffic.textContent = formatBytes(data.total_traffic_bytes || 0);
+            adminUsedTraffic.textContent = formatBytes(data.used_traffic_bytes || 0);
+            adminRemainingTraffic.textContent = formatBytes(data.remaining_traffic_bytes || 0);
+
+            if (data.used_traffic_bytes > 0 && data.remaining_traffic_bytes > 0 && data.elapsed_days > 0) {
+                const dailyAverageBytes = data.used_traffic_bytes / data.elapsed_days;
+                if (dailyAverageBytes > 0) {
+                    const remainingDays = Math.round(data.remaining_traffic_bytes / dailyAverageBytes);
+                    adminEstimatedExpiry.textContent = `${remainingDays} ${currentTrans.daysUnit}`;
+                } else {
+                    adminEstimatedExpiry.textContent = currentTrans.predictionMessageNoConsumption;
+                }
+            } else {
+                adminEstimatedExpiry.textContent = currentTrans.predictionMessageNoData;
             }
         }
 
-        // Function to update UI elements (including prediction)
-        function updateUI(data) {
+        function updateIndividualUserUI(data) {
             const currentTrans = translations[currentLanguage];
-
-            document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
-            document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
-            document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
+            userTotalTraffic.textContent = formatBytes(data.total_traffic_bytes || 0);
+            userUsedTraffic.textContent = formatBytes(data.used_traffic_bytes || 0);
+            userRemainingTraffic.textContent = formatBytes(data.remaining_traffic_bytes || 0);
             
-            if (data.date3) {
-                let displayDate = data.date3;
+            if (data.creation_date_aphp) {
+                let displayDate = data.creation_date_aphp;
                 try {
                     const dateObj = new Date(displayDate); 
                     if (isNaN(dateObj.getTime())) {
                         throw new Error("Invalid date string after cleaning or unparsable format.");
                     }
                     const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-                    const persianDateOptions = { 
+                    const dateOptions = { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric', 
@@ -1052,42 +1168,40 @@
                         second: '2-digit',
                         hour12: false 
                     };
-                    displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
+                    displayDate = new Intl.DateTimeFormat(dateLocale, dateOptions).format(dateObj);
                 } catch (e) {
-                    console.error("Error parsing date3:", e);
+                    console.error("Error parsing date_aphp:", e);
                     displayDate = currentTrans.notAvailable;
                 }
-                document.getElementById('date3').textContent = displayDate;
+                userCreationDate.textContent = displayDate;
             } else {
-                document.getElementById('date3').textContent = currentTrans.unknown;
+                userCreationDate.textContent = currentTrans.unknown;
             }
 
-            document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
+            userDaysPassed.textContent = data.elapsed_days_aphp ? `${data.elapsed_days_aphp} ${currentTrans.daysUnit}` : currentTrans.unknown;
 
-            // Prediction Logic
-            const totalVolumeMB = convertTrafficToMB(data.total2);
-            const usedVolumeMB = convertTrafficToMB(data.usage);
-            const daysPassed = parseFloat(data.date2); // data.date2 contains the number of days passed
+            const totalVolumeBytes = data.total_traffic_bytes || 0;
+            const usedVolumeBytes = data.used_traffic_bytes || 0;
+            const daysPassed = parseFloat(data.elapsed_days_aphp);
 
-            if (daysPassed > 0 && usedVolumeMB > 0) {
-                const dailyAverageMB = usedVolumeMB / daysPassed;
-                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
+            if (daysPassed > 0 && usedVolumeBytes > 0 && totalVolumeBytes > 0) {
+                const dailyAverageBytes = usedVolumeBytes / daysPassed;
+                const remainingVolumeBytes = totalVolumeBytes - usedVolumeBytes;
 
-                if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
-                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
-                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
-                    predictionMessage.style.color = 'var(--prediction-color)'; 
-                } else if (remainingVolumeMB <= 0) {
-                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
-                    predictionMessage.style.color = 'var(--error-red)';
+                if (dailyAverageBytes > 0 && remainingVolumeBytes > 0) {
+                    const daysRemaining = Math.round(remainingVolumeBytes / dailyAverageBytes);
+                    userPredictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
+                    userPredictionMessage.style.color = 'var(--prediction-color)'; 
+                } else if (remainingVolumeBytes <= 0) {
+                    userPredictionMessage.textContent = currentTrans.predictionMessageDepleted;
+                    userPredictionMessage.style.color = 'var(--error-red)';
                 } else {
-                    predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
-                    predictionMessage.style.color = 'var(--text-secondary)';
+                    userPredictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
+                    userPredictionMessage.style.color = 'var(--text-secondary)';
                 }
             } else {
-                // No sufficient data for prediction (e.g., first day, or no usage yet)
-                predictionMessage.textContent = currentTrans.predictionMessageNoData;
-                predictionMessage.style.color = 'var(--text-secondary)';
+                userPredictionMessage.textContent = currentTrans.predictionMessageNoData;
+                userPredictionMessage.style.color = 'var(--text-secondary)';
             }
         }
 

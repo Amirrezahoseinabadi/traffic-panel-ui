@@ -217,11 +217,11 @@
         #baghi { 
             color: var(--accent-yellow);
         }
-        #date3 { 
-            font-size: 1.4rem; /* Larger date text */
+        /* #date3 {  -- REMOVED --
+            font-size: 1.4rem;
             line-height: 1.3;
             margin-top: 0.75rem;
-        }
+        } */
         #predictionMessage {
             color: var(--prediction-color); /* Specific color for prediction */
             font-weight: 700;
@@ -371,7 +371,7 @@
             .card p:last-child {
                 font-size: 2rem; /* Slightly smaller for mobile */
             }
-            #date3, #predictionMessage {
+            /* #date3, */ #predictionMessage {
                 font-size: 1.1rem;
             }
             .main-button {
@@ -471,7 +471,7 @@
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
-                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-6 text-center">
+                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
             </div>
 
@@ -488,9 +488,28 @@
                     <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
                     <p id="usage" class="text-3xl">...</p>
                 </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="creationDate">تاریخ ساخت کاربر</p>
-                    <p id="date3" class="text-lg">...</p> </div>
+                <div id="backupFeatureCard" class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 21H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2zM17 8H7V6h10v2zm-4 4H7v-2h6v2zm4 4H7v-2h10v2z"/>
+                        </svg>
+                        <span data-key="backupPanelHeader">پنل بکاپ کاربران</span>
+                    </h2>
+                    <p class="text-gray-600 text-center mb-6" data-key="backupPanelDescription">
+                        با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.
+                    </p>
+                    <button id="getBackupButton"
+                            class="main-button w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 shadow-lg">
+                        📦 دریافت بکاپ کاربران
+                    </button>
+                    <div id="downloadArea" class="mt-6 hidden">
+                        <p class="text-gray-700 font-medium mb-2" data-key="backupReadyText">فایل بکاپ آماده دانلود است:</p>
+                        <a id="downloadLink" href="#" download="marzban_users_backup.json"
+                           class="block text-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                            ⬇️ دانلود فایل بکاپ
+                        </a>
+                    </div>
+                </div>
                 <div class="card col-span-full lg:col-span-1">
                     <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
                     <p id="date2" class="text-3xl">...</p>
@@ -569,6 +588,13 @@
         // Prediction elements
         const predictionMessage = document.getElementById('predictionMessage'); 
 
+        // --- New Backup Feature Elements ---
+        const backupFeatureCard = document.getElementById('backupFeatureCard');
+        const getBackupButton = document.getElementById('getBackupButton');
+        const downloadArea = document.getElementById('downloadArea');
+        const downloadLink = document.getElementById('downloadLink');
+
+
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
@@ -577,6 +603,12 @@
 
         // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
+
+        // --- Marzban API Constants (These are now unused for backup as it goes through Worker Proxy) ---
+        // const MARZBAN_BASE_URL = 'https://a-l.fl-sub.site:2096'; // Your Marzban Panel Base URL
+        // const MARZBAN_LOGIN_PATH = '/api/admin/token';
+        // const MARZBAN_USERS_PATH = '/api/users';
+
 
         const translations = {
             fa: {
@@ -590,7 +622,7 @@
                 totalVolume: 'حجم کلی کاربر',
                 remainingVolume: 'حجم باقیمانده کاربر',
                 consumed: 'حجم مصرفی کاربر',
-                creationDate: 'تاریخ ساخت کاربر',
+                // creationDate: 'تاریخ ساخت کاربر', // Removed from display, but kept in translations if needed elsewhere
                 daysPassed: 'مدت زمان ساخت کاربر',
                 notAvailable: 'در دسترس نیست',
                 invalidDateFormat: 'فرمت تاریخ نامعتبر', 
@@ -614,7 +646,15 @@
                 predictionHeader: 'پیش‌بینی اتمام حجم', 
                 predictionMessageNoData: 'اطلاعات کافی نیست.', 
                 predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
-                predictionMessageDepleted: 'حجم به اتمام رسیده.' 
+                predictionMessageDepleted: 'حجم به اتمام رسیده.',
+                // New translations for backup feature
+                backupPanelHeader: 'پنل بکاپ کاربران',
+                backupPanelDescription: 'با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.',
+                backupReadyText: 'فایل بکاپ آماده دانلود است:',
+                backupDownloadButtonText: '⬇️ دانلود فایل بکاپ',
+                backupSuccessMessage: 'بکاپ با موفقیت تهیه شد! می‌توانید آن را دانلود کنید. ✅',
+                backupErrorMessage: 'خطا در تهیه بکاپ. لطفا دوباره تلاش کنید.',
+                backupNoUsersFound: 'لیست کاربران شما در پنل مرزبان خالی است. بکاپی برای ارسال وجود ندارد.'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -627,7 +667,7 @@
                 totalVolume: 'Total User Volume',
                 remainingVolume: 'Remaining User Volume',
                 consumed: 'Consumed User Traffic',
-                creationDate: 'User Creation Date',
+                creationDate: 'User Creation Date', // Still needed for translation
                 daysPassed: 'User Days Passed',
                 notAvailable: 'Not Available',
                 invalidDateFormat: 'Invalid Date Format',
@@ -651,13 +691,21 @@
                 predictionHeader: 'Data Depletion Prediction', 
                 predictionMessageNoData: 'Insufficient data.', 
                 predictionMessageNoConsumption: 'No consumption recorded.', 
-                predictionMessageDepleted: 'Data depleted.' 
+                predictionMessageDepleted: 'Data depleted.',
+                // New translations for backup feature
+                backupPanelHeader: 'User Backup Panel',
+                backupPanelDescription: 'Click the button below to generate a backup of your Marzban panel users.',
+                backupReadyText: 'Backup file is ready for download:',
+                backupDownloadButtonText: '⬇️ Download Backup File',
+                backupSuccessMessage: 'Backup successfully generated! You can download it. ✅',
+                backupErrorMessage: 'Error generating backup. Please try again.',
+                backupNoUsersFound: 'Your Marzban panel user list is empty. No backup to send.'
             }
         };
 
         // Helper to convert formatted traffic string (e.g., "10 GB") to MB
         function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage]; // Get current translations
+            const currentTrans = translations[currentLanguage];
             if (!trafficString || trafficString === currentTrans.unknown) return 0;
             const parts = trafficString.trim().split(' ');
             if (parts.length !== 2) return 0;
@@ -669,7 +717,6 @@
             const GB_TO_MB = 1024;
             const TB_TO_MB = 1024 * 1024;
 
-            // Map Persian units to English for internal consistency in switch
             const persianUnitMap = {
                 'بایت': 'bytes',
                 'کیلوبایت': 'kb',
@@ -799,7 +846,7 @@
         // Removed all User Action Modal Logic
 
 
-        // --- Login Logic ---
+        // --- Login Logic (Existing Dashboard Login) ---
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -987,82 +1034,31 @@
             fetchUserData(username);
         });
 
-        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
-        function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage]; // Get current translations
-            if (!trafficString || trafficString === currentTrans.unknown) return 0;
-            const parts = trafficString.trim().split(' ');
-            if (parts.length !== 2) return 0;
-
-            const value = parseFloat(parts[0]);
-            const unit = parts[1].toLowerCase();
-
-            const KB_TO_MB = 1 / 1024;
-            const GB_TO_MB = 1024;
-            const TB_TO_MB = 1024 * 1024;
-
-            // Map Persian units to English for internal consistency in switch
-            const persianUnitMap = {
-                'بایت': 'bytes',
-                'کیلوبایت': 'kb',
-                'مگابایت': 'mb',
-                'گیگابایت': 'gb',
-                'ترابایت': 'tb'
-            };
-            const normalizedUnit = persianUnitMap[unit] || unit;
-
-            switch (normalizedUnit) {
-                case 'bytes':
-                    return value / (1024 * 1024);
-                case 'kb':
-                    return value * KB_TO_MB;
-                case 'mb':
-                    return value;
-                case 'gb':
-                    return value * GB_TO_MB;
-                case 'tb':
-                    return value * TB_TO_MB;
-                default:
-                    return 0;
-            }
-        }
-
         // Function to update UI elements (including prediction)
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
-            document.getElementById('total2').textContent = data.total2 || currentTrans.unknown;
-            document.getElementById('baghi').textContent = data.baghi || currentTrans.unknown;
-            document.getElementById('usage').textContent = data.usage || currentTrans.unknown;
-            
-            if (data.date3) {
-                let displayDate = data.date3;
-                try {
-                    const dateObj = new Date(displayDate); 
-                    if (isNaN(dateObj.getTime())) {
-                        throw new Error("Invalid date string after cleaning or unparsable format.");
-                    }
-                    const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-                    const persianDateOptions = { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        second: '2-digit',
-                        hour12: false 
-                    };
-                    displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
-                } catch (e) {
-                    console.error("Error parsing date3:", e);
-                    displayDate = currentTrans.notAvailable;
+            // Helper to format volume with smaller unit
+            function formatVolume(volumeString) {
+                if (!volumeString || volumeString === currentTrans.unknown) {
+                    return currentTrans.unknown;
                 }
-                document.getElementById('date3').textContent = displayDate;
-            } else {
-                document.getElementById('date3').textContent = currentTrans.unknown;
+                const parts = volumeString.trim().split(' ');
+                if (parts.length === 2) {
+                    return `${parts[0]} <span class="text-xl font-normal">${parts[1]}</span>`; // Smaller unit
+                }
+                return volumeString; // Fallback
             }
 
-            document.getElementById('date2').textContent = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
+            document.getElementById('total2').innerHTML = formatVolume(data.total2);
+            document.getElementById('baghi').innerHTML = formatVolume(data.baghi);
+            document.getElementById('usage').innerHTML = formatVolume(data.usage);
+            
+            // Note: date3 card is removed, so no need to update it here.
+            // If the data.date3 is used elsewhere (e.g., in lists), ensure it's handled there.
+
+            // Update date2 (days passed) with smaller unit text
+            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="text-xl font-normal">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
 
             // Prediction Logic
             const totalVolumeMB = convertTrafficToMB(data.total2);
@@ -1090,6 +1086,88 @@
                 predictionMessage.style.color = 'var(--text-secondary)';
             }
         }
+
+        // --- Backup Feature Logic (now via Worker proxy) ---
+        getBackupButton.addEventListener('click', async () => {
+            const currentTrans = translations[currentLanguage];
+
+            if (!accessToken) {
+                showMessage(currentTrans.loginErrorMessage, 'error');
+                return;
+            }
+
+            showMessage('در حال تهیه بکاپ از کاربران...', 'info');
+            getBackupButton.disabled = true;
+            downloadArea.classList.add('hidden'); // Hide previous download link
+
+            try {
+                // Call the Worker proxy endpoint for backup
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    // If 401, clear token and prompt re-login
+                    if (response.status === 401) {
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        showMessage(currentTrans.loginErrorMessage, 'error');
+                        return;
+                    }
+                    throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
+                }
+
+                const data = await response.json(); // This data should contain the 'users' array
+                const users = data.users; // Assuming the Worker returns { users: [...] }
+
+                if (users) {
+                    if (users.length === 0) {
+                        showMessage(currentTrans.backupNoUsersFound, 'info');
+                        getBackupButton.disabled = false;
+                        return;
+                    }
+
+                    const backupContent = JSON.stringify(users, null, 2);
+                    const backupBlob = new Blob([backupContent], { type: 'application/json' });
+
+                    // Format date and time to Solar Hijri
+                    const now = new Date();
+                    const persianDateFormatter = new Intl.DateTimeFormat('fa-IR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false,
+                        calendar: 'persian'
+                    });
+                    const formattedDateTime = persianDateFormatter.format(now);
+
+                    // Create a temporary URL for the Blob and set it to the download link
+                    const url = URL.createObjectURL(backupBlob);
+                    downloadLink.href = url;
+                    downloadLink.download = `marzban_users_backup_${marzbanUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
+                    downloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${marzbanUsernameInput.value} (${formattedDateTime})`;
+
+                    downloadArea.classList.remove('hidden');
+                    showMessage(currentTrans.backupSuccessMessage, 'success');
+                } else {
+                    showMessage(currentTrans.backupErrorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('Error during backup process:', error);
+                showMessage(`${currentTrans.backupErrorMessage} ${error.message}`, 'error');
+            } finally {
+                getBackupButton.disabled = false;
+            }
+        });
+
 
         window.onload = function() {
             initializePreferences();

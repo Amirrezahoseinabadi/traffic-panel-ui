@@ -892,6 +892,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
+                getBackupButton.click(); // Automatically trigger backup after successful login
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -1052,34 +1053,6 @@
             document.getElementById('baghi').innerHTML = `${data.baghi.split(' ')[0]} <span class="unit-text">${data.baghi.split(' ')[1]}</span>` || currentTrans.unknown;
             document.getElementById('usage').innerHTML = `${data.usage.split(' ')[0]} <span class="unit-text">${data.usage.split(' ')[1]}</span>` || currentTrans.unknown;
             
-            // Removed direct update for date3 as its card is removed
-            // if (data.date3) {
-            //     let displayDate = data.date3;
-            //     try {
-            //         const dateObj = new Date(displayDate); 
-            //         if (isNaN(dateObj.getTime())) {
-            //             throw new Error("Invalid date string after cleaning or unparsable format.");
-            //         }
-            //         const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
-            //         const persianDateOptions = { 
-            //             year: 'numeric', 
-            //             month: 'long', 
-            //             day: 'numeric', 
-            //             hour: '2-digit', 
-            //             minute: '2-digit', 
-            //             second: '2-digit',
-            //             hour12: false 
-            //         };
-            //         displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
-            //     } catch (e) {
-            //         console.error("Error parsing date3:", e);
-            //         displayDate = currentTrans.notAvailable;
-            //     }
-            //     document.getElementById('date3').textContent = displayDate;
-            // } else {
-            //     document.getElementById('date3').textContent = currentTrans.unknown;
-            // }
-
             // Update date2 with smaller unit text
             document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="unit-text">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
 

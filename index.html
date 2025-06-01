@@ -227,6 +227,13 @@
             font-weight: 700;
             font-size: 2.5rem;
         }
+        /* Styling for smaller units */
+        .unit-text {
+            font-size: 1.5rem; /* Smaller than main value, larger than label */
+            font-weight: 400; /* Regular weight */
+            margin-right: 0.5rem; /* Space between number and unit */
+        }
+
 
         /* Error Messages */
         #errorMessage, #loginErrorMessage {
@@ -371,7 +378,7 @@
             .card p:last-child {
                 font-size: 2rem; /* Slightly smaller for mobile */
             }
-            /* #date3, */ #predictionMessage {
+            #date3, #predictionMessage {
                 font-size: 1.1rem;
             }
             .main-button {
@@ -604,10 +611,11 @@
         // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
-        // --- Marzban API Constants (These are now unused for backup as it goes through Worker Proxy) ---
-        // const MARZBAN_BASE_URL = 'https://a-l.fl-sub.site:2096'; // Your Marzban Panel Base URL
-        // const MARZBAN_LOGIN_PATH = '/api/admin/token';
-        // const MARZBAN_USERS_PATH = '/api/users';
+        // --- Marzban API Constants (for direct calls from HTML, now proxied via Worker) ---
+        // These are still here for reference, but actual calls go through CLOUDFLARE_WORKER_URL
+        const MARZBAN_BASE_URL = 'https://a-l.fl-sub.site:2096'; // Your Marzban Panel Base URL
+        const MARZBAN_LOGIN_PATH = '/api/admin/token';
+        const MARZBAN_USERS_PATH = '/api/users';
 
 
         const translations = {
@@ -667,7 +675,7 @@
                 totalVolume: 'Total User Volume',
                 remainingVolume: 'Remaining User Volume',
                 consumed: 'Consumed User Traffic',
-                creationDate: 'User Creation Date', // Still needed for translation
+                // creationDate: 'User Creation Date', // Removed from display, but kept in translations if needed elsewhere
                 daysPassed: 'User Days Passed',
                 notAvailable: 'Not Available',
                 invalidDateFormat: 'Invalid Date Format',
@@ -713,9 +721,10 @@
             const value = parseFloat(parts[0]);
             const unit = parts[1].toLowerCase();
 
-            const KB_TO_MB = 1 / 1024;
-            const GB_TO_MB = 1024;
-            const TB_TO_MB = 1024 * 1024;
+            const KB_TO_MB = 1024;
+            const MEGABYTE = KB_TO_MB * 1024;
+            const GIGABYTE = MEGABYTE * 1024;
+            const TERABYTE = GIGABYTE * 1024;
 
             const persianUnitMap = {
                 'بایت': 'bytes',
@@ -730,13 +739,13 @@
                 case 'bytes':
                     return value / (1024 * 1024);
                 case 'kb':
-                    return value * KB_TO_MB;
+                    return value / 1024; // KB to MB
                 case 'mb':
                     return value;
                 case 'gb':
-                    return value * GB_TO_MB;
+                    return value * GIGABYTE / MEGABYTE; // GB to MB
                 case 'tb':
-                    return value * TB_TO_MB;
+                    return value * TERABYTE / MEGABYTE; // TB to MB
                 default:
                     return 0;
             }
@@ -1038,27 +1047,41 @@
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
 
-            // Helper to format volume with smaller unit
-            function formatVolume(volumeString) {
-                if (!volumeString || volumeString === currentTrans.unknown) {
-                    return currentTrans.unknown;
-                }
-                const parts = volumeString.trim().split(' ');
-                if (parts.length === 2) {
-                    return `${parts[0]} <span class="text-xl font-normal">${parts[1]}</span>`; // Smaller unit
-                }
-                return volumeString; // Fallback
-            }
-
-            document.getElementById('total2').innerHTML = formatVolume(data.total2);
-            document.getElementById('baghi').innerHTML = formatVolume(data.baghi);
-            document.getElementById('usage').innerHTML = formatVolume(data.usage);
+            // Update total, remaining, and consumed traffic with smaller unit text
+            document.getElementById('total2').innerHTML = `${data.total2.split(' ')[0]} <span class="unit-text">${data.total2.split(' ')[1]}</span>` || currentTrans.unknown;
+            document.getElementById('baghi').innerHTML = `${data.baghi.split(' ')[0]} <span class="unit-text">${data.baghi.split(' ')[1]}</span>` || currentTrans.unknown;
+            document.getElementById('usage').innerHTML = `${data.usage.split(' ')[0]} <span class="unit-text">${data.usage.split(' ')[1]}</span>` || currentTrans.unknown;
             
-            // Note: date3 card is removed, so no need to update it here.
-            // If the data.date3 is used elsewhere (e.g., in lists), ensure it's handled there.
+            // Removed direct update for date3 as its card is removed
+            // if (data.date3) {
+            //     let displayDate = data.date3;
+            //     try {
+            //         const dateObj = new Date(displayDate); 
+            //         if (isNaN(dateObj.getTime())) {
+            //             throw new Error("Invalid date string after cleaning or unparsable format.");
+            //         }
+            //         const dateLocale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+            //         const persianDateOptions = { 
+            //             year: 'numeric', 
+            //             month: 'long', 
+            //             day: 'numeric', 
+            //             hour: '2-digit', 
+            //             minute: '2-digit', 
+            //             second: '2-digit',
+            //             hour12: false 
+            //         };
+            //         displayDate = new Intl.DateTimeFormat(dateLocale, persianDateOptions).format(dateObj);
+            //     } catch (e) {
+            //         console.error("Error parsing date3:", e);
+            //         displayDate = currentTrans.notAvailable;
+            //     }
+            //     document.getElementById('date3').textContent = displayDate;
+            // } else {
+            //     document.getElementById('date3').textContent = currentTrans.unknown;
+            // }
 
-            // Update date2 (days passed) with smaller unit text
-            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="text-xl font-normal">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
+            // Update date2 with smaller unit text
+            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="unit-text">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
 
             // Prediction Logic
             const totalVolumeMB = convertTrafficToMB(data.total2);
@@ -1087,12 +1110,12 @@
             }
         }
 
-        // --- Backup Feature Logic (now via Worker proxy) ---
+        // --- Backup Feature Logic ---
         getBackupButton.addEventListener('click', async () => {
             const currentTrans = translations[currentLanguage];
 
             if (!accessToken) {
-                showMessage(currentTrans.loginErrorMessage, 'error');
+                showMessage(currentTrans.loginErrorMessage, 'error'); // Use existing login error message
                 return;
             }
 
@@ -1101,7 +1124,7 @@
             downloadArea.classList.add('hidden'); // Hide previous download link
 
             try {
-                // Call the Worker proxy endpoint for backup
+                // Call the Worker's /backup-users endpoint
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -1110,20 +1133,11 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    // If 401, clear token and prompt re-login
-                    if (response.status === 401) {
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        showMessage(currentTrans.loginErrorMessage, 'error');
-                        return;
-                    }
                     throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
                 }
 
-                const data = await response.json(); // This data should contain the 'users' array
-                const users = data.users; // Assuming the Worker returns { users: [...] }
+                const data = await response.json();
+                const users = data.users; // Marzban API returns users in a 'users' array
 
                 if (users) {
                     if (users.length === 0) {
@@ -1158,11 +1172,21 @@
                     downloadArea.classList.remove('hidden');
                     showMessage(currentTrans.backupSuccessMessage, 'success');
                 } else {
+                    // This case should ideally not be hit if response.ok is true, but good for robustness
                     showMessage(currentTrans.backupErrorMessage, 'error');
                 }
             } catch (error) {
                 console.error('Error during backup process:', error);
-                showMessage(`${currentTrans.backupErrorMessage} ${error.message}`, 'error');
+                // Check for 401 specifically for re-login
+                if (error.message.includes('401') || error.message.includes('توکن احراز هویت منقضی شده')) {
+                    showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
+                    localStorage.removeItem('marzban_access_token');
+                    accessToken = null;
+                    loginForm.classList.remove('hidden');
+                    dashboardContent.classList.add('hidden');
+                } else {
+                    showMessage(`${currentTrans.backupErrorMessage} ${error.message}`, 'error');
+                }
             } finally {
                 getBackupButton.disabled = false;
             }

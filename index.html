@@ -1165,7 +1165,6 @@
                     }
                 });
 
-                console.log('Response from Worker for backup:', response.status, response.statusText); // Log Worker response status
                 if (!response.ok) {
                     const errorData = await response.json();
                     console.error('Error data from Worker backup response:', errorData); // Log Worker error data
@@ -1203,8 +1202,8 @@
                     // Set up the modal download link
                     const url = URL.createObjectURL(backupBlob);
                     modalDownloadLink.href = url;
-                    modalDownloadLink.download = `marzban_users_backup_${marzbanUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
-                    modalDownloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${marzbanUsernameInput.value} (${formattedDateTime})`;
+                    modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`; // Corrected variable name
+                    modalDownloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${loginUsernameInput.value} (${formattedDateTime})`; // Corrected variable name
 
                     // Show the modal
                     backupDownloadModal.classList.remove('hidden');

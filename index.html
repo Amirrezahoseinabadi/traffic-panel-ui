@@ -380,7 +380,7 @@
         #backupDownloadModal .modal-content {
             max-width: 450px; /* Smaller width */
             width: 90%; /* Responsive width */
-            /* Removed fixed height, using padding and content to define height */
+            aspect-ratio: 1 / 1; /* Make height equal to width */
             padding: 2rem; /* Consistent padding */
             background-color: rgba(var(--bg-card-rgb), 0.9); /* Semi-transparent background */
             backdrop-filter: blur(10px); /* Glass effect */
@@ -392,7 +392,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* min-height: 200px; Remove fixed min-height for more dynamic sizing */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* Stronger shadow for modal */
             border-radius: 1.5rem; /* Ensure consistent border-radius */
         }

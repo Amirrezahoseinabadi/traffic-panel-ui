@@ -474,7 +474,7 @@
         <div id="dashboardContent" class="hidden">
             
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
-            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>
+            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage"></p>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
@@ -502,9 +502,12 @@
                         </svg>
                         <span data-key="backupPanelHeader">پنل بکاپ کاربران</span>
                     </h2>
+                    <p class="text-gray-600 text-center mb-6" data-key="backupPanelDescription">
+                        با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.
+                    </p>
                     <button id="getBackupButton"
                             class="main-button w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 shadow-lg">
-                          (بزودی)دریافت بکاپ کاربران
+                        📦 دریافت بکاپ کاربران
                     </button>
                     <div id="downloadArea" class="mt-6 hidden">
                         <p class="text-gray-700 font-medium mb-2" data-key="backupReadyText">فایل بکاپ آماده دانلود است:</p>
@@ -560,7 +563,20 @@
         </div>
     </div>
 
+    <div id="backupDownloadModal" class="modal-overlay hidden">
+        <div class="modal-content !p-8 max-w-sm text-center">
+            <button id="closeBackupDownloadModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <h3 class="text-2xl font-bold text-white mb-4" data-key="backupReadyText">فایل بکاپ آماده دانلود است!</h3>
+            <p class="text-gray-300 mb-6" data-key="backupDownloadPrompt">برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:</p>
+            <a id="modalDownloadLink" href="#" download="marzban_users_backup.json"
+               class="main-button w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                ⬇️ دانلود فایل بکاپ
+            </a>
+        </div>
+    </div>
+
     <script>
+        // --- DOM Elements ---
         const htmlElement = document.documentElement;
         const bodyElement = document.body;
         const themeToggle = document.getElementById('themeToggle');
@@ -595,8 +611,13 @@
         // --- New Backup Feature Elements ---
         const backupFeatureCard = document.getElementById('backupFeatureCard');
         const getBackupButton = document.getElementById('getBackupButton');
-        const downloadArea = document.getElementById('downloadArea');
-        const downloadLink = document.getElementById('downloadLink');
+        const downloadArea = document.getElementById('downloadArea'); // This is the inline download area, not the modal one
+        const downloadLink = document.getElementById('downloadLink'); // This is the inline download link
+
+        // --- Backup Download Modal Elements ---
+        const backupDownloadModal = document.getElementById('backupDownloadModal');
+        const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
+        const modalDownloadLink = document.getElementById('modalDownloadLink');
 
 
         let currentTrafficData = {}; 
@@ -655,11 +676,12 @@
                 // New translations for backup feature
                 backupPanelHeader: 'پنل بکاپ کاربران',
                 backupPanelDescription: 'با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.',
-                backupReadyText: 'فایل بکاپ آماده دانلود است:',
+                backupReadyText: 'فایل بکاپ آماده دانلود است!', // Updated for modal
                 backupDownloadButtonText: '⬇️ دانلود فایل بکاپ',
                 backupSuccessMessage: 'بکاپ با موفقیت تهیه شد! می‌توانید آن را دانلود کنید. ✅',
                 backupErrorMessage: 'خطا در تهیه بکاپ. لطفا دوباره تلاش کنید.',
-                backupNoUsersFound: 'لیست کاربران شما در پنل مرزبان خالی است. بکاپی برای ارسال وجود ندارد.'
+                backupNoUsersFound: 'لیست کاربران شما در پنل مرزبان خالی است. بکاپی برای ارسال وجود ندارد.',
+                backupDownloadPrompt: 'برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -700,11 +722,12 @@
                 // New translations for backup feature
                 backupPanelHeader: 'User Backup Panel',
                 backupPanelDescription: 'Click the button below to generate a backup of your Marzban panel users.',
-                backupReadyText: 'Backup file is ready for download:',
+                backupReadyText: 'Backup file is ready for download!', // Updated for modal
                 backupDownloadButtonText: '⬇️ Download Backup File',
                 backupSuccessMessage: 'Backup successfully generated! You can download it. ✅',
                 backupErrorMessage: 'Error generating backup. Please try again.',
-                backupNoUsersFound: 'Your Marzban panel user list is empty. No backup to send.'
+                backupNoUsersFound: 'Your Marzban panel user list is empty. No backup to send.',
+                backupDownloadPrompt: 'Click the button below to download the backup file:'
             }
         };
 
@@ -858,7 +881,7 @@
             const password = loginPasswordInput.value.trim();
 
             if (!username || !password) {
-                loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage;
+                showMessage(translations[currentLanguage].loginErrorMessage, 'error');
                 loginErrorMessage.classList.remove('hidden');
                 return;
             }
@@ -889,10 +912,13 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
-                getBackupButton.click(); // Automatically trigger backup after successful login
+                // Automatically trigger backup after successful login
+                // This will call the getBackupButton's click handler
+                getBackupButton.click(); 
 
             } catch (error) {
                 console.error('Login error:', error);
+                showMessage(error.message, 'error');
                 loginErrorMessage.textContent = error.message;
                 loginErrorMessage.classList.remove('hidden');
             } finally {
@@ -929,6 +955,7 @@
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
+                        showMessage(translations[currentLanguage].loginErrorMessage, 'error'); 
                         loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; 
                         loginErrorMessage.classList.remove('hidden');
                     }
@@ -975,6 +1002,7 @@
 
             } catch (error) {
                 console.error('Error fetching user lists:', error);
+                showMessage(`Error fetching user lists: ${error.message}`, 'error');
                 topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
                 leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
                 userUsageLists.classList.remove('hidden'); 
@@ -1004,8 +1032,10 @@
 
                 if (data.error) {
                     if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
+                        showMessage(translations[currentLanguage].invalidUsernameError, 'error');
                         errorMessage.textContent = translations[currentLanguage].invalidUsernameError;
                     } else if (data.auth_error) { 
+                        showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
                         errorMessage.textContent = translations[currentLanguage].loginErrorMessage;
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
@@ -1013,6 +1043,7 @@
                         dashboardContent.classList.add('hidden');
                     }
                     else {
+                        showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error), 'error');
                         errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error);
                     }
                     errorMessage.classList.remove('hidden');
@@ -1027,6 +1058,7 @@
 
             } catch (error) {
                 console.error('Error fetching individual user data:', error);
+                showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message), 'error');
                 errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message);
                 errorMessage.classList.remove('hidden');
                 dataCards.classList.add('hidden');
@@ -1091,7 +1123,7 @@
 
             showMessage('در حال تهیه بکاپ از کاربران...', 'info');
             getBackupButton.disabled = true;
-            downloadArea.classList.add('hidden'); // Hide previous download link
+            downloadArea.classList.add('hidden'); // Hide inline download area
 
             try {
                 // Call the Worker's /backup-users endpoint
@@ -1133,13 +1165,16 @@
                     });
                     const formattedDateTime = persianDateFormatter.format(now);
 
-                    // Create a temporary URL for the Blob and set it to the download link
+                    // Set up the modal download link
                     const url = URL.createObjectURL(backupBlob);
-                    downloadLink.href = url;
-                    downloadLink.download = `marzban_users_backup_${marzbanUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
-                    downloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${marzbanUsernameInput.value} (${formattedDateTime})`;
+                    modalDownloadLink.href = url;
+                    modalDownloadLink.download = `marzban_users_backup_${marzbanUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
+                    modalDownloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${marzbanUsernameInput.value} (${formattedDateTime})`;
 
-                    downloadArea.classList.remove('hidden');
+                    // Show the modal
+                    backupDownloadModal.classList.remove('hidden');
+                    backupDownloadModal.classList.add('show');
+
                     showMessage(currentTrans.backupSuccessMessage, 'success');
                 } else {
                     // This case should ideally not be hit if response.ok is true, but good for robustness
@@ -1159,6 +1194,23 @@
                 }
             } finally {
                 getBackupButton.disabled = false;
+            }
+        });
+
+        // Event listener for closing the backup download modal
+        closeBackupDownloadModalButton.addEventListener('click', () => {
+            backupDownloadModal.classList.remove('show');
+            backupDownloadModal.classList.add('hidden');
+            // Revoke the object URL to free up memory
+            if (modalDownloadLink.href && modalDownloadLink.href.startsWith('blob:')) {
+                URL.revokeObjectURL(modalDownloadLink.href);
+            }
+        });
+
+        // Close modal if clicking outside content
+        backupDownloadModal.addEventListener('click', (event) => {
+            if (event.target === backupDownloadModal) {
+                closeBackupDownloadModalButton.click();
             }
         });
 

@@ -629,6 +629,20 @@
                class="main-button w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
                 ⬇️ دانلود فایل بکاپ
             </a>
+            <div class="mt-6 pt-4 border-t border-gray-600 w-full text-sm text-gray-400">
+                <div class="flex justify-between mb-2">
+                    <span data-key="totalUsersCount">تعداد کل کاربران:</span>
+                    <span id="totalUsersValue" class="font-semibold text-gray-200">...</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span data-key="activeUsersCount">کاربران فعال:</span>
+                    <span id="activeUsersValue" class="font-semibold text-green-400">...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span data-key="expiredUsersCount">کاربران منقضی شده:</span>
+                    <span id="expiredUsersValue" class="font-semibold text-red-400">...</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -690,6 +704,9 @@
         const backupDownloadModal = document.getElementById('backupDownloadModal');
         const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
         const modalDownloadLink = document.getElementById('modalDownloadLink');
+        const totalUsersValue = document.getElementById('totalUsersValue');
+        const activeUsersValue = document.getElementById('activeUsersValue');
+        const expiredUsersValue = document.getElementById('expiredUsersValue');
 
 
         let currentTrafficData = {}; 
@@ -753,7 +770,10 @@
                 backupSuccessMessage: 'بکاپ با موفقیت تهیه شد! می‌توانید آن را دانلود کنید. ✅',
                 backupErrorMessage: 'خطا در تهیه بکاپ. لطفا دوباره تلاش کنید.',
                 backupNoUsersFound: 'لیست کاربران شما در پنل مرزبان خالی است. بکاپی برای ارسال وجود ندارد.',
-                backupDownloadPrompt: 'برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:'
+                backupDownloadPrompt: 'برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:',
+                totalUsersCount: 'تعداد کل کاربران:',
+                activeUsersCount: 'کاربران فعال:',
+                expiredUsersCount: 'کاربران منقضی شده:'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -799,7 +819,10 @@
                 backupSuccessMessage: 'Backup successfully generated! You can download it. ✅',
                 backupErrorMessage: 'Error generating backup. Please try again.',
                 backupNoUsersFound: 'Your Marzban panel user list is empty. No backup to send.',
-                backupDownloadPrompt: 'Click the button below to download the backup file:'
+                backupDownloadPrompt: 'Click the button below to download the backup file:',
+                totalUsersCount: 'Total Users:',
+                activeUsersCount: 'Active Users:',
+                expiredUsersCount: 'Expired Users:'
             }
         };
 
@@ -1254,11 +1277,22 @@
                     });
                     const formattedDateTime = persianDateFormatter.format(now);
 
+                    // Calculate user statistics
+                    const totalUsers = users.length;
+                    const activeUsers = users.filter(user => user.status === 'active').length;
+                    const expiredUsers = users.filter(user => user.status === 'expired').length; // Assuming 'expired' status
+
+                    // Update modal content with statistics
+                    totalUsersValue.textContent = totalUsers;
+                    activeUsersValue.textContent = activeUsers;
+                    expiredUsersValue.textContent = expiredUsers;
+
+
                     // Set up the modal download link
                     const url = URL.createObjectURL(backupBlob);
                     modalDownloadLink.href = url;
-                    modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`; // Corrected variable name
-                    modalDownloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${loginUsernameInput.value} (${formattedDateTime})`; // Corrected variable name
+                    modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
+                    modalDownloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${loginUsernameInput.value} (${formattedDateTime})`;
 
                     // Show the modal
                     backupDownloadModal.classList.remove('hidden');
@@ -1266,12 +1300,10 @@
 
                     showMessage(currentTrans.backupSuccessMessage, 'success');
                 } else {
-                    // This case should ideally not be hit if response.ok is true, but good for robustness
                     showMessage(currentTrans.backupErrorMessage, 'error');
                 }
             } catch (error) {
                 console.error('Error during backup process:', error);
-                // Check for 401 specifically for re-login
                 if (error.message.includes('401') || error.message.includes('توکن احراز هویت منقضی شده')) {
                     showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
                     localStorage.removeItem('marzban_access_token');

@@ -1165,6 +1165,7 @@
                     }
                 });
 
+                console.log('Response from Worker for backup:', response.status, response.statusText); // Log Worker response status
                 if (!response.ok) {
                     const errorData = await response.json();
                     console.error('Error data from Worker backup response:', errorData); // Log Worker error data

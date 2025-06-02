@@ -942,9 +942,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
-                // Automatically trigger backup after successful login
-                // This will call the getBackupButton's click handler
-                getBackupButton.click(); 
+                // Removed: getBackupButton.click(); // No automatic trigger after login
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -1165,7 +1163,6 @@
                     }
                 });
 
-                console.log('Response from Worker for backup:', response.status, response.statusText); // Log Worker response status
                 if (!response.ok) {
                     const errorData = await response.json();
                     console.error('Error data from Worker backup response:', errorData); // Log Worker error data

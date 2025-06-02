@@ -228,6 +228,1390 @@
         #baghi { 
             color: var(--accent-yellow);
         }
+        #predictionMessage {
+            color: var(--prediction-color); /* Specific color for prediction */
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        /* Styling for smaller units */
+        .unit-text {
+            font-size: 1.5rem; /* Smaller than main value, larger than label */
+            font-weight: 400; /* Regular weight */
+            margin-right: 0.5rem; /* Space between number and unit */
+        }
+
+
+        /* Error Messages */
+        #errorMessage, #loginErrorMessage {
+            color: var(--error-red);
+            font-weight: 600;
+            padding: 0.8rem 1.5rem; /* More padding */
+            border-radius: 0.75rem; /* Consistent rounding */
+            background-color: rgba(239, 68, 68, 0.15); /* Slightly darker background */
+            border: 1px solid var(--error-red);
+            font-size: 1rem; /* Clearer font size */
+            margin-top: 1.5rem; /* More space */
+            /* --- MODIFIED FOR AUTO-HIDE AND FIT-CONTENT --- */
+            display: block; /* Ensures it takes up full width for margin auto to work */
+            width: fit-content; /* Shrink to content width */
+            margin-left: auto; /* Center horizontally */
+            margin-right: auto; /* Center horizontally */
+            opacity: 1; /* Default visible state */
+            transition: opacity 0.5s ease-out; /* Smooth fade-out */
+        }
+        #errorMessage.hidden, #loginErrorMessage.hidden {
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction when hidden */
+        }
+
+
+        /* User Lists (Top/Least Consuming) */
+        #userUsageLists h2 {
+            font-size: 1.6rem; /* Larger heading */
+            color: var(--accent-blue); /* Consistent accent color */
+            margin-bottom: 1.5rem; /* More space */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+        }
+        #userUsageLists h2 span {
+            margin-right: 0.75rem; 
+        }
+        .user-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0.75rem; /* More padding */
+            border-bottom: 1px solid var(--border-color); /* Consistent border */
+            margin-bottom: 0; 
+            font-size: 1rem; /* Slightly larger text */
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border-radius: 0.5rem; /* Slight rounding for hover effect */
+        }
+        .user-list-item:hover {
+            background-color: var(--user-list-item-hover-bg); 
+        }
+        .user-list-icon {
+            width: 1.25rem; /* Larger icon */
+            height: 1.25rem;
+            margin-left: 0.75rem; 
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-top: 3.5rem; /* More space from content */
+            text-align: center;
+            color: var(--footer-text-color);
+            font-size: 0.9rem; /* Slightly larger */
+            font-weight: 400;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--modal-overlay-bg);
+            display: flex;
+            justify-content: center; /* Centers horizontally */
+            align-items: center; /* Centers vertically */
+            z-index: 1000; /* Ensure it's on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* Adjusted modal content (for support modal) */
+        .modal-content { /* Used for support modal */
+            background-color: var(--modal-bg);
+            border-radius: 1.5rem; /* More rounded modals */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
+            border: 1px solid var(--border-color);
+            position: relative; /* Ensure position for absolute close button */
+            transform: scale(0.9); /* Initial smaller scale for animation */
+            opacity: 0; /* Initial hidden state for animation */
+            transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
+            
+            width: 95vw; /* Almost full viewport width */
+            max-width: 1200px; /* An even larger max-width for very wide screens */
+            height: 95vh; /* Almost full viewport height */
+            max-height: 95vh; /* Ensure it doesn't exceed viewport */
+            overflow-y: auto; /* Allow scrolling if content truly overflows */
+            display: flex;
+            flex-direction: column; /* Stack content */
+            padding: 0; /* Remove padding if iframe is to fill entirely */
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1); /* Scale up on show */
+            opacity: 1; /* Fade in on show */
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 1.5rem; /* Slightly further from corner */
+            left: 1.5rem; /* Slightly further from corner for RTL top-left */
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 2.8rem;
+            height: 2.8rem;
+            font-size: 1.35rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001; /* Ensure button is above iframe */
+            transition: all 0.2s ease;
+        }
+        .modal-close-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+        }
+
+        /* Ensure iframe fills the modal content */
+        .modal-iframe {
+            width: 100%;
+            height: 100%; /* Iframe should fill the modal content */
+            border: none;
+            display: block; /* Ensures it takes up full space */
+        }
+
+        /* Custom styles for Backup Download Modal */
+        #backupDownloadModal .modal-content {
+            max-width: 450px; /* Smaller width */
+            width: 90%; /* Responsive width */
+            aspect-ratio: 1 / 1; /* Make height equal to width */
+            padding: 2rem; /* Consistent padding */
+            background-color: rgba(var(--bg-card-rgb), 0.9); /* Semi-transparent background */
+            backdrop-filter: blur(10px); /* Glass effect */
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            border: 1px solid rgba(var(--border-color-rgb), 0.5); /* Lighter border for glass effect */
+            color: var(--text-primary); /* Ensure text is readable */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* Stronger shadow for modal */
+            border-radius: 1.5rem; /* Ensure consistent border-radius */
+        }
+        #backupDownloadModal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        #backupDownloadModal .modal-close-button {
+            top: 1rem;
+            left: 1rem;
+            background: rgba(var(--button-bg-general-rgb), 0.7); /* Slightly transparent close button */
+            border-color: rgba(var(--border-color-rgb), 0.5);
+            color: var(--text-primary);
+        }
+        body.light-mode #backupDownloadModal .modal-content {
+            background-color: rgba(var(--bg-card-rgb), 0.9); /* Lighter semi-transparent for light mode */
+            border: 1px solid rgba(var(--border-color-rgb), 0.7);
+            color: var(--text-primary);
+        }
+        body.light-mode #backupDownloadModal .modal-close-button {
+            background: rgba(var(--button-bg-general-rgb), 0.7);
+            border-color: rgba(var(--border-color-rgb), 0.7);
+            color: var(--text-primary);
+        }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.25rem;
+                border-radius: 1rem;
+            }
+            .card p:last-child {
+                font-size: 2rem; /* Slightly smaller for mobile */
+            }
+            #date3, #predictionMessage {
+                font-size: 1.1rem;
+            }
+            .main-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            input[type="text"], input[type="password"], select {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 0.5rem;
+            }
+            .icon-button {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.2rem;
+                border-radius: 0.6rem;
+            }
+            h1 {
+                font-size: 2.5rem; /* Adjusted main header */
+            }
+            .text-xl {
+                font-size: 1.2rem; /* Adjusted subheadings */
+            }
+            .app-footer {
+                margin-top: 2.5rem;
+                font-size: 0.8rem;
+            }
+            /* Support modal content on small screens */
+            .modal-content { /* Applies to support modal now */
+                padding: 0; /* No padding on mobile for full iframe space */
+                max-width: 98vw; /* Wider on very small screens */
+                height: 98vh; /* Taller on very small screens */
+                border-radius: 1rem;
+            }
+            .modal-close-button {
+                top: 0.75rem;
+                left: 0.75rem;
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 1.1rem;
+            }
+            .user-list-item {
+                padding: 0.8rem 0.6rem;
+                font-size: 0.9rem;
+            }
+            /* Adjust icon alignment on small screens: center them */
+            .top-bar-icons { 
+                justify-content: center; /* Center items on small screens */
+                gap: 0.75rem; /* Slightly larger gap */
+            }
+            /* For RTL, move language selector visual order to be on the right (first item) */
+            .top-bar-icons .relative {
+                order: -1; 
+            }
+            /* Backup modal on small screens */
+            #backupDownloadModal .modal-content {
+                max-width: 90%; /* Adjust for very small screens */
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+                <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
+                    </svg>
+            </button>
+
+            <div class="relative">
+                <select id="languageSelector" class="px-3 py-2 rounded-md">
+                    <option value="fa">فارسی</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <button id="supportButton" class="icon-button" data-key="supportButtonTitle">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                </svg>
+            </button>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
+
+        <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
+            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
+            <input type="text" id="loginUsernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
+            
+            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
+            <input type="password" id="loginPasswordInput" placeholder="مثال: d64dgffv4f6s4fv" class="w-full max-w-md mb-6 text-center">
+            
+            <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
+            <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
+        </div>
+
+        <div id="dashboardContent" class="hidden">
+            
+            <div id="loadingIndicator" class="loading-spinner hidden"></div>
+            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage"></p>
+
+            <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
+                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
+                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
+                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
+            </div>
+
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto">
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
+                    <p id="total2" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
+                    <p id="baghi" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
+                    <p id="usage" class="text-3xl">...</p>
+                </div>
+                <div id="backupFeatureCard" class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 21H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2zM17 8H7V6h10v2zm-4 4H7v-2h6v2zm4 4H7v-2h10v2z"/>
+                        </svg>
+                        <span data-key="backupPanelHeader">پنل بکاپ کاربران</span>
+                    </h2>
+                    <p class="text-gray-600 text-center mb-6" data-key="backupPanelDescription">
+                        با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.
+                    </p>
+                    <button id="getBackupButton"
+                            class="main-button w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 shadow-lg">
+                        📦 دریافت بکاپ کاربران
+                    </button>
+                    <div id="downloadArea" class="mt-6 hidden">
+                        <p class="text-gray-700 font-medium mb-2" data-key="backupReadyText">فایل بکاپ آماده دانلود است:</p>
+                        <a id="downloadLink" href="#" download="marzban_users_backup.json"
+                           class="block text-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                            ⬇️ دانلود فایل بکاپ
+                        </a>
+                    </div>
+                </div>
+                <div class="card col-span-full lg:col-span-1">
+                    <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
+                    <p id="date2" class="text-3xl">...</p>
+                </div>
+                <div class="card">
+                    <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
+                    <p id="predictionMessage" class="text-3xl">...</p>
+                </div>
+            </div>
+
+            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/>
+                        </svg>
+                        <span data-key="topUsersHeader">کاربران پرمصرف</span>
+                    </h2>
+                    <div id="topUsersList" class="space-y-0"> 
+                        </div>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
+                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
+                        </svg>
+                        <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
+                    </h2>
+                    <div id="leastUsersList" class="space-y-0">
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="app-footer" data-key="footerText">
+        تمامی حقوق برای آقای مرزبان محفوظ است.
+    </footer>
+
+    <div id="supportModal" class="modal-overlay hidden">
+        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
+        </div>
+    </div>
+
+    <div id="backupDownloadModal" class="modal-overlay hidden">
+        <div class="modal-content !p-8 max-w-sm text-center">
+            <button id="closeBackupDownloadModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <h3 class="text-2xl font-bold text-white mb-4" data-key="backupReadyText">فایل بکاپ آماده دانلود است!</h3>
+            <p class="text-gray-300 mb-6" data-key="backupDownloadPrompt">برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:</p>
+            <a id="modalDownloadLink" href="#" download="marzban_users_backup.json"
+               class="main-button w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                ⬇️ دانلود فایل بکاپ
+            </a>
+            <div id="backupDetailsContainer" class="mt-6 pt-4 border-t border-gray-600 w-full text-sm text-gray-400">
+                <div class="flex justify-between mb-1">
+                    <span data-key="backupAdminName">نام ادمین:</span>
+                    <span id="backupAdminNameValue" class="font-semibold text-gray-200">...</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span data-key="backupDateTime">تاریخ و زمان بکاپ:</span>
+                    <span id="backupDateTimeValue" class="font-semibold text-gray-200">...</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span data-key="totalUsersCount">تعداد کل کاربران:</span>
+                    <span id="totalUsersValue" class="font-semibold text-gray-200">...</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span data-key="activeUsersCount">کاربران فعال:</span>
+                    <span id="activeUsersValue" class="font-semibold text-green-400">...</span>
+                </div>
+                <div class="flex justify-between">
+                    <span data-key="expiredUsersCount">کاربران منقضی شده:</span>
+                    <span id="expiredUsersValue" class="font-semibold text-red-400">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Helper Function: showMessage (Moved to top) ---
+        function showMessage(text, type = 'info', duration = 3000) {
+            const currentTrans = translations[currentLanguage];
+            const targetElement = (type === 'error' && text.includes(currentTrans.loginErrorMessage)) ? loginErrorMessage : errorMessage;
+
+            targetElement.textContent = text;
+            targetElement.classList.remove('hidden');
+            targetElement.classList.remove('bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800'); // Clear previous styles
+
+            if (type === 'success') {
+                targetElement.classList.add('bg-green-100', 'text-green-800');
+            } else if (type === 'error') {
+                targetElement.classList.add('bg-red-100', 'text-red-800');
+            } else { // info
+                targetElement.classList.add('bg-blue-100', 'text-blue-800');
+            }
+
+            // Set a timeout to hide the message
+            setTimeout(() => {
+                targetElement.classList.add('hidden');
+                // Optional: Clear text after transition for accessibility/screen readers
+                setTimeout(() => {
+                    targetElement.textContent = '';
+                }, 500); // Match CSS transition duration
+            }, duration);
+        }
+
+        // --- DOM Elements ---
+        const htmlElement = document.documentElement;
+        const bodyElement = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const languageSelector = document.getElementById('languageSelector');
+        const supportButton = document.getElementById('supportButton'); 
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModalButton = document.getElementById('closeSupportModalButton');
+        const goftinoIframe = document.getElementById('goftinoIframe');
+
+        const loginForm = document.getElementById('loginForm');
+        const loginUsernameInput = document.getElementById('loginUsernameInput');
+        const loginPasswordInput = document.getElementById('loginPasswordInput');
+        const loginButton = document.getElementById('loginButton');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
+        const dashboardContent = document.getElementById('dashboardContent');
+
+        const usernameInput = document.getElementById('usernameInput');
+        const fetchDataButton = document.getElementById('fetchDataButton');
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
+
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const dataCards = document.getElementById('dataCards');
+        const userUsageLists = document.getElementById('userUsageLists'); 
+        const topUsersList = document.getElementById('topUsersList');      
+        const leastUsersList = document.getElementById('leastUsersList'); 
+
+        // Prediction elements
+        const predictionMessage = document.getElementById('predictionMessage'); 
+
+        // --- New Backup Feature Elements ---
+        const backupFeatureCard = document.getElementById('backupFeatureCard');
+        const getBackupButton = document.getElementById('getBackupButton');
+        const downloadArea = document.getElementById('downloadArea'); // This is the inline download area, not the modal one
+        const downloadLink = document.getElementById('downloadLink'); // This is the inline download link
+
+        // --- Backup Download Modal Elements ---
+        const backupDownloadModal = document.getElementById('backupDownloadModal');
+        const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
+        const modalDownloadLink = document.getElementById('modalDownloadLink');
+        
+        // New elements for backup details
+        const backupDetailsContainer = document.getElementById('backupDetailsContainer');
+        const backupAdminNameValue = document.getElementById('backupAdminNameValue');
+        const backupDateTimeValue = document.getElementById('backupDateTimeValue');
+        const totalUsersValue = document.getElementById('totalUsersValue');
+        const activeUsersValue = document.getElementById('activeUsersValue');
+        const expiredUsersValue = document.getElementById('expiredUsersValue');
+
+
+        let currentTrafficData = {}; 
+        let currentLanguage = localStorage.getItem('language') || 'fa';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let accessToken = localStorage.getItem('marzban_access_token') || null; 
+        
+
+        // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
+
+        // --- Marzban API Constants (for direct calls from HTML, now proxied via Worker) ---
+        // These are still here for reference, but actual calls go through CLOUDFLARE_WORKER_URL
+        const MARZBAN_BASE_URL = 'https://a-l.fl-sub.site:2096'; // Your Marzban Panel Base URL
+        const MARZBAN_LOGIN_PATH = '/api/admin/token';
+        const MARZBAN_USERS_PATH = '/api/users';
+
+
+        const translations = {
+            fa: {
+                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
+                mainHeader: 'پنل جزئیات مصرف شما', 
+                usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
+                fetchDataButton: 'دریافت جزئیات',
+                errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
+                invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
+                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
+                totalVolume: 'حجم کلی کاربر',
+                remainingVolume: 'حجم باقیمانده کاربر',
+                consumed: 'حجم مصرفی کاربر',
+                // creationDate: 'تاریخ ساخت کاربر', // Removed from display, but kept in translations if needed elsewhere
+                daysPassed: 'مدت زمان ساخت کاربر',
+                notAvailable: 'در دسترس نیست',
+                invalidDateFormat: 'فرمت تاریخ نامعتبر', 
+                daysUnit: 'روز',
+                unknown: 'نامشخص',
+                bytes: 'بایت',
+                mb: 'مگابایت',
+                gb: 'گیگابایت',
+                tb: 'ترابایت',
+                footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
+                themeToggleTitle: 'تغییر تم',
+                supportButtonTitle: 'پشتیبانی',
+                closeButtonTitle: 'بستن',
+                loginUsernameLabel: 'نام کاربری ادمین:',
+                loginPasswordLabel: 'رمز عبور ادمین:',
+                loginButton: 'ورود',
+                loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
+                topUsersHeader: 'کاربران پرمصرف', 
+                leastUsersHeader: 'کاربران کم‌مصرف', 
+                noUsersFound: 'کاربری یافت نشد.',
+                predictionHeader: 'پیش‌بینی اتمام حجم', 
+                predictionMessageNoData: 'اطلاعات کافی نیست.', 
+                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
+                predictionMessageDepleted: 'حجم به اتمام رسیده.',
+                // New translations for backup feature
+                backupPanelHeader: 'پنل بکاپ کاربران',
+                backupPanelDescription: 'با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.',
+                backupReadyText: 'فایل بکاپ آماده دانلود است!', // Updated for modal
+                backupDownloadButtonText: '⬇️ دانلود فایل بکاپ',
+                backupSuccessMessage: 'بکاپ با موفقیت تهیه شد! می‌توانید آن را دانلود کنید. ✅',
+                backupErrorMessage: 'خطا در تهیه بکاپ. لطفا دوباره تلاش کنید.',
+                backupNoUsersFound: 'لیست کاربران شما در پنل مرزبان خالی است. بکاپی برای ارسال وجود ندارد.',
+                backupDownloadPrompt: 'برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:',
+                totalUsersCount: 'تعداد کل کاربران:',
+                activeUsersCount: 'کاربران فعال:',
+                expiredUsersCount: 'کاربران منقضی شده:',
+                backupAdminName: 'نام ادمین:',
+                backupDateTime: 'تاریخ و زمان بکاپ:'
+            },
+            en: {
+                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
+                mainHeader: 'Your Usage Details Panel', 
+                usernameLabel: 'Enter your username to view usage details:',
+                fetchDataButton: 'Get Details',
+                errorMessage: 'Error fetching data. Please try again.',
+                invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
+                fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
+                totalVolume: 'Total User Volume',
+                remainingVolume: 'Remaining User Volume',
+                consumed: 'Consumed User Traffic',
+                // creationDate: 'User Creation Date', // Removed from display, but kept in translations if needed elsewhere
+                daysPassed: 'User Days Passed',
+                notAvailable: 'Not Available',
+                invalidDateFormat: 'Invalid Date Format',
+                daysUnit: 'days',
+                unknown: 'Unknown',
+                bytes: 'Bytes',
+                mb: 'MB',
+                gb: 'GB',
+                tb: 'TB',
+                footerText: 'All rights reserved for Mr. Marzban.', 
+                themeToggleTitle: 'Toggle Theme',
+                supportButtonTitle: 'Support',
+                closeButtonTitle: 'Close',
+                loginUsernameLabel: 'Admin Username:',
+                loginPasswordLabel: 'Admin Password:',
+                loginButton: 'Login',
+                loginErrorMessage: 'Incorrect username or password.',
+                topUsersHeader: 'Top Consuming Users',
+                leastUsersHeader: 'Least Consuming Users',
+                noUsersFound: 'No users found.',
+                predictionHeader: 'Data Depletion Prediction', 
+                predictionMessageNoData: 'Insufficient data.', 
+                predictionMessageNoConsumption: 'No consumption recorded.', 
+                predictionMessageDepleted: 'Data depleted.',
+                // New translations for backup feature
+                backupPanelHeader: 'User Backup Panel',
+                backupPanelDescription: 'Click the button below to generate a backup of your Marzban panel users.',
+                backupReadyText: 'Backup file is ready for download!', // Updated for modal
+                backupDownloadButtonText: '⬇️ Download Backup File',
+                backupSuccessMessage: 'Backup successfully generated! You can download it. ✅',
+                backupErrorMessage: 'Error generating backup. Please try again.',
+                backupNoUsersFound: 'Your Marzban panel user list is empty. No backup to send.',
+                backupDownloadPrompt: 'Click the button below to download the backup file:',
+                totalUsersCount: 'Total Users:',
+                activeUsersCount: 'Active Users:',
+                expiredUsersCount: 'Expired Users:',
+                backupAdminName: 'Admin Name:',
+                backupDateTime: 'Backup Date & Time:'
+            }
+        };
+
+        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
+        function convertTrafficToMB(trafficString) {
+            const currentTrans = translations[currentLanguage];
+            if (!trafficString || trafficString === currentTrans.unknown) return 0;
+            const parts = trafficString.trim().split(' ');
+            if (parts.length !== 2) return 0;
+
+            const value = parseFloat(parts[0]);
+            const unit = parts[1].toLowerCase();
+
+            const KB_TO_MB = 1024;
+            const MEGABYTE = KB_TO_MB * 1024;
+            const GIGABYTE = MEGABYTE * 1024;
+            const TERABYTE = GIGABYTE * 1024;
+
+            const persianUnitMap = {
+                'بایت': 'bytes',
+                'کیلوبایت': 'kb',
+                'مگابایت': 'mb',
+                'گیگابایت': 'gb',
+                'ترابایت': 'tb'
+            };
+            const normalizedUnit = persianUnitMap[unit] || unit;
+
+            switch (normalizedUnit) {
+                case 'bytes':
+                    return value / (1024 * 1024);
+                case 'kb':
+                    return value / 1024; // KB to MB
+                case 'mb':
+                    return value;
+                case 'gb':
+                    return value * GIGABYTE / MEGABYTE; // GB to MB
+                case 'tb':
+                    return value * TERABYTE / MEGABYTE; // TB to MB
+                default:
+                    return 0;
+            }
+        }
+
+        function applyTranslations(lang) {
+            const currentTrans = translations[lang];
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (currentTrans[key]) {
+                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
+                        element.title = currentTrans.themeToggleTitle;
+                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
+                        element.title = currentTrans.supportButtonTitle;
+                    } else if (element.tagName === 'BUTTON' && element.id === 'closeSupportModalButton') {
+                        element.title = currentTrans.closeButtonTitle;
+                    }
+                    else {
+                        element.textContent = currentTrans[key];
+                    }
+                }
+            });
+            document.querySelector('title').textContent = currentTrans.pageTitle;
+            if (usernameInput) { 
+                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            }
+            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
+            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
+            
+            htmlElement.setAttribute('lang', lang);
+            htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+            bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+
+            // Trigger re-fetch for user lists if language changes while dashboard is visible
+            if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
+                fetchUserLists(); 
+            }
+            // Re-update prediction if data is loaded
+            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
+                updateUI(currentTrafficData);
+            }
+        }
+
+        function setTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-mode');
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
+            } else {
+                bodyElement.classList.remove('light-mode');
+                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
+            }
+            localStorage.setItem('theme', theme);
+            currentTheme = theme;
+        }
+
+        function initializePreferences() {
+            setTheme(currentTheme);
+            languageSelector.value = currentLanguage;
+            applyTranslations(currentLanguage);
+
+            if (accessToken) {
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                fetchUserLists(); 
+            } else {
+                loginForm.classList.remove('hidden');
+                dashboardContent.classList.add('hidden');
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        languageSelector.addEventListener('change', (event) => {
+            currentLanguage = event.target.value;
+            localStorage.setItem('language', currentLanguage);
+            applyTranslations(currentLanguage);
+        });
+
+        supportButton.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+            supportModal.classList.add('show');
+            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
+        });
+
+        closeSupportModalButton.addEventListener('click', () => {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            goftinoIframe.src = ''; 
+        });
+
+        supportModal.addEventListener('click', (event) => {
+            if (event.target === supportModal) {
+                hideSupportModal(); // Call a dedicated function for consistency
+            }
+        });
+
+        // Helper to hide support modal
+        function hideSupportModal() {
+            supportModal.classList.remove('show');
+            supportModal.classList.add('hidden');
+            goftinoIframe.src = '';
+        }
+
+
+        // --- Login Logic (Existing Dashboard Login) ---
+        loginButton.addEventListener('click', async () => {
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+
+            if (!username || !password) {
+                showMessage(translations[currentLanguage].loginErrorMessage, 'error');
+                // loginErrorMessage.classList.remove('hidden'); // showMessage handles this now
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginErrorMessage.classList.add('hidden'); // Hide immediately before showing loading
+            loadingIndicator.classList.remove('hidden'); 
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
+                }
+
+                const data = await response.json();
+                accessToken = data.access_token;
+                localStorage.setItem('marzban_access_token', accessToken);
+
+                loginForm.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                
+                fetchUserLists(); 
+                // Removed: getBackupButton.click(); // No automatic trigger after login
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(error.message, 'error');
+                // loginErrorMessage.textContent = error.message; // showMessage sets this
+                // loginErrorMessage.classList.remove('hidden'); // showMessage sets this
+            } finally {
+                loginButton.disabled = false;
+                loadingIndicator.classList.add('hidden'); 
+            }
+        });
+
+        // --- Fetch Top/Least Consuming Users ---
+        async function fetchUserLists() {
+            if (!accessToken) {
+                console.warn("No access token available. Cannot fetch user lists.");
+                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                userUsageLists.classList.remove('hidden'); 
+                return;
+            }
+
+            topUsersList.innerHTML = ''; 
+            leastUsersList.innerHTML = '';
+            userUsageLists.classList.add('hidden'); 
+
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        showMessage(translations[currentLanguage].loginErrorMessage, 'error'); 
+                        // loginErrorMessage.textContent = translations[currentLanguage].loginErrorMessage; // showMessage sets this
+                        // loginErrorMessage.classList.remove('hidden'); // showMessage sets this
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log("User summary data:", data);
+
+                if (data.top_users && data.top_users.length > 0) {
+                    data.top_users.slice(0, 10).forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item top-user-item'; 
+                        div.setAttribute('data-username', user.username); 
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${user.used_traffic_formatted}</span>
+                        `;
+                        topUsersList.appendChild(div);
+                    });
+                } else {
+                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                }
+
+                if (data.least_users && data.least_users.length > 0) {
+                    data.least_users.slice(0, 10).forEach(user => {
+                        const div = document.createElement('div');
+                        div.className = 'user-list-item least-user-item'; 
+                        div.setAttribute('data-username', user.username); 
+                        div.innerHTML = `
+                            <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/></svg>
+                            <span>${user.username}</span>
+                            <span>${user.used_traffic_formatted}</span>
+                        `;
+                        leastUsersList.appendChild(div);
+                    });
+                } else {
+                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
+                }
+
+                userUsageLists.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error fetching user lists:', error);
+                showMessage(`Error fetching user lists: ${error.message}`, 'error');
+                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
+                userUsageLists.classList.remove('hidden'); 
+            }
+        }
+
+        // Function to fetch and display user data
+        async function fetchUserData(username) {
+            if (!username) return;
+
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            dataCards.classList.add('hidden');
+
+            try {
+                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
+                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
+
+                const response = await fetch(fetchUrl);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
+                        showMessage(translations[currentLanguage].invalidUsernameError, 'error');
+                        // errorMessage.textContent = translations[currentLanguage].invalidUsernameError; // showMessage sets this
+                    } else if (data.auth_error) { 
+                        showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
+                        // errorMessage.textContent = translations[currentLanguage].loginErrorMessage; // showMessage sets this
+                        localStorage.removeItem('marzban_access_token');
+                        accessToken = null;
+                        loginForm.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                    }
+                    else {
+                        showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error), 'error');
+                        // errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error); // showMessage sets this
+                    }
+                    // errorMessage.classList.remove('hidden'); // showMessage sets this
+                    dataCards.classList.add('hidden');
+                    return;
+                }
+
+                currentTrafficData = data; 
+                updateUI(data); 
+                
+                dataCards.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error fetching individual user data:', error);
+                showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message), 'error');
+                // errorMessage.textContent = translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message); // showMessage sets this
+                // errorMessage.classList.remove('hidden'); // showMessage sets this
+                dataCards.classList.add('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // Event listener for the main fetch data button
+        fetchDataButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            fetchUserData(username);
+        });
+
+        // Function to update UI elements (including prediction)
+        function updateUI(data) {
+            const currentTrans = translations[currentLanguage];
+
+            // Update total, remaining, and consumed traffic with smaller unit text
+            document.getElementById('total2').innerHTML = `${data.total2.split(' ')[0]} <span class="unit-text">${data.total2.split(' ')[1]}</span>` || currentTrans.unknown;
+            document.getElementById('baghi').innerHTML = `${data.baghi.split(' ')[0]} <span class="unit-text">${data.baghi.split(' ')[1]}</span>` || currentTrans.unknown;
+            document.getElementById('usage').innerHTML = `${data.usage.split(' ')[0]} <span class="unit-text">${data.usage.split(' ')[1]}</span>` || currentTrans.unknown;
+            
+            // Update date2 with smaller unit text
+            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="unit-text">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
+
+            // Prediction Logic
+            const totalVolumeMB = convertTrafficToMB(data.total2);
+            const usedVolumeMB = convertTrafficToMB(data.usage);
+            const daysPassed = parseFloat(data.date2); // data.date2 contains the number of days passed
+
+            if (daysPassed > 0 && usedVolumeMB > 0) {
+                const dailyAverageMB = usedVolumeMB / daysPassed;
+                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
+
+                if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
+                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
+                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
+                    predictionMessage.style.color = 'var(--prediction-color)'; 
+                } else if (remainingVolumeMB <= 0) {
+                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
+                    predictionMessage.style.color = 'var(--error-red)';
+                } else {
+                    predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
+                    predictionMessage.style.color = 'var(--text-secondary)';
+                }
+            } else {
+                // No sufficient data for prediction (e.g., first day, or no usage yet)
+                predictionMessage.textContent = currentTrans.predictionMessageNoData;
+                predictionMessage.style.color = 'var(--text-secondary)';
+            }
+        }
+
+        // --- Backup Feature Logic ---
+        getBackupButton.addEventListener('click', async () => {
+            const currentTrans = translations[currentLanguage];
+            console.log('Backup button clicked. Access Token:', accessToken);
+
+            if (!accessToken) {
+                showMessage(currentTrans.loginErrorMessage, 'error');
+                return;
+            }
+
+            showMessage('در حال تهیه بکاپ از کاربران...', 'info');
+            getBackupButton.disabled = true;
+            downloadArea.classList.add('hidden');
+
+            try {
+                console.log('Fetching backup from Worker:', `${CLOUDFLARE_WORKER_URL}backup-users`);
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error data from Worker backup response:', errorData);
+                    throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const users = data.users;
+                console.log('Users data received from Worker (for backup):', users);
+
+                if (users) {
+                    if (users.length === 0) {
+                        showMessage(currentTrans.backupNoUsersFound, 'info');
+                        getBackupButton.disabled = false;
+                        return;
+                    }
+
+                    const backupContent = JSON.stringify(users, null, 2);
+                    const backupBlob = new Blob([backupContent], { type: 'application/json' });
+
+                    const now = new Date();
+                    const persianDateFormatter = new Intl.DateTimeFormat('fa-IR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false,
+                        calendar: 'persian'
+                    });
+                    const formattedDateTime = persianDateFormatter.format(now);
+
+                    const totalUsers = users.length;
+                    const activeUsers = users.filter(user => user.status === 'active').length;
+                    const expiredUsers = users.filter(user => user.status === 'expired').length;
+
+                    // Set up the modal download link
+                    const url = URL.createObjectURL(backupBlob);
+                    modalDownloadLink.href = url;
+                    modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
+                    modalDownloadLink.textContent = currentTrans.backupDownloadButtonText; // Simplified text
+
+                    // Update admin info and user stats within the existing backupDetailsContainer
+                    if (backupDetailsContainer) { // Ensure the container exists
+                        backupDetailsContainer.innerHTML = `
+                            <div class="flex justify-between mb-1" style="color: var(--text-primary);">
+                                <span data-key="backupAdminName">${currentTrans.backupAdminName}</span>
+                                <span class="font-semibold" style="color: var(--text-primary);">${loginUsernameInput.value}</span>
+                            </div>
+                            <div class="flex justify-between mb-2" style="color: var(--text-primary);">
+                                <span data-key="backupDateTime">${currentTrans.backupDateTime}</span>
+                                <span class="font-semibold" style="color: var(--text-primary);">${formattedDateTime}</span>
+                            </div>
+                            <div class="mt-4 pt-2 border-t border-gray-600 w-full"></div> <div class="flex justify-between mb-2" style="color: var(--text-primary);">
+                                <span data-key="totalUsersCount">${currentTrans.totalUsersCount}</span>
+                                <span class="font-semibold" style="color: var(--text-primary);">${totalUsers}</span>
+                            </div>
+                            <div class="flex justify-between mb-2" style="color: var(--text-primary);">
+                                <span data-key="activeUsersCount">${currentTrans.activeUsersCount}</span>
+                                <span class="font-semibold text-green-400">${activeUsers}</span>
+                            </div>
+                            <div class="flex justify-between" style="color: var(--text-primary);">
+                                <span data-key="expiredUsersCount">${currentTrans.expiredUsersCount}</span>
+                                <span class="font-semibold text-red-400">${expiredUsers}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    // Show the modal
+                    backupDownloadModal.classList.remove('hidden');
+                    backupDownloadModal.classList.add('show');
+
+                    showMessage(currentTrans.backupSuccessMessage, 'success');
+                } else {
+                    showMessage(currentTrans.backupErrorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('Error during backup process:', error);
+                if (error.message.includes('401') || error.message.includes('توکن احراز هویت منقضی شده')) {
+                    showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
+                    localStorage.removeItem('marzban_access_token');
+                    accessToken = null;
+                    loginForm.classList.remove('hidden');
+                    dashboardContent.classList.add('hidden');
+                } else {
+                    showMessage(`${currentTrans.backupErrorMessage} ${error.message}`, 'error');
+                }
+            } finally {
+                getBackupButton.disabled = false;
+            }
+        });
+
+        // Event listener for closing the backup download modal
+        closeBackupDownloadModalButton.addEventListener('click', () => {
+            backupDownloadModal.classList.remove('show');
+            backupDownloadModal.classList.add('hidden');
+            // Revoke the object URL to free up memory
+            if (modalDownloadLink.href && modalDownloadLink.href.startsWith('blob:')) {
+                URL.revokeObjectURL(modalDownloadLink.href);
+            }
+            // Clear the dynamically added content when closing
+            if (backupDetailsContainer) {
+                backupDetailsContainer.innerHTML = ''; 
+            }
+        });
+
+        // Close modal if clicking outside content
+        backupDownloadModal.addEventListener('click', (event) => {
+            if (event.target === backupDownloadModal) {
+                closeBackupDownloadModalButton.click();
+            }
+        });
+
+
+        window.onload = function() {
+            initializePreferences();
+        };
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Modern & Refined Color Palette */
+        :root {
+            --bg-primary: #0F172A; /* Darker blue-gray, deep and sophisticated */
+            --bg-card: #1E293B; /* Slightly lighter than primary, for contrast */
+            --bg-card-rgb: 30, 41, 59; /* RGB for rgba usage */
+            --text-primary: #E2E8F0; /* Off-white, soft on dark background */
+            --text-secondary: #94A3B8; /* Muted gray for secondary info */
+            --input-bg: #334155; /* Darker input fields */
+            --input-border: #475569; /* Subtle input border */
+            --input-border-rgb: 71, 85, 105; /* RGB for rgba usage */
+            --button-bg-general: #3B424E; /* General button base color */
+            --button-bg-general-rgb: 59, 66, 78; /* RGB for rgba usage */
+            --button-hover-bg-general: #4A5568; /* Hover for general buttons */
+            --accent-blue: #3B82F6; /* Vibrant blue for main actions */
+            --accent-blue-hover: #2563EB; /* Darker blue on hover */
+            --accent-green: #22C55E; /* Fresh green for success/positive values */
+            --accent-yellow: #FACC15; /* Warm yellow for warnings/remaining */
+            --error-red: #EF4444; /* Bold red for errors */
+            --shadow-color-dark: rgba(0, 0, 0, 0.4); /* Deeper, more diffused shadows */
+            --shadow-color-light: rgba(0, 0, 0, 0.2); /* Lighter part of shadow */
+            --border-color: #334155; /* Subtle border for separation */
+            --border-color-rgb: 51, 65, 85; /* RGB for rgba usage */
+            --footer-text-color: #64748B; /* Darker gray for footer */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.8); /* More opaque overlay */
+            --modal-bg: #1E293B; /* Modal background same as card */
+            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
+            --top-user-color: var(--accent-green);
+            --least-user-color: var(--accent-yellow);
+            --deactivate-button-bg: #dc2626; /* Red for deactivation */
+            --deactivate-button-hover-bg: #b91c1c;
+            --prediction-color: #8B5CF6; /* A new accent color for prediction */
+        }
+
+        body.light-mode {
+            --bg-primary: #F0F2F5;
+            --bg-card: #FFFFFF;
+            --bg-card-rgb: 255, 255, 255;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --input-bg: #E2E8F0;
+            --input-border: #CBD5E0;
+            --input-border-rgb: 203, 213, 224;
+            --button-bg-general: #E2E8F0;
+            --button-bg-general-rgb: 226, 232, 240;
+            --button-hover-bg-general: #CBD5E0;
+            --accent-blue: #3B82F6;
+            --accent-blue-hover: #2563EB;
+            --accent-green: #22C55E;
+            --accent-yellow: #FACC15;
+            --error-red: #DC2626;
+            --shadow-color-dark: rgba(0, 0, 0, 0.15);
+            --shadow-color-light: rgba(0, 0, 0, 0.08);
+            --border-color: #E2E8F0;
+            --border-color-rgb: 226, 232, 240;
+            --footer-text-color: #94A3B8;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.6);
+            --modal-bg: #FFFFFF;
+            --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
+            --top-user-color: var(--accent-green);
+            --least-user-color: var(--accent-yellow);
+            --deactivate-button-bg: var(--error-red);
+            --deactivate-button-hover-bg: #B91C1C;
+            --prediction-color: #7C3AED; 
+        }
+
+        /* General Body & Typography */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 3rem; /* More space at bottom */
+            line-height: 1.6; /* Improved readability */
+        }
+        h1, h2, h3 {
+            font-weight: 700; /* Bolder headings */
+            line-height: 1.2;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 1.25rem; /* Slightly more rounded */
+            padding: 2rem; /* Increased padding */
+            /* Enhanced shadow for a more premium look */
+            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light), 
+                        0 0 0 1px rgba(var(--border-color-rgb), 0.1); /* Subtle inner border/glow */
+            transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+        .card:hover {
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 15px 35px -10px var(--shadow-color-dark), 0 8px 15px -5px var(--shadow-color-light),
+                        0 0 0 2px rgba(var(--accent-blue-rgb), 0.3); /* Accent glow on hover */
+        }
+        .card p:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem; /* Slightly larger labels */
+            margin-bottom: 0.75rem; /* More space below label */
+        }
+        .card p:last-child {
+            font-weight: 700; /* Bolder values */
+            font-size: 2.5rem; /* Larger primary values */
+            line-height: 1.1; /* Tighter line height */
+            margin-top: 0;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border-left-color: var(--accent-blue);
+            width: 3.5rem; /* Slightly larger */
+            height: 3.5rem;
+            border-width: 5px; /* Thicker border */
+            animation: spin 1s linear infinite;
+            margin: 3rem auto; /* More vertical space */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Input Fields */
+        input[type="text"], input[type="password"] {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.9rem 1.2rem; /* More padding */
+            border-radius: 0.65rem; /* Slightly more rounded */
+            font-size: 1rem; /* Clearer font size */
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* More prominent focus ring */
+        }
+
+        /* Main Button */
+        .main-button {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 1rem 2rem; /* More padding */
+            border-radius: 0.65rem; /* Consistent rounding */
+            font-weight: 600;
+            font-size: 1.1rem; /* Slightly larger text */
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* Stronger initial shadow */
+        }
+        .main-button:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-2px); /* More noticeable lift */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
+        }
+        .main-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reset shadow on click */
+        }
+        .main-button:disabled {
+            background-color: var(--button-bg-general);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Select Dropdown */
+        select {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.75rem 1.2rem; /* Adjusted padding */
+            border-radius: 0.65rem;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            /* Moved background-image to the left for better visual balance in RTL */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1rem center; /* Moved arrow to left */
+            background-size: 1.1em 1.1em; /* Smaller arrow */
+            transition: all 0.3s ease;
+            text-align: center; /* Attempt to center text */
+            text-align-last: center; /* Attempt to center selected option text in some browsers */
+            padding-right: 1.2rem; /* Ensure enough space for text */
+            padding-left: 2.25em; /* Make space for the arrow on the left */
+        }
+        select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        /* Icon Buttons (Theme/Support) */
+        .icon-button {
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.4rem; /* Larger icon size */
+            width: 3rem; /* Larger button size */
+            height: 3rem;
+            border-radius: 0.75rem; /* More rounded */
+            display: flex; /* Ensure flex for centering icon */
+            align-items: center; /* Center icon vertically */
+            justify-content: center; /* Center icon horizontally */
+            transition: all 0.2s ease;
+        }
+        .icon-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Data Card Values */
+        #total2, #usage { 
+            color: var(--accent-green);
+        }
+        #baghi { 
+            color: var(--accent-yellow);
+        }
         /* #date3 {  -- REMOVED --
             font-size: 1.4rem;
             line-height: 1.3;

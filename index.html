@@ -629,7 +629,15 @@
                class="main-button w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
                 ⬇️ دانلود فایل بکاپ
             </a>
-            <div class="mt-6 pt-4 border-t border-gray-600 w-full text-sm text-gray-400">
+            <div id="backupDetailsContainer" class="mt-6 pt-4 border-t border-gray-600 w-full text-sm text-gray-400">
+                <div class="flex justify-between mb-1">
+                    <span data-key="backupAdminName">نام ادمین:</span>
+                    <span id="backupAdminNameValue" class="font-semibold text-gray-200">...</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span data-key="backupDateTime">تاریخ و زمان بکاپ:</span>
+                    <span id="backupDateTimeValue" class="font-semibold text-gray-200">...</span>
+                </div>
                 <div class="flex justify-between mb-2">
                     <span data-key="totalUsersCount">تعداد کل کاربران:</span>
                     <span id="totalUsersValue" class="font-semibold text-gray-200">...</span>
@@ -704,6 +712,11 @@
         const backupDownloadModal = document.getElementById('backupDownloadModal');
         const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
         const modalDownloadLink = document.getElementById('modalDownloadLink');
+        
+        // New elements for backup details
+        const backupDetailsContainer = document.getElementById('backupDetailsContainer');
+        const backupAdminNameValue = document.getElementById('backupAdminNameValue');
+        const backupDateTimeValue = document.getElementById('backupDateTimeValue');
         const totalUsersValue = document.getElementById('totalUsersValue');
         const activeUsersValue = document.getElementById('activeUsersValue');
         const expiredUsersValue = document.getElementById('expiredUsersValue');
@@ -773,7 +786,9 @@
                 backupDownloadPrompt: 'برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:',
                 totalUsersCount: 'تعداد کل کاربران:',
                 activeUsersCount: 'کاربران فعال:',
-                expiredUsersCount: 'کاربران منقضی شده:'
+                expiredUsersCount: 'کاربران منقضی شده:',
+                backupAdminName: 'نام ادمین:',
+                backupDateTime: 'تاریخ و زمان بکاپ:'
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -822,7 +837,9 @@
                 backupDownloadPrompt: 'Click the button below to download the backup file:',
                 totalUsersCount: 'Total Users:',
                 activeUsersCount: 'Active Users:',
-                expiredUsersCount: 'Expired Users:'
+                expiredUsersCount: 'Expired Users:',
+                backupAdminName: 'Admin Name:',
+                backupDateTime: 'Backup Date & Time:'
             }
         };
 
@@ -981,8 +998,6 @@
             supportModal.classList.add('hidden');
             goftinoIframe.src = '';
         }
-
-        // Removed all User Action Modal Logic
 
 
         // --- Login Logic (Existing Dashboard Login) ---
@@ -1223,20 +1238,19 @@
         // --- Backup Feature Logic ---
         getBackupButton.addEventListener('click', async () => {
             const currentTrans = translations[currentLanguage];
-            console.log('Backup button clicked. Access Token:', accessToken); // Log accessToken
+            console.log('Backup button clicked. Access Token:', accessToken);
 
             if (!accessToken) {
-                showMessage(currentTrans.loginErrorMessage, 'error'); // Use existing login error message
+                showMessage(currentTrans.loginErrorMessage, 'error');
                 return;
             }
 
             showMessage('در حال تهیه بکاپ از کاربران...', 'info');
             getBackupButton.disabled = true;
-            downloadArea.classList.add('hidden'); // Hide inline download area
+            downloadArea.classList.add('hidden');
 
             try {
-                // Call the Worker's /backup-users endpoint
-                console.log('Fetching backup from Worker:', `${CLOUDFLARE_WORKER_URL}backup-users`); // Log Worker URL
+                console.log('Fetching backup from Worker:', `${CLOUDFLARE_WORKER_URL}backup-users`);
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -1245,13 +1259,13 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    console.error('Error data from Worker backup response:', errorData); // Log Worker error data
+                    console.error('Error data from Worker backup response:', errorData);
                     throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                const users = data.users; // Marzban API returns users in a 'users' array
-                console.log('Users data received from Worker (for backup):', users); // Log users data
+                const users = data.users;
+                console.log('Users data received from Worker (for backup):', users);
 
                 if (users) {
                     if (users.length === 0) {
@@ -1263,7 +1277,6 @@
                     const backupContent = JSON.stringify(users, null, 2);
                     const backupBlob = new Blob([backupContent], { type: 'application/json' });
 
-                    // Format date and time to Solar Hijri
                     const now = new Date();
                     const persianDateFormatter = new Intl.DateTimeFormat('fa-IR', {
                         year: 'numeric',
@@ -1277,16 +1290,9 @@
                     });
                     const formattedDateTime = persianDateFormatter.format(now);
 
-                    // Calculate user statistics
                     const totalUsers = users.length;
                     const activeUsers = users.filter(user => user.status === 'active').length;
-                    const expiredUsers = users.filter(user => user.status === 'expired').length; // Assuming 'expired' status
-
-                    // Update modal content with statistics
-                    totalUsersValue.textContent = totalUsers;
-                    activeUsersValue.textContent = activeUsers;
-                    expiredUsersValue.textContent = expiredUsers;
-
+                    const expiredUsers = users.filter(user => user.status === 'expired').length;
 
                     // Set up the modal download link
                     const url = URL.createObjectURL(backupBlob);
@@ -1294,27 +1300,32 @@
                     modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
                     modalDownloadLink.textContent = currentTrans.backupDownloadButtonText; // Simplified text
 
-                    // Add admin username and date/time below the button
-                    const adminInfoDiv = document.createElement('div');
-                    adminInfoDiv.className = 'text-sm text-gray-400 mt-4';
-                    adminInfoDiv.innerHTML = `
-                        <div class="flex justify-between mb-1">
-                            <span data-key="backupAdminName">${currentTrans.backupAdminName}</span>
-                            <span class="font-semibold text-gray-200">${loginUsernameInput.value}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span data-key="backupDateTime">${currentTrans.backupDateTime}</span>
-                            <span class="font-semibold text-gray-200">${formattedDateTime}</span>
-                        </div>
-                    `;
-                    // Remove any existing admin info div before adding new one
-                    const existingAdminInfoDiv = backupDownloadModal.querySelector('.modal-content > .text-sm.text-gray-400');
-                    if (existingAdminInfoDiv) {
-                        existingAdminInfoDiv.remove();
+                    // Update admin info and user stats within the existing backupDetailsContainer
+                    if (backupDetailsContainer) { // Ensure the container exists
+                        backupDetailsContainer.innerHTML = `
+                            <div class="flex justify-between mb-1" style="color: var(--text-primary);">
+                                <span data-key="backupAdminName">${currentTrans.backupAdminName}</span>
+                                <span class="font-semibold" style="color: var(--text-primary);">${loginUsernameInput.value}</span>
+                            </div>
+                            <div class="flex justify-between mb-2" style="color: var(--text-primary);">
+                                <span data-key="backupDateTime">${currentTrans.backupDateTime}</span>
+                                <span class="font-semibold" style="color: var(--text-primary);">${formattedDateTime}</span>
+                            </div>
+                            <div class="mt-4 pt-2 border-t border-gray-600 w-full"></div> <div class="flex justify-between mb-2" style="color: var(--text-primary);">
+                                <span data-key="totalUsersCount">${currentTrans.totalUsersCount}</span>
+                                <span class="font-semibold" style="color: var(--text-primary);">${totalUsers}</span>
+                            </div>
+                            <div class="flex justify-between mb-2" style="color: var(--text-primary);">
+                                <span data-key="activeUsersCount">${currentTrans.activeUsersCount}</span>
+                                <span class="font-semibold text-green-400">${activeUsers}</span>
+                            </div>
+                            <div class="flex justify-between" style="color: var(--text-primary);">
+                                <span data-key="expiredUsersCount">${currentTrans.expiredUsersCount}</span>
+                                <span class="font-semibold text-red-400">${expiredUsers}</span>
+                            </div>
+                        `;
                     }
-                    backupDownloadModal.querySelector('.modal-content').insertBefore(adminInfoDiv, backupDownloadModal.querySelector('.modal-content > .mt-6.pt-4.border-t'));
-
-
+                    
                     // Show the modal
                     backupDownloadModal.classList.remove('hidden');
                     backupDownloadModal.classList.add('show');
@@ -1347,10 +1358,9 @@
             if (modalDownloadLink.href && modalDownloadLink.href.startsWith('blob:')) {
                 URL.revokeObjectURL(modalDownloadLink.href);
             }
-            // Remove dynamically added admin info div when closing modal
-            const existingAdminInfoDiv = backupDownloadModal.querySelector('.modal-content > .text-sm.text-gray-400');
-            if (existingAdminInfoDiv) {
-                existingAdminInfoDiv.remove();
+            // Clear the dynamically added content when closing
+            if (backupDetailsContainer) {
+                backupDetailsContainer.innerHTML = ''; 
             }
         });
 

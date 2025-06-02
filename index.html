@@ -1292,7 +1292,28 @@
                     const url = URL.createObjectURL(backupBlob);
                     modalDownloadLink.href = url;
                     modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
-                    modalDownloadLink.textContent = `${currentTrans.backupDownloadButtonText} کاربران ${loginUsernameInput.value} (${formattedDateTime})`;
+                    modalDownloadLink.textContent = currentTrans.backupDownloadButtonText; // Simplified text
+
+                    // Add admin username and date/time below the button
+                    const adminInfoDiv = document.createElement('div');
+                    adminInfoDiv.className = 'text-sm text-gray-400 mt-4';
+                    adminInfoDiv.innerHTML = `
+                        <div class="flex justify-between mb-1">
+                            <span data-key="backupAdminName">${currentTrans.backupAdminName}</span>
+                            <span class="font-semibold text-gray-200">${loginUsernameInput.value}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span data-key="backupDateTime">${currentTrans.backupDateTime}</span>
+                            <span class="font-semibold text-gray-200">${formattedDateTime}</span>
+                        </div>
+                    `;
+                    // Remove any existing admin info div before adding new one
+                    const existingAdminInfoDiv = backupDownloadModal.querySelector('.modal-content > .text-sm.text-gray-400');
+                    if (existingAdminInfoDiv) {
+                        existingAdminInfoDiv.remove();
+                    }
+                    backupDownloadModal.querySelector('.modal-content').insertBefore(adminInfoDiv, backupDownloadModal.querySelector('.modal-content > .mt-6.pt-4.border-t'));
+
 
                     // Show the modal
                     backupDownloadModal.classList.remove('hidden');
@@ -1325,6 +1346,11 @@
             // Revoke the object URL to free up memory
             if (modalDownloadLink.href && modalDownloadLink.href.startsWith('blob:')) {
                 URL.revokeObjectURL(modalDownloadLink.href);
+            }
+            // Remove dynamically added admin info div when closing modal
+            const existingAdminInfoDiv = backupDownloadModal.querySelector('.modal-content > .text-sm.text-gray-400');
+            if (existingAdminInfoDiv) {
+                existingAdminInfoDiv.remove();
             }
         });
 

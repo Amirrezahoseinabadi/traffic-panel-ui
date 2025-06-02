@@ -576,6 +576,21 @@
     </div>
 
     <script>
+        // --- Helper Function: showMessage (Moved to top) ---
+        function showMessage(text, type = 'info') {
+            const currentTrans = translations[currentLanguage];
+            errorMessage.textContent = text;
+            errorMessage.className = 'text-center mt-6 p-3 rounded-lg font-medium'; // Reset classes
+            errorMessage.classList.remove('hidden');
+            if (type === 'success') {
+                errorMessage.classList.add('bg-green-100', 'text-green-800');
+            } else if (type === 'error') {
+                errorMessage.classList.add('bg-red-100', 'text-red-800');
+            } else { // info
+                errorMessage.classList.add('bg-blue-100', 'text-blue-800');
+            }
+        }
+
         // --- DOM Elements ---
         const htmlElement = document.documentElement;
         const bodyElement = document.body;
@@ -730,6 +745,21 @@
                 backupDownloadPrompt: 'Click the button below to download the backup file:'
             }
         };
+
+        // --- Helper Function: showMessage (Moved to top) ---
+        function showMessage(text, type = 'info') {
+            const currentTrans = translations[currentLanguage];
+            errorMessage.textContent = text;
+            errorMessage.className = 'text-center mt-6 p-3 rounded-lg font-medium'; // Reset classes
+            errorMessage.classList.remove('hidden');
+            if (type === 'success') {
+                errorMessage.classList.add('bg-green-100', 'text-green-800');
+            } else if (type === 'error') {
+                errorMessage.classList.add('bg-red-100', 'text-red-800');
+            } else { // info
+                errorMessage.classList.add('bg-blue-100', 'text-blue-800');
+            }
+        }
 
         // Helper to convert formatted traffic string (e.g., "10 GB") to MB
         function convertTrafficToMB(trafficString) {
@@ -1115,6 +1145,7 @@
         // --- Backup Feature Logic ---
         getBackupButton.addEventListener('click', async () => {
             const currentTrans = translations[currentLanguage];
+            console.log('Backup button clicked. Access Token:', accessToken); // Log accessToken
 
             if (!accessToken) {
                 showMessage(currentTrans.loginErrorMessage, 'error'); // Use existing login error message
@@ -1127,19 +1158,23 @@
 
             try {
                 // Call the Worker's /backup-users endpoint
+                console.log('Fetching backup from Worker:', `${CLOUDFLARE_WORKER_URL}backup-users`); // Log Worker URL
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 });
 
+                console.log('Response from Worker for backup:', response.status, response.statusText); // Log Worker response status
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error('Error data from Worker backup response:', errorData); // Log Worker error data
                     throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
                 }
 
                 const data = await response.json();
                 const users = data.users; // Marzban API returns users in a 'users' array
+                console.log('Users data received from Worker (for backup):', users); // Log users data
 
                 if (users) {
                     if (users.length === 0) {

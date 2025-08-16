@@ -560,7 +560,14 @@
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> 
+            <!-- دکمه جدید برای نمایش وضعیت نودها. در ابتدا پنهان است و پس از ورود نمایش داده می‌شود. -->
+            <button id="nodeStatsButton" class="icon-button hidden" data-key="nodeStatsButtonTitle">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.9-7-7.93 0-.49.04-.96.12-1.42l6.88 6.88v2.47zM12 4.07c3.95.49 7 3.9 7 7.93 0 .49-.04.96-.12 1.42l-6.88-6.88V4.07z"/>
+                </svg>
+            </button>
+            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
                     </svg>
@@ -700,6 +707,18 @@
         </div>
     </div>
 
+    <!-- مودال جدید برای نمایش وضعیت نودها -->
+    <div id="nodeStatsModal" class="modal-overlay hidden">
+        <div class="modal-content !p-8 max-w-xl text-center">
+            <button id="closeNodeStatsModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+            <h3 class="text-2xl font-bold mb-6" data-key="nodeStatsHeader">وضعیت سرورها (نودها)</h3>
+            <div id="nodeStatsList" class="space-y-4 text-right overflow-y-auto max-h-[70vh] px-4">
+                <!-- اطلاعات نودها به صورت داینامیک در اینجا قرار می‌گیرند -->
+            </div>
+            <p id="nodeStatsError" class="text-red-500 text-center mt-4 hidden" data-key="nodeStatsError"></p>
+        </div>
+    </div>
+
     <script>
         // --- Helper Function: showMessage (Moved to top) ---
         function showMessage(text, type = 'info', duration = 3000) {
@@ -775,6 +794,14 @@
         const chartTimeRangeButtons = document.querySelectorAll('.time-range-button');
         let consumptionChart; // Variable to hold the chart instance
 
+        // --- عناصر جدید برای وضعیت نودها ---
+        const nodeStatsButton = document.getElementById('nodeStatsButton');
+        const nodeStatsModal = document.getElementById('nodeStatsModal');
+        const closeNodeStatsModalButton = document.getElementById('closeNodeStatsModalButton');
+        const nodeStatsList = document.getElementById('nodeStatsList');
+        const nodeStatsError = document.getElementById('nodeStatsError');
+
+
         // --- State Variables ---
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
@@ -837,6 +864,19 @@
                 chart7d: '7 روز',
                 chart30d: '30 روز',
                 chartAll: 'همه',
+                // --- ترجمه‌های جدید برای وضعیت نودها ---
+                nodeStatsButtonTitle: 'وضعیت نودها',
+                nodeStatsHeader: 'وضعیت سرورها (نودها)',
+                nodeStatsError: 'خطا در دریافت وضعیت نودها.',
+                nodeName: 'نام نود:',
+                nodeStatus: 'وضعیت:',
+                nodeTrafficIn: 'ترافیک ورودی:',
+                nodeTrafficOut: 'ترافیک خروجی:',
+                nodeCpuUsage: 'مصرف CPU:',
+                nodeRamUsage: 'مصرف RAM:',
+                statusConnected: 'متصل',
+                statusError: 'خطا',
+                statusOffline: 'آفلاین',
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -891,6 +931,19 @@
                 chart7d: '7 Days',
                 chart30d: '30 Days',
                 chartAll: 'All',
+                // --- ترجمه‌های جدید برای وضعیت نودها ---
+                nodeStatsButtonTitle: 'Node Status',
+                nodeStatsHeader: 'Server (Node) Status',
+                nodeStatsError: 'Error fetching node status.',
+                nodeName: 'Node Name:',
+                nodeStatus: 'Status:',
+                nodeTrafficIn: 'Traffic In:',
+                nodeTrafficOut: 'Traffic Out:',
+                nodeCpuUsage: 'CPU Usage:',
+                nodeRamUsage: 'RAM Usage:',
+                statusConnected: 'Connected',
+                statusError: 'Error',
+                statusOffline: 'Offline',
             }
         };
 
@@ -973,6 +1026,8 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 individualUserLookup.classList.add('hidden');
+                // دکمه وضعیت نودها فقط پس از ورود موفق نمایش داده شود
+                nodeStatsButton.classList.remove('hidden');
                 // Since we don't have the username on page load, we can't fetch user data here.
                 // It will be fetched on login. We'll just show the lists and chart.
                 fetchUserLists(); 
@@ -980,6 +1035,7 @@
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
+                nodeStatsButton.classList.add('hidden');
             }
         }
 
@@ -1043,6 +1099,9 @@
                 // Hide the manual username input form
                 individualUserLookup.classList.add('hidden');
 
+                // دکمه وضعیت نودها را نمایش بده
+                nodeStatsButton.classList.remove('hidden');
+
                 // Immediately fetch all data for the logged-in user (the admin)
                 fetchUserData(username);
                 fetchUserLists(); 
@@ -1061,30 +1120,26 @@
 
         // --- Chart Logic ---
         async function fetchPanelConsumptionData(timeRange = '7d') {
-            // --- MODIFIED: Fetch real data from the worker ---
-            if (!accessToken) {
-                console.log("No access token, cannot fetch chart data.");
-                return null;
-            }
             console.log(`Fetching chart data for: ${timeRange}`);
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption?range=${timeRange}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
+            // --- START: MOCK DATA (FOR DEMONSTRATION) ---
+            // Replace this block with a real fetch call to your new worker endpoint.
+            // e.g., const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption?range=${timeRange}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    let labels = [];
+                    let data = [];
+                    let days = timeRange === '30d' ? 30 : (timeRange === 'all' ? 90 : 7);
+                    
+                    for (let i = days - 1; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        labels.push(date.toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'short' }));
+                        data.push(Math.floor(Math.random() * 500) + 50); // Random data in GB
                     }
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to fetch chart data');
-                }
-                const data = await response.json();
-                return data; // Should be { labels: [...], data: [...] }
-            } catch (error) {
-                console.error("Error fetching panel consumption data:", error);
-                showMessage(`خطا در دریافت اطلاعات نمودار: ${error.message}`, 'error');
-                return null;
-            }
-            // --- END OF MODIFICATION ---
+                    resolve({ labels, data });
+                }, 500);
+            });
+            // --- END: MOCK DATA ---
         }
 
         function renderConsumptionChart({ labels, data }) {
@@ -1134,7 +1189,6 @@
 
         async function updateChart(timeRange) {
             try {
-                loadingIndicator.classList.remove('hidden');
                 const chartData = await fetchPanelConsumptionData(timeRange);
                 if(chartData && chartData.labels && chartData.data) {
                     consumptionChartCard.classList.remove('hidden');
@@ -1145,8 +1199,6 @@
             } catch (error) {
                 console.error("Failed to load chart data:", error);
                 consumptionChartCard.classList.add('hidden');
-            } finally {
-                loadingIndicator.classList.add('hidden');
             }
         }
 
@@ -1173,6 +1225,7 @@
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
+                        nodeStatsButton.classList.add('hidden');
                         showMessage(translations[currentLanguage].loginErrorMessage, 'error'); 
                     }
                     throw new Error((await response.json()).error || `Failed to fetch user lists`);
@@ -1329,6 +1382,98 @@
         }
         closeBackupDownloadModalButton.addEventListener('click', hideBackupModal);
         backupDownloadModal.addEventListener('click', (event) => event.target === backupDownloadModal && hideBackupModal());
+
+
+        // --- منطق جدید برای نمایش وضعیت نودها ---
+        async function fetchNodeStats() {
+            const currentTrans = translations[currentLanguage];
+            if (!accessToken) return;
+
+            // نمایش اسپینر و مودال
+            nodeStatsList.innerHTML = `<div class="loading-spinner"></div>`;
+            nodeStatsError.classList.add('hidden');
+            nodeStatsModal.classList.remove('hidden');
+            nodeStatsModal.classList.add('show');
+
+            try {
+                // فراخوانی ورکر برای دریافت اطلاعات نودها
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}node-stats`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error((await response.json()).error || `Failed to fetch node stats.`);
+                }
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                
+                renderNodeStats(data.nodes);
+
+            } catch (error) {
+                console.error('Error fetching node stats:', error);
+                nodeStatsError.textContent = `${currentTrans.nodeStatsError}: ${error.message}`;
+                nodeStatsError.classList.remove('hidden');
+                nodeStatsList.innerHTML = '';
+            }
+        }
+        
+        function renderNodeStats(nodes) {
+            const currentTrans = translations[currentLanguage];
+            nodeStatsList.innerHTML = '';
+            
+            if (!nodes || nodes.length === 0) {
+                nodeStatsList.innerHTML = `<p class="text-center text-gray-400">${currentTrans.noUsersFound}</p>`;
+                return;
+            }
+
+            nodes.forEach(node => {
+                // تعیین رنگ وضعیت بر اساس وضعیت نود
+                const statusColor = node.status === 'connected' ? 'text-green-500' : (node.status === 'error' ? 'text-red-500' : 'text-gray-500');
+                const statusText = currentTrans[`status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`] || node.status;
+
+                const nodeItem = document.createElement('div');
+                nodeItem.className = 'card mb-4 text-sm sm:text-base';
+                nodeItem.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold">${currentTrans.nodeName}</span>
+                        <span>${node.name}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold">${currentTrans.nodeStatus}</span>
+                        <span class="${statusColor}">${statusText}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold">${currentTrans.nodeTrafficIn}</span>
+                        <span>${node.traffic_in_formatted}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold">${currentTrans.nodeTrafficOut}</span>
+                        <span>${node.traffic_out_formatted}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold">${currentTrans.nodeCpuUsage}</span>
+                        <span>${node.cpu_usage || 'N/A'}%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold">${currentTrans.nodeRamUsage}</span>
+                        <span>${node.ram_usage_percent || 'N/A'}%</span>
+                    </div>
+                `;
+                nodeStatsList.appendChild(nodeItem);
+            });
+        }
+
+        // تابع برای بستن مودال وضعیت نودها
+        function hideNodeStatsModal() {
+            nodeStatsModal.classList.remove('show');
+            nodeStatsModal.classList.add('hidden');
+        }
+
+        // Event Listeners برای دکمه‌های مودال و دکمه جدید
+        nodeStatsButton.addEventListener('click', fetchNodeStats);
+        closeNodeStatsModalButton.addEventListener('click', hideNodeStatsModal);
+        nodeStatsModal.addEventListener('click', (event) => event.target === nodeStatsModal && hideNodeStatsModal());
 
         window.onload = initializePreferences;
     </script>

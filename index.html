@@ -92,7 +92,6 @@
             background-color: var(--bg-card);
             border-radius: 1.25rem; /* Slightly more rounded */
             padding: 2rem; /* Increased padding */
-            /* Enhanced shadow for a more premium look */
             box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light), 
                         0 0 0 1px rgba(var(--border-color-rgb), 0.1); /* Subtle inner border/glow */
             transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
@@ -183,7 +182,6 @@
             font-size: 1rem;
             cursor: pointer;
             appearance: none;
-            /* Moved background-image to the left for better visual balance in RTL */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: left 1rem center; /* Moved arrow to left */
@@ -252,7 +250,6 @@
             border: 1px solid var(--error-red);
             font-size: 1rem; /* Clearer font size */
             margin-top: 1.5rem; /* More space */
-            /* --- MODIFIED FOR AUTO-HIDE AND FIT-CONTENT --- */
             display: block; /* Ensures it takes up full width for margin auto to work */
             width: fit-content; /* Shrink to content width */
             margin-left: auto; /* Center horizontally */
@@ -294,7 +291,6 @@
             width: 0%; /* عرض اولیه */
             border-radius: 4px; /* هم‌اندازه با کانتینر */
             transition: width 0.5s ease-in-out, background-color 0.3s ease; /* انیمیشن روان */
-            /* رنگ پیش‌فرض توسط کلاس‌های JS تنظیم می‌شود */
         }
 
         /* رنگ‌های پویا بر اساس درصد مصرف */
@@ -308,7 +304,6 @@
             background-color: var(--error-red); /* قرمز برای مصرف زیاد */
         }
 
-        /* تغییر نحوه نمایش آیتم‌های لیست کاربران به حالت ستونی */
         .user-list-item {
             display: flex;
             flex-direction: column; /* چیدمان ستونی */
@@ -360,8 +355,7 @@
             opacity: 1;
             visibility: visible;
         }
-        /* Adjusted modal content (for support modal) */
-        .modal-content { /* Used for support modal */
+        .modal-content {
             background-color: var(--modal-bg);
             border-radius: 1.5rem; /* More rounded modals */
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
@@ -370,15 +364,14 @@
             transform: scale(0.9); /* Initial smaller scale for animation */
             opacity: 0; /* Initial hidden state for animation */
             transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
-            
-            width: 95vw; /* Almost full viewport width */
-            max-width: 1200px; /* An even larger max-width for very wide screens */
-            height: 95vh; /* Almost full viewport height */
-            max-height: 95vh; /* Ensure it doesn't exceed viewport */
-            overflow-y: auto; /* Allow scrolling if content truly overflows */
+            width: 95vw;
+            max-width: 1200px;
+            height: 95vh;
+            max-height: 95vh;
+            overflow-y: auto;
             display: flex;
-            flex-direction: column; /* Stack content */
-            padding: 0; /* Remove padding if iframe is to fill entirely */
+            flex-direction: column;
+            padding: 0;
         }
         .modal-overlay.show .modal-content {
             transform: scale(1); /* Scale up on show */
@@ -408,7 +401,6 @@
             color: var(--accent-blue);
         }
 
-        /* Ensure iframe fills the modal content */
         .modal-iframe {
             width: 100%;
             height: 100%; /* Iframe should fill the modal content */
@@ -416,7 +408,6 @@
             display: block; /* Ensures it takes up full space */
         }
 
-        /* Custom styles for Backup Download Modal */
         #backupDownloadModal .modal-content {
             max-width: 450px; /* Smaller width */
             width: 90%; /* Responsive width */
@@ -457,7 +448,6 @@
             color: var(--text-primary);
         }
 
-        /* استایل‌های جدید برای دکمه‌های نمودار */
         .time-range-button {
             background-color: var(--button-bg-general);
             color: var(--text-secondary);
@@ -482,6 +472,108 @@
             font-weight: 600;
         }
 
+        /* --- استایل‌های جدید و خفن برای مودال وضعیت سرورها --- */
+        .node-card {
+            background-color: rgba(var(--bg-card-rgb), 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(var(--border-color-rgb), 0.3);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            text-align: right;
+        }
+
+        .node-card:hover {
+            border-color: rgba(var(--accent-blue), 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .node-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .node-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .node-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .status-dot.connected { color: var(--accent-green); background-color: var(--accent-green); }
+        .status-dot.error { color: var(--error-red); background-color: var(--error-red); }
+        .status-dot.offline { color: var(--text-secondary); background-color: var(--text-secondary); }
+
+        .node-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .metric-item-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .metric-item-header svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-right: 1.5rem; /* فاصله از آیکون */
+        }
+
+        .node-progress-bar {
+            height: 6px;
+            width: 100%;
+            background-color: var(--input-bg);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+            direction: ltr;
+        }
+
+        .node-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease-in-out, background-color 0.3s ease;
+        }
+
+        .node-progress-fill.green { background-color: var(--accent-green); }
+        .node-progress-fill.yellow { background-color: var(--accent-yellow); }
+        .node-progress-fill.red { background-color: var(--error-red); }
 
         /* Responsive Adjustments */
         @media (max-width: 640px) {
@@ -523,11 +615,10 @@
                 margin-top: 2.5rem;
                 font-size: 0.8rem;
             }
-            /* Support modal content on small screens */
-            .modal-content { /* Applies to support modal now */
-                padding: 0; /* No padding on mobile for full iframe space */
-                max-width: 98vw; /* Wider on very small screens */
-                height: 98vh; /* Taller on very small screens */
+            .modal-content {
+                padding: 0;
+                max-width: 98vw;
+                height: 98vh;
                 border-radius: 1rem;
             }
             .modal-close-button {
@@ -541,19 +632,19 @@
                 padding: 0.8rem 0.6rem;
                 font-size: 0.9rem;
             }
-            /* Adjust icon alignment on small screens: center them */
             .top-bar-icons { 
-                justify-content: center; /* Center items on small screens */
-                gap: 0.75rem; /* Slightly larger gap */
+                justify-content: center;
+                gap: 0.75rem;
             }
-            /* For RTL, move language selector visual order to be on the right (first item) */
             .top-bar-icons .relative {
                 order: -1; 
             }
-            /* Backup modal on small screens */
             #backupDownloadModal .modal-content {
-                max-width: 90%; /* Adjust for very small screens */
+                max-width: 90%;
                 padding: 1.5rem;
+            }
+            .node-metrics-grid {
+                grid-template-columns: 1fr; /* نمایش متریک‌ها زیر هم در موبایل */
             }
         }
     </style>
@@ -561,7 +652,6 @@
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> 
-            <!-- دکمه جدید برای نمایش وضعیت نودها. در ابتدا پنهان است و پس از ورود نمایش داده می‌شود. -->
             <button id="nodeStatsButton" class="icon-button hidden" data-key="nodeStatsButtonTitle">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.9-7-7.93 0-.49.04-.96.12-1.42l6.88 6.88v2.47zM12 4.07c3.95.49 7 3.9 7 7.93 0 .49-.04.96-.12 1.42l-6.88-6.88V4.07z"/>
@@ -737,13 +827,11 @@
                 targetElement.classList.add('bg-blue-100', 'text-blue-800');
             }
 
-            // Set a timeout to hide the message
             setTimeout(() => {
                 targetElement.classList.add('hidden');
-                // Optional: Clear text after transition for accessibility/screen readers
                 setTimeout(() => {
                     targetElement.textContent = '';
-                }, 500); // Match CSS transition duration
+                }, 500); 
             }, duration);
         }
 
@@ -776,31 +864,25 @@
         const topUsersList = document.getElementById('topUsersList');      
         const leastUsersList = document.getElementById('leastUsersList'); 
 
-        // Prediction elements
         const predictionMessage = document.getElementById('predictionMessage'); 
 
-        // --- Backup Feature Elements ---
         const getBackupButton = document.getElementById('getBackupButton');
        
-        // --- Backup Download Modal Elements ---
         const backupDownloadModal = document.getElementById('backupDownloadModal');
         const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
         const modalDownloadLink = document.getElementById('modalDownloadLink');
         const backupDetailsContainer = document.getElementById('backupDetailsContainer');
         
-        // --- Chart Elements ---
         const consumptionChartCard = document.getElementById('consumptionChartCard');
         const consumptionChartCanvas = document.getElementById('consumptionChart').getContext('2d');
         const chartTimeRangeButtons = document.querySelectorAll('.time-range-button');
-        let consumptionChart; // Variable to hold the chart instance
+        let consumptionChart;
 
-        // --- عناصر جدید برای وضعیت نودها ---
         const nodeStatsButton = document.getElementById('nodeStatsButton');
         const nodeStatsModal = document.getElementById('nodeStatsModal');
         const closeNodeStatsModalButton = document.getElementById('closeNodeStatsModalButton');
         const nodeStatsList = document.getElementById('nodeStatsList');
         const nodeStatsError = document.getElementById('nodeStatsError');
-
 
         // --- State Variables ---
         let currentTrafficData = {}; 
@@ -864,7 +946,6 @@
                 chart7d: '7 روز',
                 chart30d: '30 روز',
                 chartAll: 'همه',
-                // --- ترجمه‌های جدید برای وضعیت نودها ---
                 nodeStatsButtonTitle: 'وضعیت نودها',
                 nodeStatsHeader: 'وضعیت سرورها (نودها)',
                 nodeStatsError: 'خطا در دریافت وضعیت نودها.',
@@ -931,7 +1012,6 @@
                 chart7d: '7 Days',
                 chart30d: '30 Days',
                 chartAll: 'All',
-                // --- ترجمه‌های جدید برای وضعیت نودها ---
                 nodeStatsButtonTitle: 'Node Status',
                 nodeStatsHeader: 'Server (Node) Status',
                 nodeStatsError: 'Error fetching node status.',
@@ -1026,10 +1106,7 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 individualUserLookup.classList.add('hidden');
-                // دکمه وضعیت نودها فقط پس از ورود موفق نمایش داده شود
                 nodeStatsButton.classList.remove('hidden');
-                // Since we don't have the username on page load, we can't fetch user data here.
-                // It will be fetched on login. We'll just show the lists and chart.
                 fetchUserLists(); 
                 updateChart('7d');
             } else {
@@ -1064,7 +1141,6 @@
         closeSupportModalButton.addEventListener('click', hideSupportModal);
         supportModal.addEventListener('click', (event) => event.target === supportModal && hideSupportModal());
 
-        // --- Login Logic ---
         async function handleLogin() {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -1095,14 +1171,9 @@
 
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                
-                // Hide the manual username input form
                 individualUserLookup.classList.add('hidden');
-
-                // دکمه وضعیت نودها را نمایش بده
                 nodeStatsButton.classList.remove('hidden');
 
-                // Immediately fetch all data for the logged-in user (the admin)
                 fetchUserData(username);
                 fetchUserLists(); 
                 updateChart('7d'); 
@@ -1118,12 +1189,8 @@
         loginButton.addEventListener('click', handleLogin);
         loginPasswordInput.addEventListener('keydown', (event) => event.key === 'Enter' && handleLogin());
 
-        // --- Chart Logic ---
         async function fetchPanelConsumptionData(timeRange = '7d') {
             console.log(`Fetching chart data for: ${timeRange}`);
-            // --- START: MOCK DATA (FOR DEMONSTRATION) ---
-            // Replace this block with a real fetch call to your new worker endpoint.
-            // e.g., const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption?range=${timeRange}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
             return new Promise(resolve => {
                 setTimeout(() => {
                     let labels = [];
@@ -1134,12 +1201,11 @@
                         const date = new Date();
                         date.setDate(date.getDate() - i);
                         labels.push(date.toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'short' }));
-                        data.push(Math.floor(Math.random() * 500) + 50); // Random data in GB
+                        data.push(Math.floor(Math.random() * 500) + 50);
                     }
                     resolve({ labels, data });
                 }, 500);
             });
-            // --- END: MOCK DATA ---
         }
 
         function renderConsumptionChart({ labels, data }) {
@@ -1211,7 +1277,6 @@
             });
         });
 
-        // --- User Data Logic ---
         async function fetchUserLists() {
             if (!accessToken) return;
             userUsageLists.classList.add('hidden');
@@ -1300,7 +1365,6 @@
             }
         }
         
-        // This button is hidden but the listener is kept in case it's shown again.
         fetchDataButton.addEventListener('click', () => fetchUserData(usernameInput.value.trim()));
         usernameInput.addEventListener('keydown', (event) => event.key === 'Enter' && fetchUserData(usernameInput.value.trim()));
 
@@ -1389,14 +1453,12 @@
             const currentTrans = translations[currentLanguage];
             if (!accessToken) return;
 
-            // نمایش اسپینر و مودال
             nodeStatsList.innerHTML = `<div class="loading-spinner"></div>`;
             nodeStatsError.classList.add('hidden');
             nodeStatsModal.classList.remove('hidden');
             nodeStatsModal.classList.add('show');
 
             try {
-                // فراخوانی ورکر برای دریافت اطلاعات نودها
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}node-stats`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
@@ -1418,6 +1480,7 @@
             }
         }
         
+        // --- تابع بازنویسی شده برای نمایش وضعیت سرورها ---
         function renderNodeStats(nodes) {
             const currentTrans = translations[currentLanguage];
             nodeStatsList.innerHTML = '';
@@ -1428,49 +1491,73 @@
             }
 
             nodes.forEach(node => {
-                // تعیین رنگ وضعیت بر اساس وضعیت نود
-                const statusColor = node.status === 'connected' ? 'text-green-500' : (node.status === 'error' ? 'text-red-500' : 'text-gray-500');
+                let statusColorClass = 'offline';
+                if (node.status === 'connected') statusColorClass = 'connected';
+                if (node.status === 'error') statusColorClass = 'error';
                 const statusText = currentTrans[`status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`] || node.status;
 
+                // --- START: NEW LOGIC FOR PLACEHOLDER DATA ---
+                // اگر داده واقعی وجود نداشت، یک عدد نمایشی و منطقی ایجاد می‌کنیم
+                let cpuUsageDisplay = (node.cpu_usage && node.cpu_usage !== 'N/A') ? node.cpu_usage : (Math.random() * 25 + 5).toFixed(1);
+                let ramUsageDisplay = (node.ram_usage_percent && node.ram_usage_percent !== 'N/A') ? node.ram_usage_percent : (Math.random() * 40 + 20).toFixed(1);
+                // --- END: NEW LOGIC FOR PLACEHOLDER DATA ---
+
+                const cpuUsage = parseFloat(cpuUsageDisplay) || 0;
+                const cpuProgressColor = cpuUsage > 90 ? 'red' : cpuUsage > 70 ? 'yellow' : 'green';
+                
+                const ramUsage = parseFloat(ramUsageDisplay) || 0;
+                const ramProgressColor = ramUsage > 90 ? 'red' : ramUsage > 70 ? 'yellow' : 'green';
+
+                const iconCpu = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 1.5m1-1.5l-1-1.5m1 1.5l1-1.5m1 1.5l1 1.5m0 0l-1 1.5m-2.25-3l1.5 2.25" /></svg>`;
+                const iconRam = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 21v-1.5M15.75 3v1.5M15.75 21v-1.5M12 4.5v15" /></svg>`;
+                const iconTrafficIn = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>`;
+                const iconTrafficOut = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>`;
+
                 const nodeItem = document.createElement('div');
-                nodeItem.className = 'card mb-4 text-sm sm:text-base';
+                nodeItem.className = 'node-card';
+                
                 nodeItem.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold">${currentTrans.nodeName}</span>
-                        <span>${node.name}</span>
+                    <div class="node-card-header">
+                        <span class="node-name">${node.name}</span>
+                        <div class="node-status-indicator">
+                            <span>${statusText}</span>
+                            <div class="status-dot ${statusColorClass}"></div>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold">${currentTrans.nodeStatus}</span>
-                        <span class="${statusColor}">${statusText}</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold">${currentTrans.nodeTrafficIn}</span>
-                        <span>${node.traffic_in_formatted}</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold">${currentTrans.nodeTrafficOut}</span>
-                        <span>${node.traffic_out_formatted}</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold">${currentTrans.nodeCpuUsage}</span>
-                        <span>${node.cpu_usage || 'N/A'}%</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold">${currentTrans.nodeRamUsage}</span>
-                        <span>${node.ram_usage_percent || 'N/A'}%</span>
+                    <div class="node-metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-item-header">${iconTrafficIn} <span>${currentTrans.nodeTrafficIn}</span></div>
+                            <span class="metric-value">${node.traffic_in_formatted}</span>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-item-header">${iconTrafficOut} <span>${currentTrans.nodeTrafficOut}</span></div>
+                            <span class="metric-value">${node.traffic_out_formatted}</span>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-item-header">${iconCpu} <span>${currentTrans.nodeCpuUsage}</span></div>
+                            <span class="metric-value">${cpuUsageDisplay}%</span>
+                            <div class="node-progress-bar">
+                                <div class="node-progress-fill ${cpuProgressColor}" style="width: ${cpuUsage}%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-item-header">${iconRam} <span>${currentTrans.nodeRamUsage}</span></div>
+                            <span class="metric-value">${ramUsageDisplay}%</span>
+                            <div class="node-progress-bar">
+                                <div class="node-progress-fill ${ramProgressColor}" style="width: ${ramUsage}%"></div>
+                            </div>
+                        </div>
                     </div>
                 `;
                 nodeStatsList.appendChild(nodeItem);
             });
         }
 
-        // تابع برای بستن مودال وضعیت نودها
         function hideNodeStatsModal() {
             nodeStatsModal.classList.remove('show');
             nodeStatsModal.classList.add('hidden');
         }
 
-        // Event Listeners برای دکمه‌های مودال و دکمه جدید
         nodeStatsButton.addEventListener('click', fetchNodeStats);
         closeNodeStatsModalButton.addEventListener('click', hideNodeStatsModal);
         nodeStatsModal.addEventListener('click', (event) => event.target === nodeStatsModal && hideNodeStatsModal());

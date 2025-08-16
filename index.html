@@ -583,10 +583,10 @@
         <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
 
         <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
-            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری:</label>
+            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
             <input type="text" id="loginUsernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
             
-            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور:</label>
+            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
             <input type="password" id="loginPasswordInput" placeholder="مثال: d64dgffv4f6s4fv" class="w-full max-w-md mb-6 text-center">
             
             <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
@@ -611,10 +611,13 @@
                     <canvas id="consumptionChart"></canvas>
                 </div>
             </div>
-            
-            <!-- بخش ورود نام کاربری مجزا حذف شد -->
+            <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
+                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
+                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
+                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
+            </div>
 
-            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto hidden">
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 mx-auto hidden">
                 <div class="card">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
                     <p id="total2" class="text-3xl">...</p>
@@ -743,6 +746,10 @@
         const loginErrorMessage = document.getElementById('loginErrorMessage');
         const dashboardContent = document.getElementById('dashboardContent');
 
+        const usernameInput = document.getElementById('usernameInput');
+        const fetchDataButton = document.getElementById('fetchDataButton');
+        const individualUserLookup = document.getElementById('individualUserLookup'); 
+
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
@@ -774,16 +781,17 @@
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
         
-        // *** IMPORTANT: Changed URL to point to your opi.php file ***
-        const API_BASE_URL = 'opi.php'; 
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
         const translations = {
             fa: {
                 pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
                 mainHeader: 'پنل جزئیات مصرف شما', 
+                usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
+                fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
                 invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
-                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده و از صحت عملکرد API اطمینان حاصل کنید.',
+                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
                 totalVolume: 'حجم کلی کاربر',
                 remainingVolume: 'حجم باقیمانده کاربر',
                 consumed: 'حجم مصرفی کاربر',
@@ -800,8 +808,8 @@
                 themeToggleTitle: 'تغییر تم',
                 supportButtonTitle: 'پشتیبانی',
                 closeButtonTitle: 'بستن',
-                loginUsernameLabel: 'نام کاربری:',
-                loginPasswordLabel: 'رمز عبور:',
+                loginUsernameLabel: 'نام کاربری ادمین:',
+                loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
                 topUsersHeader: 'کاربران پرمصرف', 
@@ -833,9 +841,11 @@
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
                 mainHeader: 'Your Usage Details Panel', 
+                usernameLabel: 'Enter your username to view usage details:',
+                fetchDataButton: 'Get Details',
                 errorMessage: 'Error fetching data. Please try again.',
                 invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
-                fetchErrorGeneric: 'Error fetching data: {error}. Please check the username and ensure the API is working correctly.',
+                fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
                 totalVolume: 'Total User Volume',
                 remainingVolume: 'Remaining User Volume',
                 consumed: 'Consumed User Traffic',
@@ -852,8 +862,8 @@
                 themeToggleTitle: 'Toggle Theme',
                 supportButtonTitle: 'Support',
                 closeButtonTitle: 'Close',
-                loginUsernameLabel: 'Username:',
-                loginPasswordLabel: 'Password:',
+                loginUsernameLabel: 'Admin Username:',
+                loginPasswordLabel: 'Admin Password:',
                 loginButton: 'Login',
                 loginErrorMessage: 'Incorrect username or password.',
                 topUsersHeader: 'Top Consuming Users',
@@ -924,7 +934,9 @@
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
-            
+            if (usernameInput) { 
+                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
+            }
             loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
             loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
             
@@ -960,10 +972,9 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                const storedUsername = localStorage.getItem('marzban_username');
-                if (storedUsername) {
-                    fetchUserData(storedUsername);
-                }
+                individualUserLookup.classList.add('hidden');
+                // Since we don't have the username on page load, we can't fetch user data here.
+                // It will be fetched on login. We'll just show the lists and chart.
                 fetchUserLists(); 
                 updateChart('7d');
             } else {
@@ -997,7 +1008,7 @@
         closeSupportModalButton.addEventListener('click', hideSupportModal);
         supportModal.addEventListener('click', (event) => event.target === supportModal && hideSupportModal());
 
-        // --- Login Logic (Modified) ---
+        // --- Login Logic ---
         async function handleLogin() {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
@@ -1011,7 +1022,7 @@
             loadingIndicator.classList.remove('hidden'); 
 
             try {
-                const response = await fetch(`${API_BASE_URL}?action=login`, {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -1025,14 +1036,18 @@
                 const data = await response.json();
                 accessToken = data.access_token;
                 localStorage.setItem('marzban_access_token', accessToken);
-                localStorage.setItem('marzban_username', username); // Store username for later
 
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
-                fetchUserData(username); 
+                // Hide the manual username input form
+                individualUserLookup.classList.add('hidden');
+
+                // Immediately fetch all data for the logged-in user (the admin)
+                fetchUserData(username);
                 fetchUserLists(); 
-                updateChart('7d');
+                updateChart('7d'); 
+
             } catch (error) {
                 console.error('Login error:', error);
                 showMessage(error.message, 'error');
@@ -1046,17 +1061,26 @@
 
         // --- Chart Logic ---
         async function fetchPanelConsumptionData(timeRange = '7d') {
-            if (!accessToken) return;
             console.log(`Fetching chart data for: ${timeRange}`);
-            
-            const response = await fetch(`${API_BASE_URL}?action=panel_consumption&range=${timeRange}`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
+            // --- START: MOCK DATA (FOR DEMONSTRATION) ---
+            // Replace this block with a real fetch call to your new worker endpoint.
+            // e.g., const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption?range=${timeRange}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    let labels = [];
+                    let data = [];
+                    let days = timeRange === '30d' ? 30 : (timeRange === 'all' ? 90 : 7);
+                    
+                    for (let i = days - 1; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        labels.push(date.toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'short' }));
+                        data.push(Math.floor(Math.random() * 500) + 50); // Random data in GB
+                    }
+                    resolve({ labels, data });
+                }, 500);
             });
-
-            if (!response.ok) {
-                throw new Error((await response.json()).error || 'Failed to fetch chart data');
-            }
-            return await response.json();
+            // --- END: MOCK DATA ---
         }
 
         function renderConsumptionChart({ labels, data }) {
@@ -1065,16 +1089,11 @@
             const isDarkMode = currentTheme === 'dark';
             const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
             const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
-            
-            // Format labels from YYYY-MM-DD to a localized format
-            const formattedLabels = labels.map(label => {
-                return new Date(label).toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'short' });
-            });
 
             consumptionChart = new Chart(consumptionChartCanvas, {
                 type: 'line',
                 data: {
-                    labels: formattedLabels,
+                    labels: labels,
                     datasets: [{
                         label: `مصرف روزانه (GB)`,
                         data: data,
@@ -1120,7 +1139,6 @@
                 }
             } catch (error) {
                 console.error("Failed to load chart data:", error);
-                showMessage(`خطا در بارگذاری نمودار: ${error.message}`, 'error');
                 consumptionChartCard.classList.add('hidden');
             }
         }
@@ -1141,11 +1159,10 @@
             loadingIndicator.classList.remove('hidden');
 
             try {
-                const response = await fetch(`${API_BASE_URL}?action=users_summary`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!response.ok) {
                     if (response.status === 401) {
                         localStorage.removeItem('marzban_access_token');
-                        localStorage.removeItem('marzban_username');
                         accessToken = null;
                         loginForm.classList.remove('hidden');
                         dashboardContent.classList.add('hidden');
@@ -1160,8 +1177,8 @@
                     div.className = `user-list-item`; 
                     div.setAttribute('data-username', user.username);
                     div.addEventListener('click', () => {
+                        usernameInput.value = user.username;
                         fetchUserData(user.username);
-                        dataCards.scrollIntoView({ behavior: 'smooth' });
                     });
 
                     let percentageHtml = '', progressBarHtml = '', progressBarColorClass = '';
@@ -1206,7 +1223,7 @@
             dataCards.classList.add('hidden');
 
             try {
-                const response = await fetch(`${API_BASE_URL}?action=fetch_user_data&username=${encodeURIComponent(username)}`);
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?username=${encodeURIComponent(username)}`);
                 if (!response.ok) throw new Error(`(${response.status}) ${await response.text()}`);
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
@@ -1223,6 +1240,10 @@
             }
         }
         
+        // This button is hidden but the listener is kept in case it's shown again.
+        fetchDataButton.addEventListener('click', () => fetchUserData(usernameInput.value.trim()));
+        usernameInput.addEventListener('keydown', (event) => event.key === 'Enter' && fetchUserData(usernameInput.value.trim()));
+
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
             const formatWithUnit = (val) => val?.includes(' ') ? `${val.split(' ')[0]} <span class="unit-text">${val.split(' ')[1]}</span>` : val || currentTrans.unknown;
@@ -1260,9 +1281,7 @@
             getBackupButton.disabled = true;
 
             try {
-                // This endpoint in PHP doesn't exist yet, you'd need to add it.
-                // For now, assuming it would be action=backup_users
-                const response = await fetch(`${API_BASE_URL}?action=backup_users`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!response.ok) throw new Error((await response.json()).error || `Failed to fetch backup`);
                 const data = await response.json();
                 const users = data.users;
@@ -1277,7 +1296,7 @@
                 modalDownloadLink.download = `marzban_backup_${now.toISOString().slice(0, 10)}.json`;
                 
                 backupDetailsContainer.innerHTML = `
-                    <div class="flex justify-between mb-1"><span>${currentTrans.backupAdminName}</span><span class="font-semibold">${localStorage.getItem('marzban_username')}</span></div>
+                    <div class="flex justify-between mb-1"><span>${currentTrans.backupAdminName}</span><span class="font-semibold">${loginUsernameInput.value}</span></div>
                     <div class="flex justify-between mb-2"><span>${currentTrans.backupDateTime}</span><span class="font-semibold">${dateTime}</span></div>
                     <div class="mt-4 pt-2 border-t border-gray-600 w-full"></div>
                     <div class="flex justify-between mb-2"><span>${currentTrans.totalUsersCount}</span><span class="font-semibold">${users.length}</span></div>

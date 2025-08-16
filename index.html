@@ -38,6 +38,7 @@
             --deactivate-button-bg: #dc2626; /* Red for deactivation */
             --deactivate-button-hover-bg: #b91c1c;
             --prediction-color: #8B5CF6; /* A new accent color for prediction */
+            --copy-icon-color: #6B7280; /* Gray for copy icon */
         }
 
         body.light-mode {
@@ -69,7 +70,8 @@
             --least-user-color: var(--accent-yellow);
             --deactivate-button-bg: var(--error-red);
             --deactivate-button-hover-bg: #B91C1C;
-            --prediction-color: #7C3AED; 
+            --prediction-color: #7C3AED;
+            --copy-icon-color: #A0AEC0; /* Lighter gray for copy icon in light mode */
         }
 
         /* General Body & Typography */
@@ -92,7 +94,7 @@
             border-radius: 1.25rem; /* Slightly more rounded */
             padding: 2rem; /* Increased padding */
             /* Enhanced shadow for a more premium look */
-            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light), 
+            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light),
                         0 0 0 1px rgba(var(--border-color-rgb), 0.1); /* Subtle inner border/glow */
             transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
             border: 1px solid var(--border-color); /* Subtle border */
@@ -222,10 +224,10 @@
         }
 
         /* Data Card Values */
-        #total2, #usage { 
+        #total2, #usage {
             color: var(--accent-green);
         }
-        #baghi { 
+        #baghi {
             color: var(--accent-yellow);
         }
         #predictionMessage {
@@ -240,6 +242,22 @@
             margin-right: 0.5rem; /* Space between number and unit */
         }
 
+        /* Copy Button Icon */
+        .copy-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem;
+            color: var(--copy-icon-color);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .copy-button:hover {
+            color: var(--accent-blue);
+            transform: scale(1.1);
+        }
 
         /* Error Messages */
         #errorMessage, #loginErrorMessage {
@@ -272,10 +290,10 @@
             margin-bottom: 1.5rem; /* More space */
             display: flex;
             align-items: center;
-            justify-content: flex-end; 
+            justify-content: flex-end;
         }
         #userUsageLists h2 span {
-            margin-right: 0.75rem; 
+            margin-right: 0.75rem;
         }
         /* Progress Bar Styles */
         .progress-container {
@@ -313,21 +331,21 @@
             flex-direction: column; /* چیدمان ستونی */
             justify-content: flex-start; /* محتوا از بالا شروع شود */
             align-items: stretch; /* آیتم‌ها تمام عرض را اشغال کنند */
-            padding: 1rem 0.75rem; 
-            border-bottom: 1px solid var(--border-color); 
-            margin-bottom: 0; 
-            font-size: 1rem; 
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+            font-size: 1rem;
             transition: background-color 0.2s ease;
             cursor: pointer;
-            border-radius: 0.5rem; 
+            border-radius: 0.5rem;
         }
         .user-list-item:hover {
-            background-color: var(--user-list-item-hover-bg); 
+            background-color: var(--user-list-item-hover-bg);
         }
         .user-list-icon {
             width: 1.25rem; /* Larger icon */
             height: 1.25rem;
-            margin-left: 0.75rem; 
+            margin-left: 0.75rem;
         }
 
         /* Footer */
@@ -369,7 +387,7 @@
             transform: scale(0.9); /* Initial smaller scale for animation */
             opacity: 0; /* Initial hidden state for animation */
             transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
-            
+
             width: 95vw; /* Almost full viewport width */
             max-width: 1200px; /* An even larger max-width for very wide screens */
             height: 95vh; /* Almost full viewport height */
@@ -456,7 +474,6 @@
             color: var(--text-primary);
         }
 
-
         /* Responsive Adjustments */
         @media (max-width: 640px) {
             body {
@@ -516,13 +533,13 @@
                 font-size: 0.9rem;
             }
             /* Adjust icon alignment on small screens: center them */
-            .top-bar-icons { 
+            .top-bar-icons {
                 justify-content: center; /* Center items on small screens */
                 gap: 0.75rem; /* Slightly larger gap */
             }
             /* For RTL, move language selector visual order to be on the right (first item) */
             .top-bar-icons .relative {
-                order: -1; 
+                order: -1;
             }
             /* Backup modal on small screens */
             #backupDownloadModal .modal-content {
@@ -534,10 +551,11 @@
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
+        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons">
+            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
-                    </svg>
+                </svg>
             </button>
 
             <div class="relative">
@@ -559,37 +577,59 @@
         <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
             <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
             <input type="text" id="loginUsernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
-            
+
             <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
             <input type="password" id="loginPasswordInput" placeholder="مثال: d64dgffv4f6s4fv" class="w-full max-w-md mb-6 text-center">
-            
+
             <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
             <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
         </div>
 
         <div id="dashboardContent" class="hidden">
-            
+
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage"></p>
 
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
-                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
+                <div class="relative flex items-center mb-4">
+                    <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full text-center pl-10 pr-10">
+                    <button id="copyUsernameButton" class="copy-button absolute left-2" title="کپی کردن نام کاربری">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.895 1 2 1.895 2 3v14h2V3h12V1zm3 4H8C6.895 5 6 5.895 6 7v14c0 1.105.895 2 2 2h11c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2zm-1 2v12H9V7h10z"/>
+                        </svg>
+                    </button>
+                </div>
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
             </div>
 
             <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto">
-                <div class="card">
+                <div class="card relative">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
                     <p id="total2" class="text-3xl">...</p>
+                    <button class="copy-button absolute top-4 left-4" data-target="total2" title="کپی کردن">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.895 1 2 1.895 2 3v14h2V3h12V1zm3 4H8C6.895 5 6 5.895 6 7v14c0 1.105.895 2 2 2h11c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2zm-1 2v12H9V7h10z"/>
+                        </svg>
+                    </button>
                 </div>
-                <div class="card">
+                <div class="card relative">
                     <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
                     <p id="baghi" class="text-3xl">...</p>
+                    <button class="copy-button absolute top-4 left-4" data-target="baghi" title="کپی کردن">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.895 1 2 1.895 2 3v14h2V3h12V1zm3 4H8C6.895 5 6 5.895 6 7v14c0 1.105.895 2 2 2h11c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2zm-1 2v12H9V7h10z"/>
+                        </svg>
+                    </button>
                 </div>
-                <div class="card">
+                <div class="card relative">
                     <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
                     <p id="usage" class="text-3xl">...</p>
+                    <button class="copy-button absolute top-4 left-4" data-target="usage" title="کپی کردن">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.895 1 2 1.895 2 3v14h2V3h12V1zm3 4H8C6.895 5 6 5.895 6 7v14c0 1.105.895 2 2 2h11c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2zm-1 2v12H9V7h10z"/>
+                        </svg>
+                    </button>
                 </div>
                 <div id="backupFeatureCard" class="card">
                     <p class="text-sm mb-2 text-right" data-key="backupPanelHeader">پنل بکاپ کاربران</p>
@@ -616,6 +656,15 @@
                     <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
                     <p id="predictionMessage" class="text-3xl">...</p>
                 </div>
+                <div class="card relative">
+                    <p class="text-sm mb-2" data-key="expirationStatus">تاریخ انقضا و وضعیت</p>
+                    <p id="expirationMessage" class="text-3xl text-red-500">...</p>
+                    <button class="copy-button absolute top-4 left-4" data-target="expirationMessage" title="کپی کردن">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.895 1 2 1.895 2 3v14h2V3h12V1zm3 4H8C6.895 5 6 5.895 6 7v14c0 1.105.895 2 2 2h11c1.105 0 2-.895 2-2V7c0-1.105-.895-2-2-2zm-1 2v12H9V7h10z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto">
@@ -626,8 +675,8 @@
                         </svg>
                         <span data-key="topUsersHeader">کاربران پرمصرف</span>
                     </h2>
-                    <div id="topUsersList" class="space-y-0"> 
-                        </div>
+                    <div id="topUsersList" class="space-y-0">
+                    </div>
                 </div>
                 <div class="card">
                     <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
@@ -637,10 +686,18 @@
                         <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
                     </h2>
                     <div id="leastUsersList" class="space-y-0">
-                        </div>
+                    </div>
                 </div>
             </div>
-
+            <div id="qrCodeCard" class="card mb-10 w-full max-w-sm mx-auto hidden text-center">
+                <h2 class="text-lg font-bold mb-4" data-key="connectionInfoTitle">اطلاعات اتصال</h2>
+                <div id="qrCodeContainer" class="flex flex-col items-center justify-center">
+                    <canvas id="qrCodeCanvas" class="w-full max-w-xs h-auto mb-4 border-2 border-gray-300 rounded-lg p-2"></canvas>
+                    <button id="copyConfigButton" class="main-button w-full" data-key="copyConfigButton">
+                        کپی کردن لینک کانفیگ
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -649,7 +706,8 @@
     </footer>
 
     <div id="supportModal" class="modal-overlay hidden">
-        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
+        <div class="modal-content">
+            <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
         </div>
     </div>
@@ -688,6 +746,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+
     <script>
         // --- Helper Function: showMessage (Moved to top) ---
         function showMessage(text, type = 'info', duration = 3000) {
@@ -722,7 +782,7 @@
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const languageSelector = document.getElementById('languageSelector');
-        const supportButton = document.getElementById('supportButton'); 
+        const supportButton = document.getElementById('supportButton');
         const supportModal = document.getElementById('supportModal');
         const closeSupportModalButton = document.getElementById('closeSupportModalButton');
         const goftinoIframe = document.getElementById('goftinoIframe');
@@ -736,17 +796,30 @@
 
         const usernameInput = document.getElementById('usernameInput');
         const fetchDataButton = document.getElementById('fetchDataButton');
-        const individualUserLookup = document.getElementById('individualUserLookup'); 
+        const individualUserLookup = document.getElementById('individualUserLookup');
 
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const dataCards = document.getElementById('dataCards');
-        const userUsageLists = document.getElementById('userUsageLists'); 
-        const topUsersList = document.getElementById('topUsersList');      
-        const leastUsersList = document.getElementById('leastUsersList'); 
+        const userUsageLists = document.getElementById('userUsageLists');
+        const topUsersList = document.getElementById('topUsersList');
+        const leastUsersList = document.getElementById('leastUsersList');
 
         // Prediction elements
-        const predictionMessage = document.getElementById('predictionMessage'); 
+        const predictionMessage = document.getElementById('predictionMessage');
+
+        // --- NEW: Copy Button Elements ---
+        const copyUsernameButton = document.getElementById('copyUsernameButton');
+        const copyButtons = document.querySelectorAll('.copy-button');
+
+        // --- NEW: Expiration Date Card Elements ---
+        const expirationMessage = document.getElementById('expirationMessage');
+
+        // --- NEW: QR Code Card Elements ---
+        const qrCodeCard = document.getElementById('qrCodeCard');
+        const qrCodeCanvas = document.getElementById('qrCodeCanvas');
+        const copyConfigButton = document.getElementById('copyConfigButton');
+
 
         // --- New Backup Feature Elements ---
         const backupFeatureCard = document.getElementById('backupFeatureCard');
@@ -758,7 +831,7 @@
         const backupDownloadModal = document.getElementById('backupDownloadModal');
         const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
         const modalDownloadLink = document.getElementById('modalDownloadLink');
-        
+
         // New elements for backup details
         const backupDetailsContainer = document.getElementById('backupDetailsContainer');
         const backupAdminNameValue = document.getElementById('backupAdminNameValue');
@@ -768,14 +841,15 @@
         const expiredUsersValue = document.getElementById('expiredUsersValue');
 
 
-        let currentTrafficData = {}; 
+        let currentTrafficData = {};
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
-        let accessToken = localStorage.getItem('marzban_access_token') || null; 
-        
+        let accessToken = localStorage.getItem('marzban_access_token') || null;
+
+        let countdownInterval;
 
         // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
-        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
+        const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/';
 
         // --- Marzban API Constants (for direct calls from HTML, now proxied via Worker) ---
         // These are still here for reference, but actual calls go through CLOUDFLARE_WORKER_URL
@@ -786,8 +860,8 @@
 
         const translations = {
             fa: {
-                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
-                mainHeader: 'پنل جزئیات مصرف شما', 
+                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان',
+                mainHeader: 'پنل جزئیات مصرف شما',
                 usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
                 fetchDataButton: 'دریافت جزئیات',
                 errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
@@ -799,14 +873,14 @@
                 // creationDate: 'تاریخ ساخت کاربر', // Removed from display, but kept in translations if needed elsewhere
                 daysPassed: 'مدت زمان ساخت کاربر',
                 notAvailable: 'در دسترس نیست',
-                invalidDateFormat: 'فرمت تاریخ نامعتبر', 
+                invalidDateFormat: 'فرمت تاریخ نامعتبر',
                 daysUnit: 'روز',
                 unknown: 'نامشخص',
                 bytes: 'بایت',
                 mb: 'مگابایت',
                 gb: 'گیگابایت',
                 tb: 'ترابایت',
-                footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
+                footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.',
                 themeToggleTitle: 'تغییر تم',
                 supportButtonTitle: 'پشتیبانی',
                 closeButtonTitle: 'بستن',
@@ -814,12 +888,12 @@
                 loginPasswordLabel: 'رمز عبور ادمین:',
                 loginButton: 'ورود',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
-                topUsersHeader: 'کاربران پرمصرف', 
-                leastUsersHeader: 'کاربران کم‌مصرف', 
+                topUsersHeader: 'کاربران پرمصرف',
+                leastUsersHeader: 'کاربران کم‌مصرف',
                 noUsersFound: 'کاربری یافت نشد.',
-                predictionHeader: 'پیش‌بینی اتمام حجم', 
-                predictionMessageNoData: 'اطلاعات کافی نیست.', 
-                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
+                predictionHeader: 'پیش‌بینی اتمام حجم',
+                predictionMessageNoData: 'اطلاعات کافی نیست.',
+                predictionMessageNoConsumption: 'مصرفی ثبت نشده.',
                 predictionMessageDepleted: 'حجم به اتمام رسیده.',
                 // New translations for backup feature
                 backupPanelHeader: 'پنل بکاپ کاربران',
@@ -836,10 +910,20 @@
                 backupAdminName: 'نام ادمین:',
                 backupDateTime: 'تاریخ و زمان بکاپ:',
                 unlimited: 'نامحدود', // اضافه شده
+                // NEW: Translations for new features
+                copySuccess: 'موفقیت‌آمیز! در حافظه کپی شد.',
+                expirationStatus: 'تاریخ انقضا و وضعیت',
+                expiredMessage: 'منقضی شده',
+                unlimitedMessage: 'نامحدود',
+                daysRemaining: 'روز و {hours} ساعت باقی مانده',
+                expiredOn: 'منقضی شده در: {date}',
+                connectionInfoTitle: 'اطلاعات اتصال',
+                copyConfigButton: 'کپی کردن لینک کانفیگ',
+                noConfigLink: 'لینک کانفیگ در دسترس نیست.'
             },
             en: {
-                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
-                mainHeader: 'Your Usage Details Panel', 
+                pageTitle: 'Mr. Marzban Traffic Usage Panel',
+                mainHeader: 'Your Usage Details Panel',
                 usernameLabel: 'Enter your username to view usage details:',
                 fetchDataButton: 'Get Details',
                 errorMessage: 'Error fetching data. Please try again.',
@@ -858,7 +942,7 @@
                 mb: 'MB',
                 gb: 'GB',
                 tb: 'TB',
-                footerText: 'All rights reserved for Mr. Marzban.', 
+                footerText: 'All rights reserved for Mr. Marzban.',
                 themeToggleTitle: 'Toggle Theme',
                 supportButtonTitle: 'Support',
                 closeButtonTitle: 'Close',
@@ -869,9 +953,9 @@
                 topUsersHeader: 'Top Consuming Users',
                 leastUsersHeader: 'Least Consuming Users',
                 noUsersFound: 'No users found.',
-                predictionHeader: 'Data Depletion Prediction', 
-                predictionMessageNoData: 'Insufficient data.', 
-                predictionMessageNoConsumption: 'No consumption recorded.', 
+                predictionHeader: 'Data Depletion Prediction',
+                predictionMessageNoData: 'Insufficient data.',
+                predictionMessageNoConsumption: 'No consumption recorded.',
                 predictionMessageDepleted: 'Data depleted.',
                 // New translations for backup feature
                 backupPanelHeader: 'User Backup Panel',
@@ -888,547 +972,9 @@
                 backupAdminName: 'Admin Name:',
                 backupDateTime: 'Backup Date & Time:',
                 unlimited: 'Unlimited', // اضافه شده
-            }
-        };
-
-        // Helper to convert formatted traffic string (e.g., "10 GB") to MB
-        function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage];
-            if (!trafficString || trafficString === currentTrans.unknown) return 0;
-            const parts = trafficString.trim().split(' ');
-            if (parts.length !== 2) return 0;
-
-            const value = parseFloat(parts[0]);
-            const unit = parts[1].toLowerCase();
-
-            const KB_TO_MB = 1024;
-            const MEGABYTE = KB_TO_MB * 1024;
-            const GIGABYTE = MEGABYTE * 1024;
-            const TERABYTE = GIGABYTE * 1024;
-
-            const persianUnitMap = {
-                'بایت': 'bytes',
-                'کیلوبایت': 'kb',
-                'مگابایت': 'mb',
-                'گیگابایت': 'gb',
-                'ترابایت': 'tb'
-            };
-            const normalizedUnit = persianUnitMap[unit] || unit;
-
-            switch (normalizedUnit) {
-                case 'bytes':
-                    return value / (1024 * 1024);
-                case 'kb':
-                    return value / 1024; // KB to MB
-                case 'mb':
-                    return value;
-                case 'gb':
-                    return value * GIGABYTE / MEGABYTE; // GB to MB
-                case 'tb':
-                    return value * TERABYTE / MEGABYTE; // TB to MB
-                default:
-                    return 0;
-            }
-        }
-
-        function applyTranslations(lang) {
-            const currentTrans = translations[lang];
-            document.querySelectorAll('[data-key]').forEach(element => {
-                const key = element.getAttribute('data-key');
-                if (currentTrans[key]) {
-                    if (element.tagName === 'BUTTON' && element.id === 'themeToggle') {
-                        element.title = currentTrans.themeToggleTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'supportButton') {
-                        element.title = currentTrans.supportButtonTitle;
-                    } else if (element.tagName === 'BUTTON' && element.id === 'closeSupportModalButton') {
-                        element.title = currentTrans.closeButtonTitle;
-                    }
-                    else {
-                        element.textContent = currentTrans[key];
-                    }
-                }
-            });
-            document.querySelector('title').textContent = currentTrans.pageTitle;
-            if (usernameInput) { 
-                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
-            }
-            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
-            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
-            
-            htmlElement.setAttribute('lang', lang);
-            htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
-            bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
-
-            // Trigger re-fetch for user lists if language changes while dashboard is visible
-            if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                fetchUserLists(); 
-            }
-            // Re-update prediction if data is loaded
-            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
-                updateUI(currentTrafficData);
-            }
-        }
-
-        function setTheme(theme) {
-            if (theme === 'light') {
-                bodyElement.classList.add('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
-            } else {
-                bodyElement.classList.remove('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
-            }
-            localStorage.setItem('theme', theme);
-            currentTheme = theme;
-        }
-
-        function initializePreferences() {
-            setTheme(currentTheme);
-            languageSelector.value = currentLanguage;
-            applyTranslations(currentLanguage);
-
-            if (accessToken) {
-                loginForm.classList.add('hidden');
-                dashboardContent.classList.remove('hidden');
-                fetchUserLists(); 
-            } else {
-                loginForm.classList.remove('hidden');
-                dashboardContent.classList.add('hidden');
-            }
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
-        });
-
-        languageSelector.addEventListener('change', (event) => {
-            currentLanguage = event.target.value;
-            localStorage.setItem('language', currentLanguage);
-            applyTranslations(currentLanguage);
-        });
-
-        supportButton.addEventListener('click', () => {
-            supportModal.classList.remove('hidden');
-            supportModal.classList.add('show');
-            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
-        });
-
-        closeSupportModalButton.addEventListener('click', () => {
-            supportModal.classList.remove('show');
-            supportModal.classList.add('hidden');
-            goftinoIframe.src = ''; 
-        });
-
-        supportModal.addEventListener('click', (event) => {
-            if (event.target === supportModal) {
-                hideSupportModal(); // Call a dedicated function for consistency
-            }
-        });
-
-        // Helper to hide support modal
-        function hideSupportModal() {
-            supportModal.classList.remove('show');
-            supportModal.classList.add('hidden');
-            goftinoIframe.src = '';
-        }
-
-
-        // --- Login Logic (Existing Dashboard Login) ---
-        loginButton.addEventListener('click', async () => {
-            const username = loginUsernameInput.value.trim();
-            const password = loginPasswordInput.value.trim();
-
-            if (!username || !password) {
-                showMessage(translations[currentLanguage].loginErrorMessage, 'error');
-                return;
-            }
-
-            loginButton.disabled = true;
-            loginErrorMessage.classList.add('hidden'); // Hide immediately before showing loading
-            loadingIndicator.classList.remove('hidden'); 
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
-                }
-
-                const data = await response.json();
-                accessToken = data.access_token;
-                localStorage.setItem('marzban_access_token', accessToken);
-
-                loginForm.classList.add('hidden');
-                dashboardContent.classList.remove('hidden');
-                
-                fetchUserLists(); 
-
-            } catch (error) {
-                console.error('Login error:', error);
-                showMessage(error.message, 'error');
-            } finally {
-                loginButton.disabled = false;
-                loadingIndicator.classList.add('hidden'); 
-            }
-        });
-
-        // --- Fetch Top/Least Consuming Users ---
-        async function fetchUserLists() {
-            if (!accessToken) {
-                console.warn("No access token available. Cannot fetch user lists.");
-                topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                userUsageLists.classList.remove('hidden'); 
-                return;
-            }
-
-            topUsersList.innerHTML = ''; 
-            leastUsersList.innerHTML = '';
-            userUsageLists.classList.add('hidden'); 
-
-            try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        console.error("Unauthorized: Access token might be expired or invalid. Please log in again.");
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        showMessage(translations[currentLanguage].loginErrorMessage, 'error'); 
-                    }
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log("User summary data:", data);
-
-                // Helper to render user list item with progress bar
-                const renderUserItem = (user, type) => {
-                    const div = document.createElement('div');
-                    // Add type-specific class for potential future styling (e.g., top-user-item, least-user-item)
-                    div.className = `user-list-item ${type}-user-item`; 
-                    div.setAttribute('data-username', user.username);
-
-                    let percentageHtml = '';
-                    let progressBarHtml = '';
-                    let progressBarColorClass = '';
-
-                    const usedBytes = user.used_traffic || 0; // Assuming used_traffic is in bytes
-                    const totalBytes = user.data_limit; // Assuming data_limit is in bytes (0 for unlimited)
-
-                    if (totalBytes === 0 || totalBytes === null) { // Unlimited traffic
-                        percentageHtml = `<span class="text-xs mr-2" style="color: var(--text-secondary);">${translations[currentLanguage].unlimited}</span>`;
-                        progressBarColorClass = 'green'; // Full green bar for unlimited
-                        progressBarHtml = `<div class="progress-container"><div class="progress-bar ${progressBarColorClass}" style="width: 100%;"></div></div>`;
-                    } else {
-                        const percentage = Math.min(100, (usedBytes / totalBytes) * 100);
-                        if (percentage > 90) {
-                            progressBarColorClass = 'red';
-                        } else if (percentage > 60) {
-                            progressBarColorClass = 'yellow';
-                        } else {
-                            progressBarColorClass = 'green';
-                        }
-                        percentageHtml = `<span class="text-xs mr-2" style="color: var(--text-secondary);">${percentage.toFixed(1)}%</span>`;
-                        progressBarHtml = `<div class="progress-container"><div class="progress-bar ${progressBarColorClass}" style="width: ${percentage}%"></div></div>`;
-                    }
-
-                    div.innerHTML = `
-                        <div class="flex items-center justify-between w-full">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/>
-                                </svg>
-                                <span class="font-medium" style="color: var(--text-primary); margin-right: 0.5rem;">${user.username}</span>
-                            </div>
-                            <div class="flex items-baseline">
-                                <span class="font-semibold" style="color: var(--text-primary);">${user.used_traffic_formatted}</span>
-                                ${percentageHtml}
-                            </div>
-                        </div>
-                        ${progressBarHtml}
-                    `;
-                    return div;
-                };
-
-                if (data.top_users && data.top_users.length > 0) {
-                    data.top_users.slice(0, 10).forEach(user => {
-                        topUsersList.appendChild(renderUserItem(user, 'top'));
-                    });
-                } else {
-                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                }
-
-                if (data.least_users && data.least_users.length > 0) {
-                    data.least_users.slice(0, 10).forEach(user => {
-                        leastUsersList.appendChild(renderUserItem(user, 'least'));
-                    });
-                } else {
-                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                }
-
-                userUsageLists.classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Error fetching user lists:', error);
-                showMessage(`Error fetching user lists: ${error.message}`, 'error');
-                topUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
-                leastUsersList.innerHTML = `<div class="user-list-item">Error: ${error.message}</div>`;
-                userUsageLists.classList.remove('hidden'); 
-            }
-        }
-
-        // Function to fetch and display user data
-        async function fetchUserData(username) {
-            if (!username) return;
-
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
-
-            try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${username}`; 
-                console.log(`Fetching data for individual user ${username} from: ${fetchUrl}`);
-
-                const response = await fetch(fetchUrl);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
-                }
-
-                const data = await response.json();
-
-                if (data.error) {
-                    if (data.error.includes("نام کاربری نامعتبر است.") || data.error.includes("Invalid username")) {
-                        showMessage(translations[currentLanguage].invalidUsernameError, 'error');
-                    } else if (data.auth_error) { 
-                        showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
-                        localStorage.removeItem('marzban_access_token');
-                        accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                    }
-                    else {
-                        showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', data.error), 'error');
-                    }
-                    dataCards.classList.add('hidden');
-                    return;
-                }
-
-                currentTrafficData = data; 
-                updateUI(data); 
-                
-                dataCards.classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Error fetching individual user data:', error);
-                showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message), 'error');
-                dataCards.classList.add('hidden');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        }
-
-        // Event listener for the main fetch data button
-        fetchDataButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            fetchUserData(username);
-        });
-
-        // Function to update UI elements (including prediction)
-        function updateUI(data) {
-            const currentTrans = translations[currentLanguage];
-
-            // Update total, remaining, and consumed traffic with smaller unit text
-            document.getElementById('total2').innerHTML = `${data.total2.split(' ')[0]} <span class="unit-text">${data.total2.split(' ')[1]}</span>` || currentTrans.unknown;
-            document.getElementById('baghi').innerHTML = `${data.baghi.split(' ')[0]} <span class="unit-text">${data.baghi.split(' ')[1]}</span>` || currentTrans.unknown;
-            document.getElementById('usage').innerHTML = `${data.usage.split(' ')[0]} <span class="unit-text">${data.usage.split(' ')[1]}</span>` || currentTrans.unknown;
-            
-            // Update date2 with smaller unit text
-            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="unit-text">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
-
-            // Prediction Logic
-            const totalVolumeMB = convertTrafficToMB(data.total2);
-            const usedVolumeMB = convertTrafficToMB(data.usage);
-            const daysPassed = parseFloat(data.date2); // data.date2 contains the number of days passed
-
-            if (daysPassed > 0 && usedVolumeMB > 0) {
-                const dailyAverageMB = usedVolumeMB / daysPassed;
-                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
-
-                if (dailyAverageMB > 0 && remainingVolumeMB > 0) {
-                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
-                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
-                    predictionMessage.style.color = 'var(--prediction-color)'; 
-                } else if (remainingVolumeMB <= 0) {
-                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
-                    predictionMessage.style.color = 'var(--error-red)';
-                } else {
-                    predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
-                    predictionMessage.style.color = 'var(--text-secondary)';
-                }
-            } else {
-                // No sufficient data for prediction (e.g., first day, or no usage yet)
-                predictionMessage.textContent = currentTrans.predictionMessageNoData;
-                predictionMessage.style.color = 'var(--text-secondary)';
-            }
-        }
-
-        // --- Backup Feature Logic ---
-        getBackupButton.addEventListener('click', async () => {
-            const currentTrans = translations[currentLanguage];
-            console.log('Backup button clicked. Access Token:', accessToken);
-
-            if (!accessToken) {
-                showMessage(currentTrans.loginErrorMessage, 'error');
-                return;
-            }
-
-            showMessage('در حال تهیه بکاپ از کاربران...', 'info');
-            getBackupButton.disabled = true;
-            downloadArea.classList.add('hidden');
-
-            try {
-                console.log('Fetching backup from Worker:', `${CLOUDFLARE_WORKER_URL}backup-users`);
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Error data from Worker backup response:', errorData);
-                    throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                const users = data.users;
-                console.log('Users data received from Worker (for backup):', users);
-
-                if (users) {
-                    if (users.length === 0) {
-                        showMessage(currentTrans.backupNoUsersFound, 'info');
-                        getBackupButton.disabled = false;
-                        return;
-                    }
-
-                    const backupContent = JSON.stringify(users, null, 2);
-                    const backupBlob = new Blob([backupContent], { type: 'application/json' });
-
-                    const now = new Date();
-                    const persianDateFormatter = new Intl.DateTimeFormat('fa-IR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false,
-                        calendar: 'persian'
-                    });
-                    const formattedDateTime = persianDateFormatter.format(now);
-
-                    const totalUsers = users.length;
-                    const activeUsers = users.filter(user => user.status === 'active').length;
-                    const expiredUsers = users.filter(user => user.status === 'expired').length;
-
-                    // Set up the modal download link
-                    const url = URL.createObjectURL(backupBlob);
-                    modalDownloadLink.href = url;
-                    modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
-                    modalDownloadLink.textContent = currentTrans.backupDownloadButtonText; // Simplified text
-
-                    // Update admin info and user stats within the existing backupDetailsContainer
-                    if (backupDetailsContainer) { // Ensure the container exists
-                        backupDetailsContainer.innerHTML = `
-                            <div class="flex justify-between mb-1" style="color: var(--text-primary);">
-                                <span data-key="backupAdminName">${currentTrans.backupAdminName}</span>
-                                <span class="font-semibold" style="color: var(--text-primary);">${loginUsernameInput.value}</span>
-                            </div>
-                            <div class="flex justify-between mb-2" style="color: var(--text-primary);">
-                                <span data-key="backupDateTime">${currentTrans.backupDateTime}</span>
-                                <span class="font-semibold" style="color: var(--text-primary);">${formattedDateTime}</span>
-                            </div>
-                            <div class="mt-4 pt-2 border-t border-gray-600 w-full"></div> <div class="flex justify-between mb-2" style="color: var(--text-primary);">
-                                <span data-key="totalUsersCount">${currentTrans.totalUsersCount}</span>
-                                <span class="font-semibold" style="color: var(--text-primary);">${totalUsers}</span>
-                            </div>
-                            <div class="flex justify-between mb-2" style="color: var(--text-primary);">
-                                <span data-key="activeUsersCount">${currentTrans.activeUsersCount}</span>
-                                <span class="font-semibold text-green-400">${activeUsers}</span>
-                            </div>
-                            <div class="flex justify-between" style="color: var(--text-primary);">
-                                <span data-key="expiredUsersCount">${currentTrans.expiredUsersCount}</span>
-                                <span class="font-semibold text-red-400">${expiredUsers}</span>
-                            </div>
-                        `;
-                    }
-                    
-                    // Show the modal
-                    backupDownloadModal.classList.remove('hidden');
-                    backupDownloadModal.classList.add('show');
-
-                    showMessage(currentTrans.backupSuccessMessage, 'success');
-                } else {
-                    showMessage(currentTrans.backupErrorMessage, 'error');
-                }
-            } catch (error) {
-                console.error('Error during backup process:', error);
-                if (error.message.includes('401') || error.message.includes('توکن احراز هویت منقضی شده')) {
-                    showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
-                    localStorage.removeItem('marzban_access_token');
-                    accessToken = null;
-                    loginForm.classList.remove('hidden');
-                    dashboardContent.classList.add('hidden');
-                } else {
-                    showMessage(`${currentTrans.backupErrorMessage} ${error.message}`, 'error');
-                }
-            } finally {
-                getBackupButton.disabled = false;
-            }
-        });
-
-        // Event listener for closing the backup download modal
-        closeBackupDownloadModalButton.addEventListener('click', () => {
-            backupDownloadModal.classList.remove('show');
-            backupDownloadModal.classList.add('hidden');
-            // Revoke the object URL to free up memory
-            if (modalDownloadLink.href && modalDownloadLink.href.startsWith('blob:')) {
-                URL.revokeObjectURL(modalDownloadLink.href);
-            }
-            // Clear the dynamically added content when closing
-            if (backupDetailsContainer) {
-                backupDetailsContainer.innerHTML = ''; 
-            }
-        });
-
-        // Close modal if clicking outside content
-        backupDownloadModal.addEventListener('click', (event) => {
-            if (event.target === backupDownloadModal) {
-                closeBackupDownloadModalButton.click();
-            }
-        });
-
-
-        window.onload = function() {
-            initializePreferences();
-        };
-    </script>
-</body>
-</html>
+                // NEW: Translations for new features
+                copySuccess: 'Copied to clipboard!',
+                expirationStatus: 'Expiration & Status',
+                expiredMessage: 'Expired',
+                unlimitedMessage: 'Unlimited',
+                daysRemaining: 'days, {hours} hours

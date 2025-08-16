@@ -6,6 +6,7 @@
     <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Modern & Refined Color Palette */
         :root {
@@ -456,6 +457,31 @@
             color: var(--text-primary);
         }
 
+        /* استایل‌های جدید برای دکمه‌های نمودار */
+        .time-range-button {
+            background-color: var(--button-bg-general);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-range-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--text-primary);
+        }
+
+        .time-range-button.active {
+            background-color: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            font-weight: 600;
+        }
+
 
         /* Responsive Adjustments */
         @media (max-width: 640px) {
@@ -572,6 +598,19 @@
             <div id="loadingIndicator" class="loading-spinner hidden"></div>
             <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage"></p>
 
+            <div id="consumptionChartCard" class="card mb-10 w-full mx-auto hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold" data-key="chartHeader">نمودار مصرف پنل</h2>
+                    <div id="chartTimeRange" class="flex items-center gap-2">
+                        <button class="time-range-button active" data-range="7d" data-key="chart7d">7 روز</button>
+                        <button class="time-range-button" data-range="30d" data-key="chart30d">30 روز</button>
+                        <button class="time-range-button" data-range="all" data-key="chartAll">همه</button>
+                    </div>
+                </div>
+                <div class="relative h-96">
+                    <canvas id="consumptionChart"></canvas>
+                </div>
+            </div>
             <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
                 <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
                 <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
@@ -721,25 +760,27 @@
         // Prediction elements
         const predictionMessage = document.getElementById('predictionMessage'); 
 
-        // --- New Backup Feature Elements ---
-        const backupFeatureCard = document.getElementById('backupFeatureCard');
+        // --- Backup Feature Elements ---
         const getBackupButton = document.getElementById('getBackupButton');
        
         // --- Backup Download Modal Elements ---
         const backupDownloadModal = document.getElementById('backupDownloadModal');
         const closeBackupDownloadModalButton = document.getElementById('closeBackupDownloadModalButton');
         const modalDownloadLink = document.getElementById('modalDownloadLink');
-        
-        // New elements for backup details
         const backupDetailsContainer = document.getElementById('backupDetailsContainer');
+        
+        // --- Chart Elements ---
+        const consumptionChartCard = document.getElementById('consumptionChartCard');
+        const consumptionChartCanvas = document.getElementById('consumptionChart').getContext('2d');
+        const chartTimeRangeButtons = document.querySelectorAll('.time-range-button');
+        let consumptionChart; // Variable to hold the chart instance
 
+        // --- State Variables ---
         let currentTrafficData = {}; 
         let currentLanguage = localStorage.getItem('language') || 'fa';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let accessToken = localStorage.getItem('marzban_access_token') || null; 
         
-
-        // IMPORTANT: This URL should point to your deployed Cloudflare Worker.
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
         const translations = {
@@ -778,10 +819,9 @@
                 predictionMessageNoData: 'اطلاعات کافی نیست.', 
                 predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
                 predictionMessageDepleted: 'حجم به اتمام رسیده.',
-                // New translations for backup feature
                 backupPanelHeader: 'پنل بکاپ کاربران',
                 backupPanelDescription: 'با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.',
-                backupReadyText: 'فایل بکاپ آماده دانلود است!', // Updated for modal
+                backupReadyText: 'فایل بکاپ آماده دانلود است!',
                 backupDownloadButtonText: '⬇️ دانلود فایل بکاپ',
                 backupSuccessMessage: 'بکاپ با موفقیت تهیه شد! می‌توانید آن را دانلود کنید. ✅',
                 backupErrorMessage: 'خطا در تهیه بکاپ. لطفا دوباره تلاش کنید.',
@@ -793,6 +833,10 @@
                 backupAdminName: 'نام ادمین:',
                 backupDateTime: 'تاریخ و زمان بکاپ:',
                 unlimited: 'نامحدود',
+                chartHeader: 'نمودار مصرف پنل',
+                chart7d: '7 روز',
+                chart30d: '30 روز',
+                chartAll: 'همه',
             },
             en: {
                 pageTitle: 'Mr. Marzban Traffic Usage Panel', 
@@ -829,10 +873,9 @@
                 predictionMessageNoData: 'Insufficient data.', 
                 predictionMessageNoConsumption: 'No consumption recorded.', 
                 predictionMessageDepleted: 'Data depleted.',
-                // New translations for backup feature
                 backupPanelHeader: 'User Backup Panel',
                 backupPanelDescription: 'Click the button below to generate a backup of your Marzban panel users.',
-                backupReadyText: 'Backup file is ready for download!', // Updated for modal
+                backupReadyText: 'Backup file is ready for download!',
                 backupDownloadButtonText: '⬇️ Download Backup File',
                 backupSuccessMessage: 'Backup successfully generated! You can download it. ✅',
                 backupErrorMessage: 'Error generating backup. Please try again.',
@@ -844,6 +887,10 @@
                 backupAdminName: 'Admin Name:',
                 backupDateTime: 'Backup Date & Time:',
                 unlimited: 'Unlimited',
+                chartHeader: 'Panel Consumption Chart',
+                chart7d: '7 Days',
+                chart30d: '30 Days',
+                chartAll: 'All',
             }
         };
 
@@ -860,27 +907,17 @@
             const TERABYTE = GIGABYTE * 1024;
 
             const persianUnitMap = {
-                'بایت': 'bytes',
-                'کیلوبایت': 'kb',
-                'مگابایت': 'mb',
-                'گیگابایت': 'gb',
-                'ترابایت': 'tb'
+                'بایت': 'bytes', 'کیلوبایت': 'kb', 'مگابایت': 'mb', 'گیگابایت': 'gb', 'ترابایت': 'tb'
             };
             const normalizedUnit = persianUnitMap[unit] || unit;
 
             switch (normalizedUnit) {
-                case 'bytes':
-                    return value / (1024 * 1024);
-                case 'kb':
-                    return value / 1024;
-                case 'mb':
-                    return value;
-                case 'gb':
-                    return value * GIGABYTE;
-                case 'tb':
-                    return value * TERABYTE;
-                default:
-                    return 0;
+                case 'bytes': return value / (1024 * 1024);
+                case 'kb': return value / 1024;
+                case 'mb': return value;
+                case 'gb': return value * GIGABYTE;
+                case 'tb': return value * TERABYTE;
+                default: return 0;
             }
         }
 
@@ -891,8 +928,7 @@
                 if (currentTrans[key]) {
                     if (element.tagName === 'BUTTON' && (element.id === 'themeToggle' || element.id === 'supportButton' || element.id.startsWith('close'))) {
                         element.title = currentTrans[key];
-                    }
-                    else {
+                    } else {
                         element.textContent = currentTrans[key];
                     }
                 }
@@ -911,7 +947,7 @@
             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
                 fetchUserLists(); 
             }
-            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData) {
+            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData.username) {
                 updateUI(currentTrafficData);
             }
         }
@@ -937,6 +973,7 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 fetchUserLists(); 
+                updateChart('7d'); // Load initial 7-day chart data
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -954,30 +991,24 @@
             applyTranslations(currentLanguage);
         });
 
-        supportButton.addEventListener('click', () => {
-            supportModal.classList.remove('hidden');
-            supportModal.classList.add('show');
-            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
-        });
-
         function hideSupportModal() {
             supportModal.classList.remove('show');
             supportModal.classList.add('hidden');
             goftinoIframe.src = '';
         }
 
-        closeSupportModalButton.addEventListener('click', hideSupportModal);
-        supportModal.addEventListener('click', (event) => {
-            if (event.target === supportModal) {
-                hideSupportModal();
-            }
+        supportButton.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+            supportModal.classList.add('show');
+            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
         });
+        closeSupportModalButton.addEventListener('click', hideSupportModal);
+        supportModal.addEventListener('click', (event) => event.target === supportModal && hideSupportModal());
 
         // --- Login Logic ---
         async function handleLogin() {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value.trim();
-
             if (!username || !password) {
                 showMessage(translations[currentLanguage].loginErrorMessage, 'error');
                 return;
@@ -1007,7 +1038,7 @@
                 dashboardContent.classList.remove('hidden');
                 
                 fetchUserLists(); 
-
+                updateChart('7d'); // Load initial 7-day chart data
             } catch (error) {
                 console.error('Login error:', error);
                 showMessage(error.message, 'error');
@@ -1016,28 +1047,110 @@
                 loadingIndicator.classList.add('hidden'); 
             }
         }
-
         loginButton.addEventListener('click', handleLogin);
-        loginPasswordInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') handleLogin();
+        loginPasswordInput.addEventListener('keydown', (event) => event.key === 'Enter' && handleLogin());
+
+        // --- Chart Logic ---
+        async function fetchPanelConsumptionData(timeRange = '7d') {
+            console.log(`Fetching chart data for: ${timeRange}`);
+            // --- START: MOCK DATA (FOR DEMONSTRATION) ---
+            // Replace this block with a real fetch call to your new worker endpoint.
+            // e.g., const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption?range=${timeRange}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    let labels = [];
+                    let data = [];
+                    let days = timeRange === '30d' ? 30 : (timeRange === 'all' ? 90 : 7);
+                    
+                    for (let i = days - 1; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        labels.push(date.toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'short' }));
+                        data.push(Math.floor(Math.random() * 500) + 50); // Random data in GB
+                    }
+                    resolve({ labels, data });
+                }, 500);
+            });
+            // --- END: MOCK DATA ---
+        }
+
+        function renderConsumptionChart({ labels, data }) {
+            if (consumptionChart) consumptionChart.destroy();
+            
+            const isDarkMode = currentTheme === 'dark';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+
+            consumptionChart = new Chart(consumptionChartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `مصرف روزانه (GB)`,
+                        data: data,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                        pointRadius: 4,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: textColor, font: { family: 'Vazirmatn' }, callback: value => value + ' GB' }, grid: { color: gridColor } },
+                        x: { ticks: { color: textColor, font: { family: 'Vazirmatn' } }, grid: { color: gridColor } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+                            titleColor: textColor, bodyColor: textColor, borderColor: gridColor, borderWidth: 1,
+                            rtl: currentLanguage === 'fa',
+                            bodyFont: { family: 'Vazirmatn' }, titleFont: { family: 'Vazirmatn', weight: 'bold' },
+                            callbacks: { label: context => `${context.dataset.label}: ${context.parsed.y} GB` }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function updateChart(timeRange) {
+            try {
+                const chartData = await fetchPanelConsumptionData(timeRange);
+                if(chartData && chartData.labels && chartData.data) {
+                    consumptionChartCard.classList.remove('hidden');
+                    renderConsumptionChart(chartData);
+                } else {
+                    consumptionChartCard.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Failed to load chart data:", error);
+                consumptionChartCard.classList.add('hidden');
+            }
+        }
+
+        chartTimeRangeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                chartTimeRangeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const range = button.getAttribute('data-range');
+                updateChart(range);
+            });
         });
 
-
-        // --- Fetch Top/Least Consuming Users ---
+        // --- User Data Logic ---
         async function fetchUserLists() {
-            if (!accessToken) {
-                console.warn("No access token available. Cannot fetch user lists.");
-                return;
-            }
-            
+            if (!accessToken) return;
             userUsageLists.classList.add('hidden');
             loadingIndicator.classList.remove('hidden');
 
             try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!response.ok) {
                     if (response.status === 401) {
                         localStorage.removeItem('marzban_access_token');
@@ -1046,163 +1159,102 @@
                         dashboardContent.classList.add('hidden');
                         showMessage(translations[currentLanguage].loginErrorMessage, 'error'); 
                     }
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch user lists: ${response.statusText}`);
+                    throw new Error((await response.json()).error || `Failed to fetch user lists`);
                 }
 
                 const data = await response.json();
-
-                const renderUserItem = (user, type) => {
+                const renderUserItem = (user) => {
                     const div = document.createElement('div');
                     div.className = `user-list-item`; 
                     div.setAttribute('data-username', user.username);
-                    
-                    // *** IMPROVEMENT 1: Added Click Event Listener ***
                     div.addEventListener('click', () => {
                         usernameInput.value = user.username;
                         fetchUserData(user.username);
                         individualUserLookup.scrollIntoView({ behavior: 'smooth' });
                     });
 
-                    let percentageHtml = '';
-                    let progressBarHtml = '';
-                    let progressBarColorClass = '';
-
-                    const usedBytes = user.used_traffic || 0;
-                    const totalBytes = user.data_limit;
+                    let percentageHtml = '', progressBarHtml = '', progressBarColorClass = '';
+                    const usedBytes = user.used_traffic || 0, totalBytes = user.data_limit;
 
                     if (totalBytes === 0 || totalBytes === null) {
-                        percentageHtml = `<span class="text-xs mr-2" style="color: var(--text-secondary);">${translations[currentLanguage].unlimited}</span>`;
+                        percentageHtml = `<span class="text-xs mr-2">${translations[currentLanguage].unlimited}</span>`;
                         progressBarColorClass = 'green';
                         progressBarHtml = `<div class="progress-container"><div class="progress-bar ${progressBarColorClass}" style="width: 100%;"></div></div>`;
                     } else {
                         const percentage = Math.min(100, (usedBytes / totalBytes) * 100);
                         progressBarColorClass = percentage > 90 ? 'red' : (percentage > 60 ? 'yellow' : 'green');
-                        percentageHtml = `<span class="text-xs mr-2" style="color: var(--text-secondary);">${percentage.toFixed(1)}%</span>`;
+                        percentageHtml = `<span class="text-xs mr-2">${percentage.toFixed(1)}%</span>`;
                         progressBarHtml = `<div class="progress-container"><div class="progress-bar ${progressBarColorClass}" style="width: ${percentage}%"></div></div>`;
                     }
 
-                    div.innerHTML = `
-                        <div class="flex items-center justify-between w-full">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span class="font-medium" style="color: var(--text-primary); margin-right: 0.5rem;">${user.username}</span>
-                            </div>
-                            <div class="flex items-baseline">
-                                <span class="font-semibold" style="color: var(--text-primary);">${user.used_traffic_formatted}</span>
-                                ${percentageHtml}
-                            </div>
-                        </div>
-                        ${progressBarHtml}
-                    `;
+                    div.innerHTML = `<div class="flex items-center justify-between w-full"><div class="flex items-center"><svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="font-medium" style="margin-right: 0.5rem;">${user.username}</span></div><div class="flex items-baseline"><span class="font-semibold">${user.used_traffic_formatted}</span>${percentageHtml}</div></div>${progressBarHtml}`;
                     return div;
                 };
 
                 topUsersList.innerHTML = '';
-                if (data.top_users && data.top_users.length > 0) {
-                    data.top_users.slice(0, 10).forEach(user => topUsersList.appendChild(renderUserItem(user, 'top')));
-                } else {
-                    topUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                }
+                if (data.top_users?.length) data.top_users.slice(0, 10).forEach(user => topUsersList.appendChild(renderUserItem(user)));
+                else topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
 
                 leastUsersList.innerHTML = '';
-                if (data.least_users && data.least_users.length > 0) {
-                    data.least_users.slice(0, 10).forEach(user => leastUsersList.appendChild(renderUserItem(user, 'least')));
-                } else {
-                    leastUsersList.innerHTML = `<div class="user-list-item"><span data-key="noUsersFound">${translations[currentLanguage].noUsersFound}</span></div>`;
-                }
-
+                if (data.least_users?.length) data.least_users.slice(0, 10).forEach(user => leastUsersList.appendChild(renderUserItem(user)));
+                else leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
+                
                 userUsageLists.classList.remove('hidden');
-
             } catch (error) {
                 console.error('Error fetching user lists:', error);
-                showMessage(`Error fetching user lists: ${error.message}`, 'error');
+                showMessage(`Error fetching lists: ${error.message}`, 'error');
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
         }
 
-        // --- Fetch Individual User Data ---
         async function fetchUserData(username) {
             if (!username) return;
-
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
             dataCards.classList.add('hidden');
 
             try {
-                const fetchUrl = `${CLOUDFLARE_WORKER_URL}?username=${encodeURIComponent(username)}`; 
-                const response = await fetch(fetchUrl);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`(${response.status}): ${response.statusText}. Server response: ${errorText}`);
-                }
-
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}?username=${encodeURIComponent(username)}`);
+                if (!response.ok) throw new Error(`(${response.status}) ${await response.text()}`);
                 const data = await response.json();
-
-                if (data.error) {
-                    throw new Error(data.error);
-                }
+                if (data.error) throw new Error(data.error);
 
                 currentTrafficData = data; 
                 updateUI(data); 
                 dataCards.classList.remove('hidden');
-
             } catch (error) {
-                console.error('Error fetching individual user data:', error);
+                console.error('Error fetching user data:', error);
                 showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message), 'error');
                 dataCards.classList.add('hidden');
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
         }
-
-        fetchDataButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            fetchUserData(username);
-        });
-        
-        // *** IMPROVEMENT 2: Added Enter Key Listener for Search ***
-        usernameInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                const username = usernameInput.value.trim();
-                fetchUserData(username);
-            }
-        });
-
+        fetchDataButton.addEventListener('click', () => fetchUserData(usernameInput.value.trim()));
+        usernameInput.addEventListener('keydown', (event) => event.key === 'Enter' && fetchUserData(usernameInput.value.trim()));
 
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
-            
-            const formatWithUnit = (valueStr) => {
-                if (!valueStr || !valueStr.includes(' ')) return valueStr || currentTrans.unknown;
-                const parts = valueStr.split(' ');
-                return `${parts[0]} <span class="unit-text">${parts[1]}</span>`;
-            };
+            const formatWithUnit = (val) => val?.includes(' ') ? `${val.split(' ')[0]} <span class="unit-text">${val.split(' ')[1]}</span>` : val || currentTrans.unknown;
 
             document.getElementById('total2').innerHTML = formatWithUnit(data.total2);
             document.getElementById('baghi').innerHTML = formatWithUnit(data.baghi);
             document.getElementById('usage').innerHTML = formatWithUnit(data.usage);
             document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="unit-text">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
 
-            const totalVolumeMB = convertTrafficToMB(data.total2);
-            const usedVolumeMB = convertTrafficToMB(data.usage);
-            const daysPassed = parseFloat(data.date2);
-
-            if (daysPassed > 0 && usedVolumeMB > 0 && totalVolumeMB > 0) {
-                const dailyAverageMB = usedVolumeMB / daysPassed;
-                const remainingVolumeMB = totalVolumeMB - usedVolumeMB;
-
-                if (remainingVolumeMB > 0) {
-                    const daysRemaining = Math.round(remainingVolumeMB / dailyAverageMB);
-                    predictionMessage.textContent = `${daysRemaining} ${currentTrans.daysUnit}`;
+            const totalMB = convertTrafficToMB(data.total2), usedMB = convertTrafficToMB(data.usage), days = parseFloat(data.date2);
+            if (days > 0 && usedMB > 0 && totalMB > 0) {
+                const remainingMB = totalMB - usedMB;
+                if (remainingMB > 0) {
+                    const daysLeft = Math.round(remainingMB / (usedMB / days));
+                    predictionMessage.textContent = `${daysLeft} ${currentTrans.daysUnit}`;
                     predictionMessage.style.color = 'var(--prediction-color)'; 
                 } else {
                     predictionMessage.textContent = currentTrans.predictionMessageDepleted;
                     predictionMessage.style.color = 'var(--error-red)';
                 }
-            } else if (totalVolumeMB > 0 && usedVolumeMB <= 0) {
+            } else if (totalMB > 0 && usedMB <= 0) {
                 predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
                 predictionMessage.style.color = 'var(--text-secondary)';
             } else {
@@ -1211,76 +1263,43 @@
             }
         }
 
-        // --- Backup Feature Logic ---
         getBackupButton.addEventListener('click', async () => {
             const currentTrans = translations[currentLanguage];
-            if (!accessToken) {
-                showMessage(currentTrans.loginErrorMessage, 'error');
-                return;
-            }
+            if (!accessToken) return showMessage(currentTrans.loginErrorMessage, 'error');
 
-            showMessage('در حال تهیه بکاپ از کاربران...', 'info');
+            showMessage('در حال تهیه بکاپ...', 'info');
             getBackupButton.disabled = true;
 
             try {
-                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Failed to fetch users for backup: ${response.statusText}`);
-                }
-
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (!response.ok) throw new Error((await response.json()).error || `Failed to fetch backup`);
                 const data = await response.json();
                 const users = data.users;
+                if (!users?.length) return showMessage(currentTrans.backupNoUsersFound, 'info');
 
-                if (!users || users.length === 0) {
-                    showMessage(currentTrans.backupNoUsersFound, 'info');
-                    return;
-                }
-
-                const backupContent = JSON.stringify(users, null, 2);
-                const backupBlob = new Blob([backupContent], { type: 'application/json' });
-                const url = URL.createObjectURL(backupBlob);
-                
+                const url = URL.createObjectURL(new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' }));
                 const now = new Date();
-                const formattedDateTime = new Intl.DateTimeFormat('fa-IR-u-nu-latn', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-                }).format(now);
-
-                const totalUsers = users.length;
-                const activeUsers = users.filter(user => user.status === 'active').length;
-                const expiredUsers = totalUsers - activeUsers;
+                const dateTime = new Intl.DateTimeFormat('fa-IR-u-nu-latn', { dateStyle: 'short', timeStyle: 'medium' }).format(now);
+                const activeUsers = users.filter(u => u.status === 'active').length;
 
                 modalDownloadLink.href = url;
-                modalDownloadLink.download = `marzban_users_backup_${loginUsernameInput.value}_${now.toISOString().slice(0, 10)}.json`;
+                modalDownloadLink.download = `marzban_backup_${now.toISOString().slice(0, 10)}.json`;
                 
                 backupDetailsContainer.innerHTML = `
                     <div class="flex justify-between mb-1"><span>${currentTrans.backupAdminName}</span><span class="font-semibold">${loginUsernameInput.value}</span></div>
-                    <div class="flex justify-between mb-2"><span>${currentTrans.backupDateTime}</span><span class="font-semibold">${formattedDateTime}</span></div>
+                    <div class="flex justify-between mb-2"><span>${currentTrans.backupDateTime}</span><span class="font-semibold">${dateTime}</span></div>
                     <div class="mt-4 pt-2 border-t border-gray-600 w-full"></div>
-                    <div class="flex justify-between mb-2"><span>${currentTrans.totalUsersCount}</span><span class="font-semibold">${totalUsers}</span></div>
+                    <div class="flex justify-between mb-2"><span>${currentTrans.totalUsersCount}</span><span class="font-semibold">${users.length}</span></div>
                     <div class="flex justify-between mb-2"><span>${currentTrans.activeUsersCount}</span><span class="font-semibold text-green-400">${activeUsers}</span></div>
-                    <div class="flex justify-between"><span>${currentTrans.expiredUsersCount}</span><span class="font-semibold text-red-400">${expiredUsers}</span></div>
+                    <div class="flex justify-between"><span>${currentTrans.expiredUsersCount}</span><span class="font-semibold text-red-400">${users.length - activeUsers}</span></div>
                 `;
                 
                 backupDownloadModal.classList.remove('hidden');
                 backupDownloadModal.classList.add('show');
                 showMessage(currentTrans.backupSuccessMessage, 'success');
-
             } catch (error) {
-                console.error('Error during backup process:', error);
-                if (error.message.includes('401')) {
-                     showMessage(translations[currentLanguage].loginErrorMessage + ' (لطفا دوباره وارد شوید.)', 'error');
-                    localStorage.removeItem('marzban_access_token');
-                    accessToken = null;
-                    loginForm.classList.remove('hidden');
-                    dashboardContent.classList.add('hidden');
-                } else {
-                    showMessage(`${currentTrans.backupErrorMessage} ${error.message}`, 'error');
-                }
+                console.error('Backup error:', error);
+                showMessage(`${currentTrans.backupErrorMessage}: ${error.message}`, 'error');
             } finally {
                 getBackupButton.disabled = false;
             }
@@ -1289,17 +1308,10 @@
         function hideBackupModal() {
             backupDownloadModal.classList.remove('show');
             backupDownloadModal.classList.add('hidden');
-            if (modalDownloadLink.href.startsWith('blob:')) {
-                URL.revokeObjectURL(modalDownloadLink.href);
-            }
+            if (modalDownloadLink.href.startsWith('blob:')) URL.revokeObjectURL(modalDownloadLink.href);
         }
-        
         closeBackupDownloadModalButton.addEventListener('click', hideBackupModal);
-        backupDownloadModal.addEventListener('click', (event) => {
-            if (event.target === backupDownloadModal) {
-                hideBackupModal();
-            }
-        });
+        backupDownloadModal.addEventListener('click', (event) => event.target === backupDownloadModal && hideBackupModal());
 
         window.onload = initializePreferences;
     </script>

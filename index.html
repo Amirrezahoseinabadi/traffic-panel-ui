@@ -617,7 +617,7 @@
                 <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
             </div>
 
-            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-20 mx-auto hidden">
+            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 mx-auto hidden">
                 <div class="card">
                     <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
                     <p id="total2" class="text-3xl">...</p>
@@ -972,8 +972,11 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
+                individualUserLookup.classList.add('hidden');
+                // Since we don't have the username on page load, we can't fetch user data here.
+                // It will be fetched on login. We'll just show the lists and chart.
                 fetchUserLists(); 
-                updateChart('7d'); // Load initial 7-day chart data
+                updateChart('7d');
             } else {
                 loginForm.classList.remove('hidden');
                 dashboardContent.classList.add('hidden');
@@ -1037,8 +1040,14 @@
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
                 
+                // Hide the manual username input form
+                individualUserLookup.classList.add('hidden');
+
+                // Immediately fetch all data for the logged-in user (the admin)
+                fetchUserData(username);
                 fetchUserLists(); 
-                updateChart('7d'); // Load initial 7-day chart data
+                updateChart('7d'); 
+
             } catch (error) {
                 console.error('Login error:', error);
                 showMessage(error.message, 'error');
@@ -1170,7 +1179,6 @@
                     div.addEventListener('click', () => {
                         usernameInput.value = user.username;
                         fetchUserData(user.username);
-                        individualUserLookup.scrollIntoView({ behavior: 'smooth' });
                     });
 
                     let percentageHtml = '', progressBarHtml = '', progressBarColorClass = '';
@@ -1231,6 +1239,8 @@
                 loadingIndicator.classList.add('hidden');
             }
         }
+        
+        // This button is hidden but the listener is kept in case it's shown again.
         fetchDataButton.addEventListener('click', () => fetchUserData(usernameInput.value.trim()));
         usernameInput.addEventListener('keydown', (event) => event.key === 'Enter' && fetchUserData(usernameInput.value.trim()));
 

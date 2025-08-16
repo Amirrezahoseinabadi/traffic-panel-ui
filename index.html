@@ -219,6 +219,38 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+        
+        /* --- NEW: Button for Icon + Text --- */
+        .text-icon-button {
+            background: var(--button-bg-general);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0 1rem; /* Padding for text */
+            gap: 0.5rem; /* Space between icon and text */
+        }
+        .text-icon-button:hover {
+            background-color: var(--button-hover-bg-general);
+            color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .text-icon-button span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+        
+        /* --- NEW: Container for top buttons --- */
+        .top-bar-icons {
+            flex-wrap: wrap;
+        }
 
         /* Data Card Values */
         #total2, #usage { 
@@ -600,10 +632,22 @@
                 border-radius: 0.5rem;
             }
             .icon-button {
-                width: 2.5rem;
-                height: 2.5rem;
+                width: 2.75rem;
+                height: 2.75rem;
                 font-size: 1.2rem;
                 border-radius: 0.6rem;
+            }
+            .text-icon-button {
+                height: 2.75rem;
+                padding: 0 0.75rem;
+                gap: 0.25rem;
+            }
+            .text-icon-button span {
+                font-size: 0.85rem;
+            }
+            .text-icon-button svg {
+                width: 1.1rem;
+                height: 1.1rem;
             }
             h1 {
                 font-size: 2.5rem; /* Adjusted main header */
@@ -633,8 +677,8 @@
                 font-size: 0.9rem;
             }
             .top-bar-icons { 
-                justify-content: center;
-                gap: 0.75rem;
+                justify-content: center; /* Center items on small screens */
+                gap: 0.5rem; /* Slightly larger gap */
             }
             .top-bar-icons .relative {
                 order: -1; 
@@ -651,11 +695,13 @@
 </head>
 <body class="p-4 sm:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-4 mb-8 top-bar-icons"> 
-            <button id="nodeStatsButton" class="icon-button hidden" data-key="nodeStatsButtonTitle">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div class="flex justify-end items-center gap-2 sm:gap-4 mb-8 top-bar-icons"> 
+            <!-- دکمه جدید برای نمایش وضعیت نودها. در ابتدا پنهان است و پس از ورود نمایش داده می‌شود. -->
+            <button id="nodeStatsButton" class="text-icon-button hidden" data-key="nodeStatsButtonTitle">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.9-7-7.93 0-.49.04-.96.12-1.42l6.88 6.88v2.47zM12 4.07c3.95.49 7 3.9 7 7.93 0 .49-.04.96-.12 1.42l-6.88-6.88V4.07z"/>
                 </svg>
+                <span data-key="nodeStatsButtonText">وضعیت نودها</span>
             </button>
             <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
                 <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -799,7 +845,7 @@
 
     <!-- مودال جدید برای نمایش وضعیت نودها -->
     <div id="nodeStatsModal" class="modal-overlay hidden">
-        <div class="modal-content !p-8 max-w-xl text-center">
+        <div class="modal-content !p-8 max-w-3xl text-center">
             <button id="closeNodeStatsModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
             <h3 class="text-2xl font-bold mb-6" data-key="nodeStatsHeader">وضعیت سرورها (نودها)</h3>
             <div id="nodeStatsList" class="space-y-4 text-right overflow-y-auto max-h-[70vh] px-4">
@@ -947,6 +993,7 @@
                 chart30d: '30 روز',
                 chartAll: 'همه',
                 nodeStatsButtonTitle: 'وضعیت نودها',
+                nodeStatsButtonText: 'وضعیت نودها',
                 nodeStatsHeader: 'وضعیت سرورها (نودها)',
                 nodeStatsError: 'خطا در دریافت وضعیت نودها.',
                 nodeName: 'نام نود:',
@@ -1013,6 +1060,7 @@
                 chart30d: '30 Days',
                 chartAll: 'All',
                 nodeStatsButtonTitle: 'Node Status',
+                nodeStatsButtonText: 'Node Status',
                 nodeStatsHeader: 'Server (Node) Status',
                 nodeStatsError: 'Error fetching node status.',
                 nodeName: 'Node Name:',
@@ -1059,7 +1107,7 @@
             document.querySelectorAll('[data-key]').forEach(element => {
                 const key = element.getAttribute('data-key');
                 if (currentTrans[key]) {
-                    if (element.tagName === 'BUTTON' && (element.id === 'themeToggle' || element.id === 'supportButton' || element.id.startsWith('close'))) {
+                    if (element.tagName === 'BUTTON' && (element.id === 'themeToggle' || element.id === 'supportButton' || element.id.startsWith('close') || element.id === 'nodeStatsButton')) {
                         element.title = currentTrans[key];
                     } else {
                         element.textContent = currentTrans[key];

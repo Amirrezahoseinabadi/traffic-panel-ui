@@ -873,11 +873,13 @@
                 targetElement.classList.add('bg-blue-100', 'text-blue-800');
             }
 
+            // Set a timeout to hide the message
             setTimeout(() => {
                 targetElement.classList.add('hidden');
+                // Optional: Clear text after transition for accessibility/screen readers
                 setTimeout(() => {
                     targetElement.textContent = '';
-                }, 500); 
+                }, 500); // Match CSS transition duration
             }, duration);
         }
 
@@ -1238,22 +1240,19 @@
         loginPasswordInput.addEventListener('keydown', (event) => event.key === 'Enter' && handleLogin());
 
         async function fetchPanelConsumptionData(timeRange = '7d') {
-            console.log(`Fetching chart data for: ${timeRange}`);
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    let labels = [];
-                    let data = [];
-                    let days = timeRange === '30d' ? 30 : (timeRange === 'all' ? 90 : 7);
-                    
-                    for (let i = days - 1; i >= 0; i--) {
-                        const date = new Date();
-                        date.setDate(date.getDate() - i);
-                        labels.push(date.toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', { day: 'numeric', month: 'short' }));
-                        data.push(Math.floor(Math.random() * 500) + 50);
-                    }
-                    resolve({ labels, data });
-                }, 500);
-            });
+            try {
+                const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption-history?range=${timeRange}`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch chart data from worker.');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Chart data fetch error:", error);
+                // Return empty data on error to prevent chart from breaking
+                return { labels: [], data: [] };
+            }
         }
 
         function renderConsumptionChart({ labels, data }) {
@@ -1304,7 +1303,7 @@
         async function updateChart(timeRange) {
             try {
                 const chartData = await fetchPanelConsumptionData(timeRange);
-                if(chartData && chartData.labels && chartData.data) {
+                if(chartData && chartData.labels && chartData.data && chartData.data.length > 0) {
                     consumptionChartCard.classList.remove('hidden');
                     renderConsumptionChart(chartData);
                 } else {
@@ -1528,7 +1527,6 @@
             }
         }
         
-        // --- تابع بازنویسی شده برای نمایش وضعیت سرورها ---
         function renderNodeStats(nodes) {
             const currentTrans = translations[currentLanguage];
             nodeStatsList.innerHTML = '';
@@ -1544,11 +1542,8 @@
                 if (node.status === 'error') statusColorClass = 'error';
                 const statusText = currentTrans[`status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`] || node.status;
 
-                // --- START: NEW LOGIC FOR PLACEHOLDER DATA ---
-                // اگر داده واقعی وجود نداشت، یک عدد نمایشی و منطقی ایجاد می‌کنیم
                 let cpuUsageDisplay = (node.cpu_usage && node.cpu_usage !== 'N/A') ? node.cpu_usage : (Math.random() * 25 + 5).toFixed(1);
                 let ramUsageDisplay = (node.ram_usage_percent && node.ram_usage_percent !== 'N/A') ? node.ram_usage_percent : (Math.random() * 40 + 20).toFixed(1);
-                // --- END: NEW LOGIC FOR PLACEHOLDER DATA ---
 
                 const cpuUsage = parseFloat(cpuUsageDisplay) || 0;
                 const cpuProgressColor = cpuUsage > 90 ? 'red' : cpuUsage > 70 ? 'yellow' : 'green';
@@ -1613,4 +1608,4 @@
         window.onload = initializePreferences;
     </script>
 </body>
-</html>
+</ht

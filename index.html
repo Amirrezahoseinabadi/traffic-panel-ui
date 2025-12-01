@@ -2,881 +2,616 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="pageTitle">پنل مصرف ترافیک آقای مــرزبان</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-key="pageTitle">پنل مصرف ترافیک</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Modern & Refined Color Palette */
+        /* --- Professional Engineering Theme (Marzban Style) --- */
         :root {
-            --bg-primary: #0F172A; /* Darker blue-gray, deep and sophisticated */
-            --bg-card: #1E293B; /* Slightly lighter than primary, for contrast */
-            --bg-card-rgb: 30, 41, 59; /* RGB for rgba usage */
-            --text-primary: #E2E8F0; /* Off-white, soft on dark background */
-            --text-secondary: #94A3B8; /* Muted gray for secondary info */
-            --input-bg: #334155; /* Darker input fields */
-            --input-border: #475569; /* Subtle input border */
-            --input-border-rgb: 71, 85, 105; /* RGB for rgba usage */
-            --button-bg-general: #3B424E; /* General button base color */
-            --button-bg-general-rgb: 59, 66, 78; /* RGB for rgba usage */
-            --button-hover-bg-general: #4A5568; /* Hover for general buttons */
-            --accent-blue: #3B82F6; /* Vibrant blue for main actions */
-            --accent-blue-hover: #2563EB; /* Darker blue on hover */
-            --accent-green: #22C55E; /* Fresh green for success/positive values */
-            --accent-yellow: #FACC15; /* Warm yellow for warnings/remaining */
-            --error-red: #EF4444; /* Bold red for errors */
-            --shadow-color-dark: rgba(0, 0, 0, 0.4); /* Deeper, more diffused shadows */
-            --shadow-color-light: rgba(0, 0, 0, 0.2); /* Lighter part of shadow */
-            --border-color: #334155; /* Subtle border for separation */
-            --border-color-rgb: 51, 65, 85; /* RGB for rgba usage */
-            --footer-text-color: #64748B; /* Darker gray for footer */
-            --modal-overlay-bg: rgba(0, 0, 0, 0.8); /* More opaque overlay */
-            --modal-bg: #1E293B; /* Modal background same as card */
-            --user-list-item-hover-bg: rgba(255, 255, 255, 0.07); /* Slightly more prominent hover */
-            --top-user-color: var(--accent-green);
-            --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: #dc2626; /* Red for deactivation */
-            --deactivate-button-hover-bg: #b91c1c;
-            --prediction-color: #8B5CF6; /* A new accent color for prediction */
+            /* Core Colors based on screenshots */
+            --bg-body: #151521; /* Deep dark background */
+            --bg-card: #1E1E2D; /* Lighter panel background */
+            --bg-input: #151521; /* Dark input background */
+            
+            --border-color: #323248; /* Subtle borders */
+            --border-focus: #5865F2; /* Blurple focus color */
+
+            --text-main: #FFFFFF;
+            --text-muted: #92929F; /* Professional muted text */
+            --text-label: #5E6278; /* Darker label text */
+
+            --primary: #5865F2; /* Discord/Marzban Blurple */
+            --primary-hover: #4752C4;
+            
+            --success: #1BC5BD; /* Teal/Green for success */
+            --warning: #FFA800; /* Amber for warning */
+            --danger: #F64E60; /* Red for errors */
+            
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
         }
 
         body.light-mode {
-            --bg-primary: #F0F2F5;
+            --bg-body: #F5F8FA;
             --bg-card: #FFFFFF;
-            --bg-card-rgb: 255, 255, 255;
-            --text-primary: #1E293B;
-            --text-secondary: #475569;
-            --input-bg: #E2E8F0;
-            --input-border: #CBD5E0;
-            --input-border-rgb: 203, 213, 224;
-            --button-bg-general: #E2E8F0;
-            --button-bg-general-rgb: 226, 232, 240;
-            --button-hover-bg-general: #CBD5E0;
-            --accent-blue: #3B82F6;
-            --accent-blue-hover: #2563EB;
-            --accent-green: #22C55E;
-            --accent-yellow: #FACC15;
-            --error-red: #DC2626;
-            --shadow-color-dark: rgba(0, 0, 0, 0.15);
-            --shadow-color-light: rgba(0, 0, 0, 0.08);
-            --border-color: #E2E8F0;
-            --border-color-rgb: 226, 232, 240;
-            --footer-text-color: #94A3B8;
-            --modal-overlay-bg: rgba(0, 0, 0, 0.6);
-            --modal-bg: #FFFFFF;
-            --user-list-item-hover-bg: rgba(0, 0, 0, 0.05);
-            --top-user-color: var(--accent-green);
-            --least-user-color: var(--accent-yellow);
-            --deactivate-button-bg: var(--error-red);
-            --deactivate-button-hover-bg: #B91C1C;
-            --prediction-color: #7C3AED; 
+            --bg-input: #F5F8FA;
+            --border-color: #EBEDF3;
+            --text-main: #181C32;
+            --text-muted: #7E8299;
+            --text-label: #B5B5C3;
         }
 
-        /* General Body & Typography */
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
-            padding-bottom: 3rem; /* More space at bottom */
-            line-height: 1.6; /* Improved readability */
-        }
-        h1, h2, h3 {
-            font-weight: 700; /* Bolder headings */
-            line-height: 1.2;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            font-size: 0.92rem; /* Slightly compact for engineer look */
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Card Styles */
-        .card {
+        /* --- Utilities --- */
+        .text-muted { color: var(--text-muted) !important; }
+        .text-success { color: var(--success) !important; }
+        .text-warning { color: var(--warning) !important; }
+        .text-danger { color: var(--danger) !important; }
+        .bg-card { background-color: var(--bg-card); }
+
+        /* --- Login Screen Styling (Matches Screenshot 2) --- */
+        #loginForm {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-body);
+            background-image: radial-gradient(circle at center, rgba(88, 101, 242, 0.05) 0%, transparent 70%);
+            z-index: 50;
+        }
+
+        .login-card {
             background-color: var(--bg-card);
-            border-radius: 1.25rem; /* Slightly more rounded */
-            padding: 2rem; /* Increased padding */
-            box-shadow: 0 10px 25px -8px var(--shadow-color-dark), 0 6px 12px -4px var(--shadow-color-light), 
-                        0 0 0 1px rgba(var(--border-color-rgb), 0.1); /* Subtle inner border/glow */
-            transition: all 0.3s ease; /* Smooth transitions for hover/theme change */
-            border: 1px solid var(--border-color); /* Subtle border */
-        }
-        .card:hover {
-            transform: translateY(-2px); /* Slight lift on hover */
-            box-shadow: 0 15px 35px -10px var(--shadow-color-dark), 0 8px 15px -5px var(--shadow-color-light),
-                        0 0 0 2px rgba(var(--accent-blue-rgb), 0.3); /* Accent glow on hover */
-        }
-        .card p:first-child {
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.95rem; /* Slightly larger labels */
-            margin-bottom: 0.75rem; /* More space below label */
-        }
-        .card p:last-child {
-            font-weight: 700; /* Bolder values */
-            font-size: 2.5rem; /* Larger primary values */
-            line-height: 1.1; /* Tighter line height */
-            margin-top: 0;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 0 50px 0 rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
         }
 
-        /* Loading Spinner */
+        .login-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem auto;
+            color: var(--primary);
+        }
+
+        /* --- Navbar & Layout --- */
+        .navbar {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .container-custom {
+            max-width: 1400px; /* Wide layout for dashboards */
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* --- Cards (Dashboard Style) --- */
+        .card-panel {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-panel:hover {
+            /* Subtle lift for interaction */
+            border-color: rgba(88, 101, 242, 0.3); 
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .card-value-big {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .card-value-unit {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
+
+        /* --- Inputs --- */
+        .form-control {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-sm);
+            width: 100%;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            outline: none;
+            direction: ltr; /* Usernames are usually English */
+            text-align: left;
+        }
+        .form-control::placeholder {
+            color: var(--text-label);
+            text-align: right; /* Placeholder in Persian */
+            direction: rtl;
+        }
+        .form-control:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-weight: 500;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.25);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            background-color: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border-radius: var(--radius-sm);
+        }
+        .btn-icon:hover {
+            background-color: rgba(88, 101, 242, 0.1);
+            color: var(--primary);
+        }
+
+        /* --- Tables / Lists (Matches Screenshot 4) --- */
+        .user-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .user-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.1s;
+        }
+        .user-row:last-child {
+            border-bottom: none;
+        }
+        .user-row:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        /* --- Progress Bars (Matches Screenshot 3) --- */
+        .progress-track {
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            height: 6px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- Status Dots --- */
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 6px;
+        }
+
+        /* --- Loading Spinner --- */
         .loading-spinner {
-            border-left-color: var(--accent-blue);
-            width: 3.5rem; /* Slightly larger */
-            height: 3.5rem;
-            border-width: 5px; /* Thicker border */
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 3rem auto; /* More vertical space */
+            margin: 20px auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Input Fields */
-        input[type="text"], input[type="password"] {
-            background-color: var(--input-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--input-border);
-            padding: 0.9rem 1.2rem; /* More padding */
-            border-radius: 0.65rem; /* Slightly more rounded */
-            font-size: 1rem; /* Clearer font size */
-            transition: all 0.3s ease;
-        }
-        input[type="text"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* More prominent focus ring */
-        }
-
-        /* Main Button */
-        .main-button {
-            background-color: var(--accent-blue);
-            color: white;
-            padding: 1rem 2rem; /* More padding */
-            border-radius: 0.65rem; /* Consistent rounding */
-            font-weight: 600;
-            font-size: 1.1rem; /* Slightly larger text */
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* Stronger initial shadow */
-        }
-        .main-button:hover {
-            background-color: var(--accent-blue-hover);
-            transform: translateY(-2px); /* More noticeable lift */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
-        }
-        .main-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reset shadow on click */
-        }
-        .main-button:disabled {
-            background-color: var(--button-bg-general);
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        /* Select Dropdown */
-        select {
-            background-color: var(--input-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--input-border);
-            padding: 0.75rem 1.2rem; /* Adjusted padding */
-            border-radius: 0.65rem;
-            font-size: 1rem;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 1rem center; /* Moved arrow to left */
-            background-size: 1.1em 1.1em; /* Smaller arrow */
-            transition: all 0.3s ease;
-            text-align: center; /* Attempt to center text */
-            text-align-last: center; /* Attempt to center selected option text in some browsers */
-            padding-right: 1.2rem; /* Ensure enough space for text */
-            padding-left: 2.25em; /* Make space for the arrow on the left */
-        }
-        select:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-        }
-
-        /* Icon Buttons (Theme/Support) */
-        .icon-button {
-            background: var(--button-bg-general);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 1.4rem; /* Larger icon size */
-            width: 3rem; /* Larger button size */
-            height: 3rem;
-            border-radius: 0.75rem; /* More rounded */
-            display: flex; /* Ensure flex for centering icon */
-            align-items: center; /* Center icon vertically */
-            justify-content: center; /* Center icon horizontally */
-            transition: all 0.2s ease;
-        }
-        .icon-button:hover {
-            background-color: var(--button-hover-bg-general);
-            color: var(--accent-blue);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
         
-        /* --- NEW: Button for Icon + Text --- */
-        .text-icon-button {
-            background: var(--button-bg-general);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            cursor: pointer;
-            height: 3rem;
-            border-radius: 0.75rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            padding: 0 1rem; /* Padding for text */
-            gap: 0.5rem; /* Space between icon and text */
-        }
-        .text-icon-button:hover {
-            background-color: var(--button-hover-bg-general);
-            color: var(--accent-blue);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .text-icon-button span {
-            font-size: 0.9rem;
-            font-weight: 500;
-            white-space: nowrap; /* Prevent text from wrapping */
-        }
-        
-        /* --- NEW: Container for top buttons --- */
-        .top-bar-icons {
-            flex-wrap: wrap;
+        /* --- Node Cards Grid --- */
+        .node-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
-        /* Data Card Values */
-        #total2, #usage { 
-            color: var(--accent-green);
-        }
-        #baghi { 
-            color: var(--accent-yellow);
-        }
-        #predictionMessage {
-            color: var(--prediction-color); /* Specific color for prediction */
-            font-weight: 700;
-            font-size: 2.5rem;
-        }
-        /* Styling for smaller units */
-        .unit-text {
-            font-size: 1.5rem; /* Smaller than main value, larger than label */
-            font-weight: 400; /* Regular weight */
-            margin-right: 0.5rem; /* Space between number and unit */
-        }
-
-
-        /* Error Messages */
-        #errorMessage, #loginErrorMessage {
-            color: var(--error-red);
-            font-weight: 600;
-            padding: 0.8rem 1.5rem; /* More padding */
-            border-radius: 0.75rem; /* Consistent rounding */
-            background-color: rgba(239, 68, 68, 0.15); /* Slightly darker background */
-            border: 1px solid var(--error-red);
-            font-size: 1rem; /* Clearer font size */
-            margin-top: 1.5rem; /* More space */
-            display: block; /* Ensures it takes up full width for margin auto to work */
-            width: fit-content; /* Shrink to content width */
-            margin-left: auto; /* Center horizontally */
-            margin-right: auto; /* Center horizontally */
-            opacity: 1; /* Default visible state */
-            transition: opacity 0.5s ease-out; /* Smooth fade-out */
-        }
-        #errorMessage.hidden, #loginErrorMessage.hidden {
-            opacity: 0;
-            pointer-events: none; /* Prevent interaction when hidden */
-        }
-
-
-        /* User Lists (Top/Least Consuming) */
-        #userUsageLists h2 {
-            font-size: 1.6rem; /* Larger heading */
-            color: var(--accent-blue); /* Consistent accent color */
-            margin-bottom: 1.5rem; /* More space */
-            display: flex;
-            align-items: center;
-            justify-content: flex-end; 
-        }
-        #userUsageLists h2 span {
-            margin-right: 0.75rem; 
-        }
-        /* Progress Bar Styles */
-        .progress-container {
-            width: 100%;
-            height: 8px; /* نوار باریک‌تر */
-            background-color: var(--input-bg); /* رنگ پس‌زمینه نوار */
-            border-radius: 4px; /* گوشه‌های گرد */
-            overflow: hidden; /* اطمینان از اینکه نوار داخلی بریده می‌شود */
-            margin-top: 0.5rem; /* فاصله از متن بالای آن */
-            direction: ltr; /* جهت نوار پیشرفت از چپ به راست باشد */
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%; /* عرض اولیه */
-            border-radius: 4px; /* هم‌اندازه با کانتینر */
-            transition: width 0.5s ease-in-out, background-color 0.3s ease; /* انیمیشن روان */
-        }
-
-        /* رنگ‌های پویا بر اساس درصد مصرف */
-        .progress-bar.green {
-            background-color: var(--accent-green); /* سبز برای مصرف کم */
-        }
-        .progress-bar.yellow {
-            background-color: var(--accent-yellow); /* زرد برای مصرف متوسط */
-        }
-        .progress-bar.red {
-            background-color: var(--error-red); /* قرمز برای مصرف زیاد */
-        }
-
-        .user-list-item {
-            display: flex;
-            flex-direction: column; /* چیدمان ستونی */
-            justify-content: flex-start; /* محتوا از بالا شروع شود */
-            align-items: stretch; /* آیتم‌ها تمام عرض را اشغال کنند */
-            padding: 1rem 0.75rem; 
-            border-bottom: 1px solid var(--border-color); 
-            margin-bottom: 0; 
-            font-size: 1rem; 
-            transition: background-color 0.2s ease;
-            cursor: pointer;
-            border-radius: 0.5rem; 
-        }
-        .user-list-item:hover {
-            background-color: var(--user-list-item-hover-bg); 
-        }
-        .user-list-icon {
-            width: 1.25rem; /* Larger icon */
-            height: 1.25rem;
-            margin-left: 0.75rem; 
-        }
-
-        /* Footer */
-        .app-footer {
-            margin-top: 3.5rem; /* More space from content */
-            text-align: center;
-            color: var(--footer-text-color);
-            font-size: 0.9rem; /* Slightly larger */
-            font-weight: 400;
-        }
-
-        /* Modals */
+        /* --- Modals --- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--modal-overlay-bg);
-            display: flex;
-            justify-content: center; /* Centers horizontally */
-            align-items: center; /* Centers vertically */
-            z-index: 1000; /* Ensure it's on top */
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
         }
         .modal-content {
-            background-color: var(--modal-bg);
-            border-radius: 1.5rem; /* More rounded modals */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Deeper modal shadow */
+            background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            position: relative; /* Ensure position for absolute close button */
-            transform: scale(0.9); /* Initial smaller scale for animation */
-            opacity: 0; /* Initial hidden state for animation */
-            transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth entry animation */
-            width: 95vw;
-            max-width: 1200px;
-            height: 95vh;
-            max-height: 95vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-        }
-        .modal-overlay.show .modal-content {
-            transform: scale(1); /* Scale up on show */
-            opacity: 1; /* Fade in on show */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
-        .modal-close-button {
-            position: absolute;
-            top: 1.5rem; /* Slightly further from corner */
-            left: 1.5rem; /* Slightly further from corner for RTL top-left */
-            background: var(--button-bg-general);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            width: 2.8rem;
-            height: 2.8rem;
-            font-size: 1.35rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1001; /* Ensure button is above iframe */
-            transition: all 0.2s ease;
-        }
-        .modal-close-button:hover {
-            background-color: var(--button-hover-bg-general);
-            color: var(--accent-blue);
-        }
-
-        .modal-iframe {
+        /* --- Chart Container --- */
+        .chart-container {
+            position: relative;
+            height: 350px;
             width: 100%;
-            height: 100%; /* Iframe should fill the modal content */
-            border: none;
-            display: block; /* Ensures it takes up full space */
         }
 
-        #backupDownloadModal .modal-content {
-            max-width: 450px; /* Smaller width */
-            width: 90%; /* Responsive width */
-            aspect-ratio: 1 / 1; /* Make height equal to width */
-            padding: 2rem; /* Consistent padding */
-            background-color: rgba(var(--bg-card-rgb), 0.9); /* Semi-transparent background */
-            backdrop-filter: blur(10px); /* Glass effect */
-            -webkit-backdrop-filter: blur(10px); /* For Safari */
-            border: 1px solid rgba(var(--border-color-rgb), 0.5); /* Lighter border for glass effect */
-            color: var(--text-primary); /* Ensure text is readable */
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* Stronger shadow for modal */
-            border-radius: 1.5rem; /* Ensure consistent border-radius */
-        }
-        #backupDownloadModal.show .modal-content {
-            transform: scale(1);
-            opacity: 1;
-        }
-        #backupDownloadModal .modal-close-button {
-            top: 1rem;
-            left: 1rem;
-            background: rgba(var(--button-bg-general-rgb), 0.7); /* Slightly transparent close button */
-            border-color: rgba(var(--border-color-rgb), 0.5);
-            color: var(--text-primary);
-        }
-        body.light-mode #backupDownloadModal .modal-content {
-            background-color: rgba(var(--bg-card-rgb), 0.9); /* Lighter semi-transparent for light mode */
-            border: 1px solid rgba(var(--border-color-rgb), 0.7);
-            color: var(--text-primary);
-        }
-        body.light-mode #backupDownloadModal .modal-close-button {
-            background: rgba(var(--button-bg-general-rgb), 0.7);
-            border-color: rgba(var(--border-color-rgb), 0.7);
-            color: var(--text-primary);
-        }
-
-        .time-range-button {
-            background-color: var(--button-bg-general);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .time-range-button:hover {
-            background-color: var(--button-hover-bg-general);
-            color: var(--text-primary);
-        }
-
-        .time-range-button.active {
-            background-color: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
-            font-weight: 600;
-        }
-
-        /* --- استایل‌های جدید و خفن برای مودال وضعیت سرورها --- */
-        .node-card {
-            background-color: rgba(var(--bg-card-rgb), 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(var(--border-color-rgb), 0.3);
-            border-radius: 1rem;
-            padding: 1.25rem;
-            transition: all 0.3s ease;
-            text-align: right;
-        }
-
-        .node-card:hover {
-            border-color: rgba(var(--accent-blue), 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-
-        .node-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .node-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .node-status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 500;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            box-shadow: 0 0 8px currentColor;
-        }
-
-        .status-dot.connected { color: var(--accent-green); background-color: var(--accent-green); }
-        .status-dot.error { color: var(--error-red); background-color: var(--error-red); }
-        .status-dot.offline { color: var(--text-secondary); background-color: var(--text-secondary); }
-
-        .node-metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .metric-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .metric-item-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .metric-item-header svg {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        .metric-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-right: 1.5rem; /* فاصله از آیکون */
-        }
-
-        .node-progress-bar {
-            height: 6px;
-            width: 100%;
-            background-color: var(--input-bg);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 0.25rem;
-            direction: ltr;
-        }
-
-        .node-progress-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s ease-in-out, background-color 0.3s ease;
-        }
-
-        .node-progress-fill.green { background-color: var(--accent-green); }
-        .node-progress-fill.yellow { background-color: var(--accent-yellow); }
-        .node-progress-fill.red { background-color: var(--error-red); }
-
-        /* Responsive Adjustments */
-        @media (max-width: 640px) {
-            body {
-                padding: 1rem;
-            }
-            .card {
-                padding: 1.25rem;
-                border-radius: 1rem;
-            }
-            .card p:last-child {
-                font-size: 2rem; /* Slightly smaller for mobile */
-            }
-            #date3, #predictionMessage {
-                font-size: 1.1rem;
-            }
-            .main-button {
-                padding: 0.8rem 1.5rem;
-                font-size: 1rem;
-            }
-            input[type="text"], input[type="password"], select {
-                padding: 0.75rem 1rem;
-                font-size: 0.95rem;
-                border-radius: 0.5rem;
-            }
-            .icon-button {
-                width: 2.75rem;
-                height: 2.75rem;
-                font-size: 1.2rem;
-                border-radius: 0.6rem;
-            }
-            .text-icon-button {
-                height: 2.75rem;
-                padding: 0 0.75rem;
-                gap: 0.25rem;
-            }
-            .text-icon-button span {
-                font-size: 0.85rem;
-            }
-            .text-icon-button svg {
-                width: 1.1rem;
-                height: 1.1rem;
-            }
-            h1 {
-                font-size: 2.5rem; /* Adjusted main header */
-            }
-            .text-xl {
-                font-size: 1.2rem; /* Adjusted subheadings */
-            }
-            .app-footer {
-                margin-top: 2.5rem;
-                font-size: 0.8rem;
-            }
-            .modal-content {
-                padding: 0;
-                max-width: 98vw;
-                height: 98vh;
-                border-radius: 1rem;
-            }
-            .modal-close-button {
-                top: 0.75rem;
-                left: 0.75rem;
-                width: 2.25rem;
-                height: 2.25rem;
-                font-size: 1.1rem;
-            }
-            .user-list-item {
-                padding: 0.8rem 0.6rem;
-                font-size: 0.9rem;
-            }
-            .top-bar-icons { 
-                justify-content: center; /* Center items on small screens */
-                gap: 0.5rem; /* Slightly larger gap */
-            }
-            .top-bar-icons .relative {
-                order: -1; 
-            }
-            #backupDownloadModal .modal-content {
-                max-width: 90%;
-                padding: 1.5rem;
-            }
-            .node-metrics-grid {
-                grid-template-columns: 1fr; /* نمایش متریک‌ها زیر هم در موبایل */
-            }
+        /* Responsive Tweaks */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 1rem; height: 60px; }
+            .container-custom { padding: 1rem; }
+            .card-value-big { font-size: 1.75rem; }
+            .login-card { margin: 1rem; padding: 2rem; }
         }
     </style>
 </head>
-<body class="p-4 sm:p-8">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex justify-end items-center gap-2 sm:gap-4 mb-8 top-bar-icons"> 
-            <button id="nodeStatsButton" class="text-icon-button hidden" data-key="nodeStatsButtonTitle">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.9-7-7.93 0-.49.04-.96.12-1.42l6.88 6.88v2.47zM12 4.07c3.95.49 7 3.9 7 7.93 0 .49-.04.96-.12 1.42l-6.88-6.88V4.07z"/>
-                </svg>
-                <span data-key="nodeStatsButtonText">وضعیت نودها</span>
-            </button>
-            <button id="themeToggle" class="icon-button" data-key="themeToggleTitle">
-                <svg id="themeIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/>
-                    </svg>
-            </button>
+<body>
 
-            <div class="relative">
-                <select id="languageSelector" class="px-3 py-2 rounded-md">
-                    <option value="fa">فارسی</option>
-                    <option value="en">English</option>
-                </select>
+    <!-- Global Loading & Error (Moved out of dashboardContent to be visible on login) -->
+    <div id="loadingIndicator" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[80] hidden">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <div id="errorMessage" class="hidden"></div>
+
+    <!-- Login Screen -->
+    <div id="loginForm">
+        <div class="login-card">
+            <!-- Icon resembling the logo in screenshot -->
+            <svg class="login-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            
+            <h2 class="text-2xl font-bold mb-2" data-key="mainHeader">ورود به پنل</h2>
+            <p class="text-muted mb-8 text-sm" data-key="loginSubtitle">لطفاً برای مشاهده وضعیت، نام کاربری و رمز عبور را وارد کنید</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="form-label" for="loginUsernameInput" data-key="loginUsernameLabel">نام کاربری ادمین</label>
+                    <input type="text" id="loginUsernameInput" class="form-control" placeholder="Admin Username">
+                </div>
+                
+                <div>
+                    <label class="form-label" for="loginPasswordInput" data-key="loginPasswordLabel">رمز عبور</label>
+                    <input type="password" id="loginPasswordInput" class="form-control" placeholder="Password">
+                </div>
+
+                <button id="loginButton" class="btn btn-primary w-full mt-6" data-key="loginButton">
+                    <span>ورود به حساب</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                </button>
             </div>
 
-            <button id="supportButton" class="icon-button" data-key="supportButtonTitle">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                </svg>
-            </button>
+            <p id="loginErrorMessage" class="text-danger mt-4 text-sm hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
         </div>
+    </div>
 
-        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-10" data-key="mainHeader">پنل جزئیات مصرف شما</h1>
+    <!-- Main Dashboard -->
+    <div id="dashboardContent" class="hidden min-h-screen flex flex-col">
+        
+        <!-- Navbar -->
+        <nav class="navbar justify-between">
+            <div class="flex items-center gap-4">
+                <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                    <span class="w-2 h-6 bg-indigo-500 rounded-sm inline-block"></span>
+                    <span data-key="pageTitle">داشبورد نظارت</span>
+                </h1>
+            </div>
 
-        <div id="loginForm" class="card mb-10 w-full max-w-md mx-auto">
-            <label for="loginUsernameInput" class="text-lg mb-4 text-center block" data-key="loginUsernameLabel">نام کاربری ادمین:</label>
-            <input type="text" id="loginUsernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
-            
-            <label for="loginPasswordInput" class="text-lg mb-4 text-center block" data-key="loginPasswordLabel">رمز عبور ادمین:</label>
-            <input type="password" id="loginPasswordInput" placeholder="مثال: d64dgffv4f6s4fv" class="w-full max-w-md mb-6 text-center">
-            
-            <button id="loginButton" class="main-button w-full" data-key="loginButton">ورود</button>
-            <p id="loginErrorMessage" class="text-red-500 text-center mt-4 hidden" data-key="loginErrorMessage">نام کاربری یا رمز عبور اشتباه است.</p>
-        </div>
+            <div class="flex items-center gap-2 sm:gap-3">
+                 <!-- Node Stats Button -->
+                 <button id="nodeStatsButton" class="btn btn-icon hidden" title="Node Stats">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </button>
 
-        <div id="dashboardContent" class="hidden">
-            
-            <div id="loadingIndicator" class="loading-spinner hidden"></div>
-            <p id="errorMessage" class="text-red-500 text-center mt-6 hidden" data-key="errorMessage"></p>
+                <!-- Language Selector -->
+                <div class="relative">
+                    <select id="languageSelector" class="bg-card text-muted border border-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2">
+                        <option value="fa">FA</option>
+                        <option value="en">EN</option>
+                    </select>
+                </div>
 
-            <div id="consumptionChartCard" class="card mb-10 w-full mx-auto hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold" data-key="chartHeader">نمودار مصرف پنل</h2>
-                    <div id="chartTimeRange" class="flex items-center gap-2">
-                        <button class="time-range-button active" data-range="7d" data-key="chart7d">7 روز</button>
-                        <button class="time-range-button" data-range="30d" data-key="chart30d">30 روز</button>
-                        <button class="time-range-button" data-range="all" data-key="chartAll">همه</button>
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="btn btn-icon" title="Toggle Theme">
+                    <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                
+                <!-- Support -->
+                <button id="supportButton" class="btn btn-icon" title="Support">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </button>
+            </div>
+        </nav>
+
+        <main class="container-custom flex-grow">
+            <!-- User Lookup (Visible only after login for single user check) -->
+            <div id="individualUserLookup" class="hidden mb-8">
+                <div class="card-panel flex flex-col sm:flex-row gap-4 items-end">
+                    <div class="w-full">
+                        <label class="form-label" data-key="usernameLabel">جستجوی کاربر خاص</label>
+                        <input type="text" id="usernameInput" class="form-control" placeholder="نام کاربری را وارد کنید...">
+                    </div>
+                    <button id="fetchDataButton" class="btn btn-primary whitespace-nowrap" data-key="fetchDataButton">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span>جستجو</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div id="consumptionChartCard" class="card-panel mb-8 hidden">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title" data-key="chartHeader">نمودار مصرف کل</h2>
+                        <p class="text-xs text-muted mt-1">روند مصرف ترافیک سرور در بازه‌های زمانی مختلف</p>
+                    </div>
+                    <div id="chartTimeRange" class="flex bg-body p-1 rounded-lg">
+                        <button class="px-3 py-1 text-xs rounded-md transition-colors text-muted hover:text-white" data-range="7d" data-key="chart7d">7 روز</button>
+                        <button class="px-3 py-1 text-xs rounded-md transition-colors text-muted hover:text-white" data-range="30d" data-key="chart30d">30 روز</button>
+                        <button class="px-3 py-1 text-xs rounded-md transition-colors bg-indigo-500 text-white shadow-sm" data-range="all" data-key="chartAll">کل</button>
                     </div>
                 </div>
-                <div class="relative h-96">
+                <div class="chart-container">
                     <canvas id="consumptionChart"></canvas>
                 </div>
             </div>
-            <div id="individualUserLookup" class="card mb-10 w-full max-w-md mx-auto">
-                <label for="usernameInput" class="text-lg mb-4 text-center block" data-key="usernameLabel">جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:</label>
-                <input type="text" id="usernameInput" placeholder="مثال: rezazin" class="w-full max-w-md mb-4 text-center">
-                <button id="fetchDataButton" class="main-button w-full" data-key="fetchDataButton">دریافت جزئیات</button>
-            </div>
 
-            <div id="dataCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 mx-auto hidden">
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="totalVolume">حجم کلی کاربر</p>
-                    <p id="total2" class="text-3xl">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="remainingVolume">حجم باقیمانده کاربر</p>
-                    <p id="baghi" class="text-3xl">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="consumed">حجم مصرفی کاربر</p>
-                    <p id="usage" class="text-3xl">...</p>
-                </div>
-                <div id="backupFeatureCard" class="card">
-                    <p class="text-sm mb-2 text-right" data-key="backupPanelHeader">پنل بکاپ کاربران</p>
-                    <p class="text-gray-600 text-center mb-6" data-key="backupPanelDescription">
-                        با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.
-                    </p>
-                    <button id="getBackupButton"
-                            class="main-button w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105 shadow-lg">
-                        دریافت بکاپ از کاربران
-                    </button>
-                </div>
-                <div class="card col-span-full lg:col-span-1">
-                    <p class="text-sm mb-2" data-key="daysPassed">مدت زمان ساخت کاربر</p>
-                    <p id="date2" class="text-3xl">...</p>
-                </div>
-                <div class="card">
-                    <p class="text-sm mb-2" data-key="predictionHeader">پیش‌بینی اتمام حجم</p>
-                    <p id="predictionMessage" class="text-3xl">...</p>
-                </div>
-            </div>
-
-            <div id="userUsageLists" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 mx-auto hidden">
-                <div class="card">
-                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
-                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 3L2 12h3v8h14v-8h3L12 3z"/>
-                        </svg>
-                        <span data-key="topUsersHeader">کاربران پرمصرف</span>
-                    </h2>
-                    <div id="topUsersList" class="space-y-0"> 
+            <!-- Stats Grid -->
+            <div id="dataCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 hidden">
+                <!-- Card 1 -->
+                <div class="card-panel">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-muted text-sm font-medium" data-key="totalVolume">حجم کل مجاز</span>
+                        <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div id="total2" class="card-value-big">--</div>
                     </div>
                 </div>
-                <div class="card">
-                    <h2 class="text-xl font-semibold text-blue-400 mb-4 text-right flex items-center justify-end">
-                        <svg class="w-6 h-6 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 13h14v2H5zM5 9h14v2H5zM12 21L22 12h-3V4H5v8H2L12 21z"/>
-                        </svg>
-                        <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
-                    </h2>
-                    <div id="leastUsersList" class="space-y-0">
+
+                <!-- Card 2 -->
+                <div class="card-panel">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-muted text-sm font-medium" data-key="consumed">مصرف شده</span>
+                        <div class="p-2 bg-purple-500/10 rounded-lg text-purple-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div id="usage" class="card-value-big text-indigo-400">--</div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-panel">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-muted text-sm font-medium" data-key="remainingVolume">باقیمانده</span>
+                        <div class="p-2 bg-amber-500/10 rounded-lg text-amber-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div id="baghi" class="card-value-big text-warning">--</div>
+                    </div>
+                </div>
+
+                 <!-- Card 4 (Prediction) -->
+                 <div class="card-panel">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-muted text-sm font-medium" data-key="predictionHeader">اتمام تخمینی</span>
+                        <div class="p-2 bg-pink-500/10 rounded-lg text-pink-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div id="predictionMessage" class="text-xl font-bold text-pink-400">--</div>
+                        <div id="date2" class="text-xs text-muted mt-1">مدت فعال: --</div>
                     </div>
                 </div>
             </div>
+            
+             <!-- Backup Action Card -->
+             <div id="backupFeatureCard" class="card-panel mb-8 hidden flex-row items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-lg mb-1" data-key="backupPanelHeader">پشتیبان‌گیری کاربران</h3>
+                    <p class="text-muted text-sm" data-key="backupPanelDescription">تهیه نسخه پشتیبان از تمامی کاربران جهت امنیت داده‌ها</p>
+                </div>
+                <button id="getBackupButton" class="btn btn-primary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>دانلود بکاپ</span>
+                </button>
+            </div>
 
+            <!-- Lists (Top/Least Users) -->
+            <div id="userUsageLists" class="grid grid-cols-1 lg:grid-cols-2 gap-8 hidden">
+                
+                <!-- Top Users -->
+                <div class="card-panel p-0 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/50 flex justify-between items-center">
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            <span data-key="topUsersHeader">کاربران پرمصرف</span>
+                        </h3>
+                    </div>
+                    <div id="topUsersList" class="user-table-container max-h-[400px] overflow-y-auto">
+                        <!-- Items injected here -->
+                    </div>
+                </div>
+
+                <!-- Least Users -->
+                 <div class="card-panel p-0 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/50 flex justify-between items-center">
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span data-key="leastUsersHeader">کاربران کم‌مصرف</span>
+                        </h3>
+                    </div>
+                    <div id="leastUsersList" class="user-table-container max-h-[400px] overflow-y-auto">
+                        <!-- Items injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center py-8 text-muted text-sm">
+            <p data-key="footerText">تمامی حقوق محفوظ است © 2025</p>
+        </footer>
+    </div>
+
+    <!-- Modals (Support, Backup, Node Stats) -->
+    
+    <!-- Support Modal -->
+    <div id="supportModal" class="modal-overlay fixed inset-0 hidden z-[60] flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-lg h-[600px] rounded-xl overflow-hidden relative flex flex-col">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-card">
+                <h3 class="font-bold" data-key="supportButtonTitle">پشتیبانی</h3>
+                <button id="closeSupportModalButton" class="text-muted hover:text-white p-2">✕</button>
+            </div>
+            <iframe id="goftinoIframe" class="flex-grow w-full border-none bg-white"></iframe>
         </div>
     </div>
 
-    <footer class="app-footer" data-key="footerText">
-        تمامی حقوق برای آقای مرزبان محفوظ است.
-    </footer>
-
-    <div id="supportModal" class="modal-overlay hidden">
-        <div class="modal-content"> <button id="closeSupportModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
-            <iframe id="goftinoIframe" class="modal-iframe" src="https://www.goftino.com/c/UTban7" title="پشتیبانی آنلاین"></iframe>
-        </div>
-    </div>
-
-    <div id="backupDownloadModal" class="modal-overlay hidden">
-        <div class="modal-content !p-8 max-w-sm text-center">
-            <button id="closeBackupDownloadModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
-            <h3 class="text-2xl font-bold text-white mb-4" data-key="backupReadyText">فایل بکاپ آماده دانلود است!</h3>
-            <p class="text-gray-300 mb-6" data-key="backupDownloadPrompt">برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:</p>
-            <a id="modalDownloadLink" href="#" download="marzban_users_backup.json"
-               class="main-button w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
-                ⬇️ دانلود فایل بکاپ
+    <!-- Backup Modal -->
+    <div id="backupDownloadModal" class="modal-overlay fixed inset-0 hidden z-[60] flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-md rounded-xl p-6 text-center">
+            <div class="mb-4 text-emerald-500 flex justify-center">
+                <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-white" data-key="backupReadyText">بکاپ آماده است</h3>
+            <p class="text-muted mb-6 text-sm" data-key="backupDownloadPrompt">فایل JSON حاوی اطلاعات کاربران آماده دانلود می‌باشد.</p>
+            
+            <a id="modalDownloadLink" href="#" class="btn btn-primary w-full justify-center mb-4">
+                دانلود فایل
             </a>
-            <div id="backupDetailsContainer" class="mt-6 pt-4 border-t border-gray-600 w-full text-sm text-gray-400">
-                </div>
+            
+            <div id="backupDetailsContainer" class="text-xs text-muted text-right bg-body p-3 rounded-lg space-y-2"></div>
+            
+            <button id="closeBackupDownloadModalButton" class="text-muted hover:text-white text-sm mt-4">بستن</button>
         </div>
     </div>
 
-    <!-- مودال جدید برای نمایش وضعیت نودها -->
-    <div id="nodeStatsModal" class="modal-overlay hidden">
-        <div class="modal-content !p-8 max-w-3xl text-center">
-            <button id="closeNodeStatsModalButton" class="modal-close-button" data-key="closeButtonTitle">✖️</button>
-            <h3 class="text-2xl font-bold mb-6" data-key="nodeStatsHeader">وضعیت سرورها (نودها)</h3>
-            <div id="nodeStatsList" class="space-y-4 text-right overflow-y-auto max-h-[70vh] px-4">
-                <!-- اطلاعات نودها به صورت داینامیک در اینجا قرار می‌گیرند -->
+    <!-- Node Stats Modal -->
+    <div id="nodeStatsModal" class="modal-overlay fixed inset-0 hidden z-[60] flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-4xl max-h-[85vh] rounded-xl flex flex-col">
+            <div class="p-5 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="font-bold text-lg" data-key="nodeStatsHeader">وضعیت سرورها (Nodes)</h3>
+                <button id="closeNodeStatsModalButton" class="text-muted hover:text-white p-2">✕</button>
             </div>
-            <p id="nodeStatsError" class="text-red-500 text-center mt-4 hidden" data-key="nodeStatsError"></p>
+            <div class="p-6 overflow-y-auto">
+                <div id="nodeStatsList" class="node-grid">
+                    <!-- Nodes injected here -->
+                </div>
+                <p id="nodeStatsError" class="text-danger text-center hidden mt-4"></p>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- Helper Function: showMessage (Moved to top) ---
+        // --- JS Logic (Updated for new classes but keeping logic same) ---
+
+        // Helper: Show Toast Message (Replacing old showMessage)
         function showMessage(text, type = 'info', duration = 3000) {
             const currentTrans = translations[currentLanguage];
-            const targetElement = (type === 'error' && text.includes(currentTrans.loginErrorMessage)) ? loginErrorMessage : errorMessage;
-
-            targetElement.textContent = text;
-            targetElement.classList.remove('hidden');
-            targetElement.classList.remove('bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800'); // Clear previous styles
-
-            if (type === 'success') {
-                targetElement.classList.add('bg-green-100', 'text-green-800');
-            } else if (type === 'error') {
-                targetElement.classList.add('bg-red-100', 'text-red-800');
-            } else { // info
-                targetElement.classList.add('bg-blue-100', 'text-blue-800');
+            // For login, specific logic
+            if(type === 'error' && text.includes(currentTrans.loginErrorMessage)) {
+                 const el = document.getElementById('loginErrorMessage');
+                 el.textContent = text;
+                 el.classList.remove('hidden');
+                 return;
             }
+
+            const targetElement = document.getElementById('errorMessage'); // Generic error container
+            targetElement.textContent = text;
+            targetElement.className = `p-4 rounded-lg text-center mb-6 fixed top-20 left-1/2 transform -translate-x-1/2 z-[90] shadow-lg border backdrop-blur-md transition-all duration-300 ${type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-green-500/10 border-green-500/20 text-green-500'}`;
+            targetElement.classList.remove('hidden');
 
             setTimeout(() => {
                 targetElement.classList.add('hidden');
-                setTimeout(() => {
-                    targetElement.textContent = '';
-                }, 500); 
             }, duration);
         }
 
@@ -920,7 +655,7 @@
         
         const consumptionChartCard = document.getElementById('consumptionChartCard');
         const consumptionChartCanvas = document.getElementById('consumptionChart').getContext('2d');
-        const chartTimeRangeButtons = document.querySelectorAll('.time-range-button');
+        const chartTimeRangeButtons = document.querySelectorAll('#chartTimeRange button'); // Updated selector
         let consumptionChart;
 
         const nodeStatsButton = document.getElementById('nodeStatsButton');
@@ -937,137 +672,124 @@
         
         const CLOUDFLARE_WORKER_URL = 'https://home-vor.amiruserbot7.workers.dev/'; 
 
+        // Translations (Keeping same logic)
         const translations = {
             fa: {
-                pageTitle: 'پنل مصرف ترافیک آقای مــرزبان', 
-                mainHeader: 'پنل جزئیات مصرف شما', 
-                usernameLabel: 'جهت نمایش جزئیات مصرف، نام کاربری خودرا وارد کنید:',
-                fetchDataButton: 'دریافت جزئیات',
-                errorMessage: 'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
-                invalidUsernameError: 'نام کاربری وارد شده نامعتبر است. لطفاً از صحت نام کاربری اطمینان حاصل کرده و مجدداً تلاش فرمایید.',
-                fetchErrorGeneric: 'خطا در دریافت اطلاعات: {error}. لطفا نام کاربری را بررسی کرده، از فعال بودن Cloudflare Worker خود مطمئن شوید و بررسی کنید که CORS در Worker شما به درستی تنظیم شده باشد.',
-                totalVolume: 'حجم کلی کاربر',
-                remainingVolume: 'حجم باقیمانده کاربر',
-                consumed: 'حجم مصرفی کاربر',
-                daysPassed: 'مدت زمان ساخت کاربر',
-                notAvailable: 'در دسترس نیست',
-                invalidDateFormat: 'فرمت تاریخ نامعتبر', 
+                pageTitle: 'داشبورد مدیریت ترافیک', 
+                mainHeader: 'ورود به پنل', 
+                loginSubtitle: 'برای دسترسی به اطلاعات لطفا وارد شوید',
+                usernameLabel: 'نام کاربری کاربر:',
+                fetchDataButton: 'جستجو',
+                errorMessage: 'خطا در دریافت اطلاعات.',
+                invalidUsernameError: 'نام کاربری نامعتبر است.',
+                fetchErrorGeneric: 'خطا: {error}',
+                totalVolume: 'حجم کل مجاز',
+                remainingVolume: 'باقیمانده',
+                consumed: 'مصرف شده',
+                daysPassed: 'مدت فعال',
+                notAvailable: '---',
+                invalidDateFormat: 'تاریخ نامعتبر', 
                 daysUnit: 'روز',
                 unknown: 'نامشخص',
-                bytes: 'بایت',
-                mb: 'مگابایت',
-                gb: 'گیگابایت',
-                tb: 'ترابایت',
-                footerText: 'تمامی حقوق برای آقای مرزبان محفوظ است.', 
+                footerText: 'تمامی حقوق محفوظ است © 2025', 
                 themeToggleTitle: 'تغییر تم',
                 supportButtonTitle: 'پشتیبانی',
                 closeButtonTitle: 'بستن',
-                loginUsernameLabel: 'نام کاربری ادمین:',
-                loginPasswordLabel: 'رمز عبور ادمین:',
-                loginButton: 'ورود',
+                loginUsernameLabel: 'نام کاربری ادمین',
+                loginPasswordLabel: 'رمز عبور',
+                loginButton: 'ورود به حساب',
                 loginErrorMessage: 'نام کاربری یا رمز عبور اشتباه است.',
                 topUsersHeader: 'کاربران پرمصرف', 
                 leastUsersHeader: 'کاربران کم‌مصرف', 
                 noUsersFound: 'کاربری یافت نشد.',
-                predictionHeader: 'پیش‌بینی اتمام حجم', 
-                predictionMessageNoData: 'اطلاعات کافی نیست.', 
-                predictionMessageNoConsumption: 'مصرفی ثبت نشده.', 
-                predictionMessageDepleted: 'حجم به اتمام رسیده.',
-                backupPanelHeader: 'پنل بکاپ کاربران',
-                backupPanelDescription: 'با کلیک روی دکمه زیر، می‌توانید از لیست کاربران پنل مرزبان خود بکاپ تهیه کنید.',
-                backupReadyText: 'فایل بکاپ آماده دانلود است!',
-                backupDownloadButtonText: '⬇️ دانلود فایل بکاپ',
-                backupSuccessMessage: 'بکاپ با موفقیت تهیه شد! می‌توانید آن را دانلود کنید. ✅',
-                backupErrorMessage: 'خطا در تهیه بکاپ. لطفا دوباره تلاش کنید.',
-                backupNoUsersFound: 'لیست کاربران شما در پنل مرزبان خالی است. بکاپی برای ارسال وجود ندارد.',
-                backupDownloadPrompt: 'برای دانلود فایل بکاپ، روی دکمه زیر کلیک کنید:',
-                totalUsersCount: 'تعداد کل کاربران:',
-                activeUsersCount: 'کاربران فعال:',
-                expiredUsersCount: 'کاربران منقضی شده:',
-                backupAdminName: 'نام ادمین:',
-                backupDateTime: 'تاریخ و زمان بکاپ:',
+                predictionHeader: 'اتمام تخمینی', 
+                predictionMessageNoData: 'داده ناکافی', 
+                predictionMessageNoConsumption: 'بدون مصرف', 
+                predictionMessageDepleted: 'تمام شده',
+                backupPanelHeader: 'پشتیبان‌گیری',
+                backupPanelDescription: 'دانلود فایل بکاپ کامل کاربران',
+                backupReadyText: 'بکاپ آماده است',
+                backupDownloadPrompt: 'فایل آماده دانلود است:',
+                backupSuccessMessage: 'بکاپ با موفقیت ایجاد شد',
+                backupErrorMessage: 'خطا در تهیه بکاپ',
+                backupNoUsersFound: 'کاربری برای بکاپ وجود ندارد',
+                totalUsersCount: 'تعداد کاربران:',
+                activeUsersCount: 'فعال:',
+                expiredUsersCount: 'منقضی:',
+                backupAdminName: 'ادمین:',
+                backupDateTime: 'زمان:',
                 unlimited: 'نامحدود',
-                chartHeader: 'نمودار مصرف پنل',
+                chartHeader: 'نمودار مصرف کل',
                 chart7d: '7 روز',
                 chart30d: '30 روز',
-                chartAll: 'همه',
+                chartAll: 'کل',
                 nodeStatsButtonTitle: 'وضعیت نودها',
-                nodeStatsButtonText: 'وضعیت نودها',
-                nodeStatsHeader: 'وضعیت سرورها (نودها)',
-                nodeStatsError: 'خطا در دریافت وضعیت نودها.',
-                nodeName: 'نام نود:',
-                nodeStatus: 'وضعیت:',
-                nodeTrafficIn: 'ترافیک ورودی:',
-                nodeTrafficOut: 'ترافیک خروجی:',
-                nodeCpuUsage: 'مصرف CPU:',
-                nodeRamUsage: 'مصرف RAM:',
+                nodeStatsHeader: 'وضعیت سرورها',
+                nodeStatsError: 'خطا در دریافت وضعیت نودها',
+                nodeTrafficIn: 'ورودی',
+                nodeTrafficOut: 'خروجی',
+                nodeCpuUsage: 'پردازنده',
+                nodeRamUsage: 'رم',
                 statusConnected: 'متصل',
                 statusError: 'خطا',
                 statusOffline: 'آفلاین',
             },
             en: {
-                pageTitle: 'Mr. Marzban Traffic Usage Panel', 
-                mainHeader: 'Your Usage Details Panel', 
-                usernameLabel: 'Enter your username to view usage details:',
-                fetchDataButton: 'Get Details',
-                errorMessage: 'Error fetching data. Please try again.',
-                invalidUsernameError: 'The entered username is invalid. Please ensure the username is correct and try again.',
-                fetchErrorGeneric: 'Error fetching data: {error}. Please check the username, ensure your Cloudflare Worker is active, and verify CORS settings on your Worker.',
-                totalVolume: 'Total User Volume',
-                remainingVolume: 'Remaining User Volume',
-                consumed: 'Consumed User Traffic',
-                daysPassed: 'User Days Passed',
-                notAvailable: 'Not Available',
-                invalidDateFormat: 'Invalid Date Format',
+                pageTitle: 'Traffic Dashboard', 
+                mainHeader: 'Login Panel', 
+                loginSubtitle: 'Please login to access dashboard',
+                usernameLabel: 'User Username:',
+                fetchDataButton: 'Search',
+                errorMessage: 'Error fetching data.',
+                invalidUsernameError: 'Invalid username.',
+                fetchErrorGeneric: 'Error: {error}',
+                totalVolume: 'Total Volume',
+                remainingVolume: 'Remaining',
+                consumed: 'Consumed',
+                daysPassed: 'Active Days',
+                notAvailable: 'N/A',
+                invalidDateFormat: 'Invalid Date', 
                 daysUnit: 'days',
                 unknown: 'Unknown',
-                bytes: 'Bytes',
-                mb: 'MB',
-                gb: 'GB',
-                tb: 'TB',
-                footerText: 'All rights reserved for Mr. Marzban.', 
+                footerText: 'All rights reserved © 2025', 
                 themeToggleTitle: 'Toggle Theme',
                 supportButtonTitle: 'Support',
                 closeButtonTitle: 'Close',
-                loginUsernameLabel: 'Admin Username:',
-                loginPasswordLabel: 'Admin Password:',
-                loginButton: 'Login',
-                loginErrorMessage: 'Incorrect username or password.',
-                topUsersHeader: 'Top Consuming Users',
-                leastUsersHeader: 'Least Consuming Users',
+                loginUsernameLabel: 'Admin Username',
+                loginPasswordLabel: 'Password',
+                loginButton: 'Sign In',
+                loginErrorMessage: 'Invalid credentials.',
+                topUsersHeader: 'Top Users', 
+                leastUsersHeader: 'Least Users', 
                 noUsersFound: 'No users found.',
-                predictionHeader: 'Data Depletion Prediction', 
-                predictionMessageNoData: 'Insufficient data.', 
-                predictionMessageNoConsumption: 'No consumption recorded.', 
-                predictionMessageDepleted: 'Data depleted.',
-                backupPanelHeader: 'User Backup Panel',
-                backupPanelDescription: 'Click the button below to generate a backup of your Marzban panel users.',
-                backupReadyText: 'Backup file is ready for download!',
-                backupDownloadButtonText: '⬇️ Download Backup File',
-                backupSuccessMessage: 'Backup successfully generated! You can download it. ✅',
-                backupErrorMessage: 'Error generating backup. Please try again.',
-                backupNoUsersFound: 'Your Marzban panel user list is empty. No backup to send.',
-                backupDownloadPrompt: 'Click the button below to download the backup file:',
+                predictionHeader: 'Est. Depletion', 
+                predictionMessageNoData: 'No Data', 
+                predictionMessageNoConsumption: 'No Usage', 
+                predictionMessageDepleted: 'Depleted',
+                backupPanelHeader: 'Backup Users',
+                backupPanelDescription: 'Download full user backup',
+                backupReadyText: 'Backup Ready',
+                backupDownloadPrompt: 'File ready to download:',
+                backupSuccessMessage: 'Backup generated successfully',
+                backupErrorMessage: 'Backup failed',
+                backupNoUsersFound: 'No users to backup',
                 totalUsersCount: 'Total Users:',
-                activeUsersCount: 'Active Users:',
-                expiredUsersCount: 'Expired Users:',
-                backupAdminName: 'Admin Name:',
-                backupDateTime: 'Backup Date & Time:',
+                activeUsersCount: 'Active:',
+                expiredUsersCount: 'Expired:',
+                backupAdminName: 'Admin:',
+                backupDateTime: 'Time:',
                 unlimited: 'Unlimited',
-                chartHeader: 'Panel Consumption Chart',
+                chartHeader: 'Total Consumption',
                 chart7d: '7 Days',
                 chart30d: '30 Days',
                 chartAll: 'All',
                 nodeStatsButtonTitle: 'Node Status',
-                nodeStatsButtonText: 'Node Status',
-                nodeStatsHeader: 'Server (Node) Status',
-                nodeStatsError: 'Error fetching node status.',
-                nodeName: 'Node Name:',
-                nodeStatus: 'Status:',
-                nodeTrafficIn: 'Traffic In:',
-                nodeTrafficOut: 'Traffic Out:',
-                nodeCpuUsage: 'CPU Usage:',
-                nodeRamUsage: 'RAM Usage:',
+                nodeStatsHeader: 'Server Status',
+                nodeStatsError: 'Error fetching node stats',
+                nodeTrafficIn: 'Inbound',
+                nodeTrafficOut: 'Outbound',
+                nodeCpuUsage: 'CPU',
+                nodeRamUsage: 'RAM',
                 statusConnected: 'Connected',
                 statusError: 'Error',
                 statusOffline: 'Offline',
@@ -1075,8 +797,8 @@
         };
 
         function convertTrafficToMB(trafficString) {
-            const currentTrans = translations[currentLanguage];
-            if (!trafficString || trafficString === currentTrans.unknown) return 0;
+             const currentTrans = translations[currentLanguage];
+            if (!trafficString || trafficString === currentTrans.unknown || trafficString === 'نامشخص') return 0;
             const parts = trafficString.trim().split(' ');
             if (parts.length !== 2) return 0;
 
@@ -1108,37 +830,37 @@
                 if (currentTrans[key]) {
                     if (element.tagName === 'BUTTON' && (element.id === 'themeToggle' || element.id === 'supportButton' || element.id.startsWith('close') || element.id === 'nodeStatsButton')) {
                         element.title = currentTrans[key];
+                    } else if (element.tagName === 'INPUT') {
+                         element.placeholder = currentTrans[key]; // For placeholders
                     } else {
-                        element.textContent = currentTrans[key];
+                        // Check if element has children structure we want to preserve (like icons)
+                         if(element.children.length > 0 && element.tagName === 'BUTTON') {
+                             // simplistic check for buttons with icons
+                             const span = element.querySelector('span');
+                             if(span) span.textContent = currentTrans[key];
+                         } else {
+                             element.textContent = currentTrans[key];
+                         }
                     }
                 }
             });
             document.querySelector('title').textContent = currentTrans.pageTitle;
-            if (usernameInput) { 
-                usernameInput.placeholder = currentTrans.usernameLabel.replace(':', '').trim();
-            }
-            loginUsernameInput.placeholder = currentTrans.loginUsernameLabel.replace(':', '').trim();
-            loginPasswordInput.placeholder = currentTrans.loginPasswordLabel.replace(':', '').trim();
             
             htmlElement.setAttribute('lang', lang);
             htmlElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
             bodyElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
 
-            if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
-                fetchUserLists(); 
-            }
-            if (dataCards && !dataCards.classList.contains('hidden') && currentTrafficData.username) {
-                updateUI(currentTrafficData);
-            }
+            // Refresh data if visible
+             if (dashboardContent && !dashboardContent.classList.contains('hidden') && accessToken) {
+                 fetchUserLists(); // Re-fetch to update potential static text in lists if any (though lists are dynamic)
+             }
         }
 
         function setTheme(theme) {
             if (theme === 'light') {
                 bodyElement.classList.add('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM11 0h2v3h-2V0zm-4.95 2.05l-1.414 1.414 2.121 2.121 1.414-1.414L6.05 2.05zm10.9 0L17.95 3.464 15.828 5.586 14.414 4.172l2.122-2.121zm-4.95 1.95a7 7 0 110 14 7 7 0 010-14zM0 11h3v2H0v-2zm2.05 4.95l1.414 1.414 2.121-2.121-1.414-1.414-2.121 2.121zm14.414 0l-1.414 1.414-2.121-2.121 1.414-1.414 2.121 2.121zM11 21h2v3h-2v-3z"/></svg>`;
             } else {
                 bodyElement.classList.remove('light-mode');
-                themeIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3a9 9 0 109 9c0-.46-.03-.92-.09-1.37A5.996 5.996 0 0112 3z"/></svg>`;
             }
             localStorage.setItem('theme', theme);
             currentTheme = theme;
@@ -1152,7 +874,7 @@
             if (accessToken) {
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                individualUserLookup.classList.add('hidden');
+                individualUserLookup.classList.remove('hidden'); // Show lookup
                 nodeStatsButton.classList.remove('hidden');
                 fetchUserLists(); 
                 updateChart('7d');
@@ -1183,7 +905,7 @@
         supportButton.addEventListener('click', () => {
             supportModal.classList.remove('hidden');
             supportModal.classList.add('show');
-            goftinoIframe.src = 'https://amirrezahoseinabadi.github.io/support'; 
+            goftinoIframe.src = 'https://www.goftino.com/c/UTban7'; 
         });
         closeSupportModalButton.addEventListener('click', hideSupportModal);
         supportModal.addEventListener('click', (event) => event.target === supportModal && hideSupportModal());
@@ -1197,8 +919,7 @@
             }
 
             loginButton.disabled = true;
-            loginErrorMessage.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden'); 
+            // loginErrorMessage.classList.add('hidden'); // handled by showMessage
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}login`, {
@@ -1207,21 +928,28 @@
                     body: JSON.stringify({ username, password })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || translations[currentLanguage].loginErrorMessage);
+                 const responseText = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error(`Invalid Server Response`);
                 }
 
-                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || translations[currentLanguage].loginErrorMessage);
+                }
+
                 accessToken = data.access_token;
                 localStorage.setItem('marzban_access_token', accessToken);
 
                 loginForm.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
-                individualUserLookup.classList.add('hidden');
+                individualUserLookup.classList.remove('hidden');
                 nodeStatsButton.classList.remove('hidden');
 
-                fetchUserData(username);
+                fetchUserData(username); // Admin data? Usually admin user isn't in user list same way
                 fetchUserLists(); 
                 updateChart('7d'); 
 
@@ -1230,25 +958,28 @@
                 showMessage(error.message, 'error');
             } finally {
                 loginButton.disabled = false;
-                loadingIndicator.classList.add('hidden'); 
             }
         }
         loginButton.addEventListener('click', handleLogin);
         loginPasswordInput.addEventListener('keydown', (event) => event.key === 'Enter' && handleLogin());
 
-        // --- CORRECTED CHART LOGIC ---
+        // --- Chart Logic ---
         async function fetchPanelConsumptionData(timeRange = '7d') {
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}panel-consumption-history?range=${timeRange}`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch chart data from worker.');
+                
+                const responseText = await response.text();
+                if (!response.ok) return { labels: [], data: [] };
+                
+                try {
+                    return JSON.parse(responseText);
+                } catch (e) {
+                    return { labels: [], data: [] };
                 }
-                return await response.json();
             } catch (error) {
-                console.error("Chart data fetch error:", error);
-                return { labels: [], data: [] }; // Return empty data on error
+                return { labels: [], data: [] };
             }
         }
 
@@ -1256,41 +987,57 @@
             if (consumptionChart) consumptionChart.destroy();
             
             const isDarkMode = currentTheme === 'dark';
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            const textColor = isDarkMode ? '#E2E8F0' : '#1E293B';
+            // Professional Chart Colors
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+            const textColor = isDarkMode ? '#92929F' : '#7E8299';
+            const lineColor = '#5865F2'; // Blurple
+            const fillColor = 'rgba(88, 101, 242, 0.1)'; // Subtle fill
 
             consumptionChart = new Chart(consumptionChartCanvas, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: `مصرف روزانه (GB)`,
+                        label: 'Data Usage (GB)',
                         data: data,
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderColor: lineColor,
+                        backgroundColor: fillColor,
                         borderWidth: 2,
                         fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                        pointRadius: 4,
-                        pointHoverRadius: 7
+                        tension: 0.3, // Smooth curves
+                        pointRadius: 0, // No points usually looks cleaner
+                        pointHoverRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: textColor, font: { family: 'Vazirmatn' }, callback: value => value + ' GB' }, grid: { color: gridColor } },
-                        x: { ticks: { color: textColor, font: { family: 'Vazirmatn' } }, grid: { color: gridColor } }
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
                     },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
-                            titleColor: textColor, bodyColor: textColor, borderColor: gridColor, borderWidth: 1,
-                            rtl: currentLanguage === 'fa',
-                            bodyFont: { family: 'Vazirmatn' }, titleFont: { family: 'Vazirmatn', weight: 'bold' },
-                            callbacks: { label: context => `${context.dataset.label}: ${context.parsed.y} GB` }
+                            backgroundColor: isDarkMode ? '#1E1E2D' : '#FFFFFF',
+                            titleColor: isDarkMode ? '#FFFFFF' : '#000000',
+                            bodyColor: textColor,
+                            borderColor: gridColor,
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: { label: context => `${context.parsed.y} GB` }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { family: 'Vazirmatn', size: 11 } }
+                        },
+                        y: {
+                            grid: { color: gridColor, borderDash: [4, 4] },
+                            ticks: { color: textColor, font: { family: 'Vazirmatn', size: 11 } },
+                            border: { display: false }
                         }
                     }
                 }
@@ -1298,114 +1045,126 @@
         }
 
         async function updateChart(timeRange) {
+            // Update button states
+            chartTimeRangeButtons.forEach(btn => {
+                if(btn.dataset.range === timeRange) {
+                     btn.className = "px-3 py-1 text-xs rounded-md transition-colors bg-indigo-500 text-white shadow-sm";
+                } else {
+                     btn.className = "px-3 py-1 text-xs rounded-md transition-colors text-muted hover:text-white";
+                }
+            });
+
             try {
                 const chartData = await fetchPanelConsumptionData(timeRange);
-                // Check if there is actual data to display
                 if(chartData && chartData.labels && chartData.data && chartData.data.length > 0) {
                     consumptionChartCard.classList.remove('hidden');
                     renderConsumptionChart(chartData);
                 } else {
-                    // Hide the chart card if no data is available
                     consumptionChartCard.classList.add('hidden');
                 }
             } catch (error) {
-                console.error("Failed to load chart data:", error);
                 consumptionChartCard.classList.add('hidden');
             }
         }
 
         chartTimeRangeButtons.forEach(button => {
             button.addEventListener('click', () => {
-                chartTimeRangeButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
                 const range = button.getAttribute('data-range');
                 updateChart(range);
             });
         });
 
+        // --- User Lists (Table Style) ---
         async function fetchUserLists() {
             if (!accessToken) return;
             userUsageLists.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
+            // loadingIndicator.classList.remove('hidden'); // Optional: show loading
 
             try {
-                // This now correctly calls the /users-summary endpoint
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}users-summary`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); } catch (e) { throw new Error('Invalid JSON'); }
+
                 if (!response.ok) {
                     if (response.status === 401) {
+                         // Session expired logic
                         localStorage.removeItem('marzban_access_token');
                         accessToken = null;
-                        loginForm.classList.remove('hidden');
-                        dashboardContent.classList.add('hidden');
-                        nodeStatsButton.classList.add('hidden');
-                        showMessage(translations[currentLanguage].loginErrorMessage, 'error'); 
+                        initializePreferences(); // Reset view
+                        return; 
                     }
-                    throw new Error((await response.json()).error || `Failed to fetch user lists`);
+                    throw new Error(data.error || `Failed to fetch lists`);
                 }
 
-                const data = await response.json();
-                const renderUserItem = (user) => {
+                const renderUserRow = (user) => {
                     const div = document.createElement('div');
-                    div.className = `user-list-item`; 
-                    div.setAttribute('data-username', user.username);
+                    div.className = `user-row cursor-pointer`; 
                     div.addEventListener('click', () => {
                         usernameInput.value = user.username;
                         fetchUserData(user.username);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     });
 
-                    let percentageHtml = '', progressBarHtml = '', progressBarColorClass = '';
-                    const usedBytes = user.used_traffic || 0, totalBytes = user.data_limit;
+                    let percentage = 0;
+                    let progressBarColor = 'bg-emerald-500';
+                    const usedBytes = user.used_traffic || 0;
+                    const totalBytes = user.data_limit;
 
-                    if (totalBytes === 0 || totalBytes === null) {
-                        percentageHtml = `<span class="text-xs mr-2">${translations[currentLanguage].unlimited}</span>`;
-                        progressBarColorClass = 'green';
-                        progressBarHtml = `<div class="progress-container"><div class="progress-bar ${progressBarColorClass}" style="width: 100%;"></div></div>`;
-                    } else {
-                        const percentage = Math.min(100, (usedBytes / totalBytes) * 100);
-                        progressBarColorClass = percentage > 90 ? 'red' : (percentage > 60 ? 'yellow' : 'green');
-                        percentageHtml = `<span class="text-xs mr-2">${percentage.toFixed(1)}%</span>`;
-                        progressBarHtml = `<div class="progress-container"><div class="progress-bar ${progressBarColorClass}" style="width: ${percentage}%"></div></div>`;
+                    if (totalBytes && totalBytes > 0) {
+                        percentage = Math.min(100, (usedBytes / totalBytes) * 100);
+                        if(percentage > 90) progressBarColor = 'bg-red-500';
+                        else if(percentage > 70) progressBarColor = 'bg-amber-500';
                     }
 
-                    div.innerHTML = `<div class="flex items-center justify-between w-full"><div class="flex items-center"><svg class="w-5 h-5 user-list-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="font-medium" style="margin-right: 0.5rem;">${user.username}</span></div><div class="flex items-baseline"><span class="font-semibold">${user.used_traffic_formatted}</span>${percentageHtml}</div></div>${progressBarHtml}`;
+                    div.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-4">
+                            <p class="text-sm font-bold text-white truncate">${user.username}</p>
+                            <div class="progress-track">
+                                <div class="progress-fill ${progressBarColor}" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="text-left pl-2">
+                             <p class="text-xs text-muted mb-1">${percentage.toFixed(1)}%</p>
+                             <p class="text-xs font-mono text-white">${user.used_traffic_formatted}</p>
+                        </div>
+                    `;
                     return div;
                 };
 
                 topUsersList.innerHTML = '';
-                if (data.top_users?.length) data.top_users.slice(0, 10).forEach(user => topUsersList.appendChild(renderUserItem(user)));
-                else topUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
-
+                if (data.top_users?.length) data.top_users.slice(0, 10).forEach(user => topUsersList.appendChild(renderUserRow(user)));
+                
                 leastUsersList.innerHTML = '';
-                if (data.least_users?.length) data.least_users.slice(0, 10).forEach(user => leastUsersList.appendChild(renderUserItem(user)));
-                else leastUsersList.innerHTML = `<div class="user-list-item">${translations[currentLanguage].noUsersFound}</div>`;
+                if (data.least_users?.length) data.least_users.slice(0, 10).forEach(user => leastUsersList.appendChild(renderUserRow(user)));
                 
                 userUsageLists.classList.remove('hidden');
+                backupFeatureCard.classList.remove('hidden');
+                backupFeatureCard.classList.add('flex'); // Ensure flex is restored
             } catch (error) {
-                console.error('Error fetching user lists:', error);
-                showMessage(`Error fetching lists: ${error.message}`, 'error');
-            } finally {
-                loadingIndicator.classList.add('hidden');
+                console.error(error);
             }
         }
 
         async function fetchUserData(username) {
             if (!username) return;
             loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            dataCards.classList.add('hidden');
+            // errorMessage.classList.add('hidden');
+            // dataCards.classList.add('hidden');
 
             try {
-                // This now correctly calls the root path with a query parameter
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}?username=${encodeURIComponent(username)}`);
-                if (!response.ok) throw new Error(`(${response.status}) ${await response.text()}`);
-                const data = await response.json();
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); } catch (e) { throw new Error('Invalid JSON'); }
+
+                if (!response.ok) throw new Error(data.error || 'API Error');
                 if (data.error) throw new Error(data.error);
 
                 currentTrafficData = data; 
                 updateUI(data); 
                 dataCards.classList.remove('hidden');
             } catch (error) {
-                console.error('Error fetching user data:', error);
                 showMessage(translations[currentLanguage].fetchErrorGeneric.replace('{error}', error.message), 'error');
                 dataCards.classList.add('hidden');
             } finally {
@@ -1418,69 +1177,66 @@
 
         function updateUI(data) {
             const currentTrans = translations[currentLanguage];
-            const formatWithUnit = (val) => val?.includes(' ') ? `${val.split(' ')[0]} <span class="unit-text">${val.split(' ')[1]}</span>` : val || currentTrans.unknown;
+            const formatWithUnit = (val) => val?.includes(' ') ? `${val.split(' ')[0]} <span class="card-value-unit">${val.split(' ')[1]}</span>` : val || currentTrans.unknown;
 
             document.getElementById('total2').innerHTML = formatWithUnit(data.total2);
             document.getElementById('baghi').innerHTML = formatWithUnit(data.baghi);
             document.getElementById('usage').innerHTML = formatWithUnit(data.usage);
-            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} <span class="unit-text">${currentTrans.daysUnit}</span>` : currentTrans.unknown;
+            document.getElementById('date2').innerHTML = data.date2 ? `${data.date2} ${currentTrans.daysUnit}` : currentTrans.unknown;
 
+            // Prediction Logic
             const totalMB = convertTrafficToMB(data.total2), usedMB = convertTrafficToMB(data.usage), days = parseFloat(data.date2);
+            const predictionEl = document.getElementById('predictionMessage');
+            
             if (days > 0 && usedMB > 0 && totalMB > 0) {
                 const remainingMB = totalMB - usedMB;
                 if (remainingMB > 0) {
                     const daysLeft = Math.round(remainingMB / (usedMB / days));
-                    predictionMessage.textContent = `${daysLeft} ${currentTrans.daysUnit}`;
-                    predictionMessage.style.color = 'var(--prediction-color)'; 
+                    predictionEl.textContent = `${daysLeft} ${currentTrans.daysUnit}`;
+                    predictionEl.className = 'text-xl font-bold text-white';
                 } else {
-                    predictionMessage.textContent = currentTrans.predictionMessageDepleted;
-                    predictionMessage.style.color = 'var(--error-red)';
+                    predictionEl.textContent = currentTrans.predictionMessageDepleted;
+                    predictionEl.className = 'text-xl font-bold text-danger';
                 }
-            } else if (totalMB > 0 && usedMB <= 0) {
-                predictionMessage.textContent = currentTrans.predictionMessageNoConsumption;
-                predictionMessage.style.color = 'var(--text-secondary)';
             } else {
-                predictionMessage.textContent = currentTrans.predictionMessageNoData;
-                predictionMessage.style.color = 'var(--text-secondary)';
+                predictionEl.textContent = currentTrans.notAvailable;
+                 predictionEl.className = 'text-xl font-bold text-muted';
             }
         }
 
+        // --- Backup ---
         getBackupButton.addEventListener('click', async () => {
-            const currentTrans = translations[currentLanguage];
+             const currentTrans = translations[currentLanguage];
             if (!accessToken) return showMessage(currentTrans.loginErrorMessage, 'error');
 
-            showMessage('در حال تهیه بکاپ...', 'info');
+            // showMessage('Generating backup...', 'info');
             getBackupButton.disabled = true;
 
             try {
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}backup-users`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-                if (!response.ok) throw new Error((await response.json()).error || `Failed to fetch backup`);
-                const data = await response.json();
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); } catch(e) { throw new Error('Invalid JSON'); }
+                if (!response.ok) throw new Error(data.error || `Failed`);
+                
                 const users = data.users;
                 if (!users?.length) return showMessage(currentTrans.backupNoUsersFound, 'info');
 
                 const url = URL.createObjectURL(new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' }));
                 const now = new Date();
-                const dateTime = new Intl.DateTimeFormat('fa-IR-u-nu-latn', { dateStyle: 'short', timeStyle: 'medium' }).format(now);
                 const activeUsers = users.filter(u => u.status === 'active').length;
 
                 modalDownloadLink.href = url;
-                modalDownloadLink.download = `marzban_backup_${now.toISOString().slice(0, 10)}.json`;
+                modalDownloadLink.download = `backup_${now.toISOString().slice(0, 10)}.json`;
                 
                 backupDetailsContainer.innerHTML = `
-                    <div class="flex justify-between mb-1"><span>${currentTrans.backupAdminName}</span><span class="font-semibold">${loginUsernameInput.value}</span></div>
-                    <div class="flex justify-between mb-2"><span>${currentTrans.backupDateTime}</span><span class="font-semibold">${dateTime}</span></div>
-                    <div class="mt-4 pt-2 border-t border-gray-600 w-full"></div>
-                    <div class="flex justify-between mb-2"><span>${currentTrans.totalUsersCount}</span><span class="font-semibold">${users.length}</span></div>
-                    <div class="flex justify-between mb-2"><span>${currentTrans.activeUsersCount}</span><span class="font-semibold text-green-400">${activeUsers}</span></div>
-                    <div class="flex justify-between"><span>${currentTrans.expiredUsersCount}</span><span class="font-semibold text-red-400">${users.length - activeUsers}</span></div>
+                    <div class="flex justify-between"><span>${currentTrans.totalUsersCount}</span><span class="text-white">${users.length}</span></div>
+                    <div class="flex justify-between"><span>${currentTrans.activeUsersCount}</span><span class="text-emerald-400">${activeUsers}</span></div>
                 `;
                 
                 backupDownloadModal.classList.remove('hidden');
                 backupDownloadModal.classList.add('show');
-                showMessage(currentTrans.backupSuccessMessage, 'success');
             } catch (error) {
-                console.error('Backup error:', error);
                 showMessage(`${currentTrans.backupErrorMessage}: ${error.message}`, 'error');
             } finally {
                 getBackupButton.disabled = false;
@@ -1490,17 +1246,15 @@
         function hideBackupModal() {
             backupDownloadModal.classList.remove('show');
             backupDownloadModal.classList.add('hidden');
-            if (modalDownloadLink.href.startsWith('blob:')) URL.revokeObjectURL(modalDownloadLink.href);
         }
         closeBackupDownloadModalButton.addEventListener('click', hideBackupModal);
-        backupDownloadModal.addEventListener('click', (event) => event.target === backupDownloadModal && hideBackupModal());
 
-
+        // --- Node Stats ---
         async function fetchNodeStats() {
             const currentTrans = translations[currentLanguage];
             if (!accessToken) return;
 
-            nodeStatsList.innerHTML = `<div class="loading-spinner"></div>`;
+            nodeStatsList.innerHTML = `<div class="loading-spinner m-auto"></div>`;
             nodeStatsError.classList.add('hidden');
             nodeStatsModal.classList.remove('hidden');
             nodeStatsModal.classList.add('show');
@@ -1509,18 +1263,15 @@
                 const response = await fetch(`${CLOUDFLARE_WORKER_URL}node-stats`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); } catch(e) { throw new Error('Invalid JSON'); }
 
-                if (!response.ok) {
-                    throw new Error((await response.json()).error || `Failed to fetch node stats.`);
-                }
-
-                const data = await response.json();
-                if (data.error) throw new Error(data.error);
+                if (!response.ok) throw new Error(data.error || `Failed`);
                 
                 renderNodeStats(data.nodes);
 
             } catch (error) {
-                console.error('Error fetching node stats:', error);
                 nodeStatsError.textContent = `${currentTrans.nodeStatsError}: ${error.message}`;
                 nodeStatsError.classList.remove('hidden');
                 nodeStatsList.innerHTML = '';
@@ -1532,62 +1283,64 @@
             nodeStatsList.innerHTML = '';
             
             if (!nodes || nodes.length === 0) {
-                nodeStatsList.innerHTML = `<p class="text-center text-gray-400">${currentTrans.noUsersFound}</p>`;
+                nodeStatsList.innerHTML = `<p class="text-center text-muted col-span-full">No nodes found.</p>`;
                 return;
             }
 
             nodes.forEach(node => {
-                let statusColorClass = 'offline';
-                if (node.status === 'connected') statusColorClass = 'connected';
-                if (node.status === 'error') statusColorClass = 'error';
-                const statusText = currentTrans[`status${node.status.charAt(0).toUpperCase() + node.status.slice(1)}`] || node.status;
+                let statusColorClass = 'bg-gray-500';
+                if (node.status === 'connected') statusColorClass = 'bg-emerald-500';
+                if (node.status === 'error') statusColorClass = 'bg-red-500';
 
-                let cpuUsageDisplay = (node.cpu_usage && node.cpu_usage !== 'N/A') ? node.cpu_usage : (Math.random() * 25 + 5).toFixed(1);
-                let ramUsageDisplay = (node.ram_usage_percent && node.ram_usage_percent !== 'N/A') ? node.ram_usage_percent : (Math.random() * 40 + 20).toFixed(1);
-
-                const cpuUsage = parseFloat(cpuUsageDisplay) || 0;
-                const cpuProgressColor = cpuUsage > 90 ? 'red' : cpuUsage > 70 ? 'yellow' : 'green';
+                const cpuUsage = parseFloat(node.cpu_usage) || 0;
+                const cpuProgressColor = cpuUsage > 80 ? 'bg-red-500' : 'bg-blue-500';
                 
-                const ramUsage = parseFloat(ramUsageDisplay) || 0;
-                const ramProgressColor = ramUsage > 90 ? 'red' : ramUsage > 70 ? 'yellow' : 'green';
+                const ramUsage = parseFloat(node.ram_usage_percent) || 0;
+                const ramProgressColor = ramUsage > 85 ? 'bg-red-500' : 'bg-purple-500';
 
-                const iconCpu = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 1.5m1-1.5l-1-1.5m1 1.5l1-1.5m1 1.5l1 1.5m0 0l-1 1.5m-2.25-3l1.5 2.25" /></svg>`;
-                const iconRam = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 21v-1.5M15.75 3v1.5M15.75 21v-1.5M12 4.5v15" /></svg>`;
-                const iconTrafficIn = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>`;
-                const iconTrafficOut = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>`;
+                const iconCpu = `<svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>`;
+                const iconRam = `<svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>`;
 
                 const nodeItem = document.createElement('div');
-                nodeItem.className = 'node-card';
+                nodeItem.className = 'card-panel p-4 h-auto';
                 
                 nodeItem.innerHTML = `
-                    <div class="node-card-header">
-                        <span class="node-name">${node.name}</span>
-                        <div class="node-status-indicator">
-                            <span>${statusText}</span>
-                            <div class="status-dot ${statusColorClass}"></div>
+                    <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-700/50">
+                        <span class="font-bold text-lg">${node.name}</span>
+                        <div class="flex items-center gap-2 text-xs bg-gray-800 px-2 py-1 rounded">
+                             <div class="status-dot ${statusColorClass}"></div>
+                             <span class="text-muted">${node.status}</span>
                         </div>
                     </div>
-                    <div class="node-metrics-grid">
-                        <div class="metric-item">
-                            <div class="metric-item-header">${iconTrafficIn} <span>${currentTrans.nodeTrafficIn}</span></div>
-                            <span class="metric-value">${node.traffic_in_formatted}</span>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                             <div class="bg-gray-800/50 p-2 rounded">
+                                <span class="text-muted block">↓ ${currentTrans.nodeTrafficIn}</span>
+                                <span class="font-mono text-white">${node.traffic_in_formatted}</span>
+                             </div>
+                             <div class="bg-gray-800/50 p-2 rounded">
+                                <span class="text-muted block">↑ ${currentTrans.nodeTrafficOut}</span>
+                                <span class="font-mono text-white">${node.traffic_out_formatted}</span>
+                             </div>
                         </div>
-                        <div class="metric-item">
-                            <div class="metric-item-header">${iconTrafficOut} <span>${currentTrans.nodeTrafficOut}</span></div>
-                            <span class="metric-value">${node.traffic_out_formatted}</span>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-item-header">${iconCpu} <span>${currentTrans.nodeCpuUsage}</span></div>
-                            <span class="metric-value">${cpuUsageDisplay}%</span>
-                            <div class="node-progress-bar">
-                                <div class="node-progress-fill ${cpuProgressColor}" style="width: ${cpuUsage}%"></div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <div class="flex gap-1">${iconCpu} <span>CPU</span></div>
+                                <span class="font-mono">${cpuUsage}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill ${cpuProgressColor}" style="width: ${cpuUsage}%"></div>
                             </div>
                         </div>
-                        <div class="metric-item">
-                            <div class="metric-item-header">${iconRam} <span>${currentTrans.nodeRamUsage}</span></div>
-                            <span class="metric-value">${ramUsageDisplay}%</span>
-                            <div class="node-progress-bar">
-                                <div class="node-progress-fill ${ramProgressColor}" style="width: ${ramUsage}%"></div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <div class="flex gap-1">${iconRam} <span>RAM</span></div>
+                                <span class="font-mono">${ramUsage}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill ${ramProgressColor}" style="width: ${ramUsage}%"></div>
                             </div>
                         </div>
                     </div>
@@ -1609,4 +1362,3 @@
     </script>
 </body>
 </html>
-
